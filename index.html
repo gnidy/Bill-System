@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>محل الاكسيسوارات</title>
+
+    <style>body,html{padding:0;margin:0;font-family:Arial,sans-serif;font-size:20px;scroll-behavior:smooth}html{--ccc:#ccc;--gray:gray;--black:black;---lookGood:#cbdcf7;---secondary:aliceblue}form{display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;background-color:#f1f1f1;position:relative}ul{list-style-type:none}#btn,#btn2,#btn3,form input{padding:20px;margin:6px;border-radius:30px;border:3px solid var(--ccc);font-size:20px}#mainForm input{width:600px}#btn,#btn2,#btn3{background-color:var(--ccc);width:400px;transition:.5s;font-size:25px;cursor:pointer;border-radius:40px}#btn2{position:fixed;bottom:0}#btn2:hover,#btn3:hover,#btn:hover{width:500px}.btnList{width:100%;display:flex;justify-content:center;margin-bottom:20px}.header{display:flex;justify-content:space-evenly;align-items:center;flex-wrap:wrap;border-radius:30px;border:3px solid var(--ccc);text-align:center;margin:10px}.header p{padding:0 10px}.nameOfShop{text-align:center}.grid-container{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid-container ul{list-style-type:none;padding:10px;margin:30px 10px;border-radius:30px;border:3px solid var(--ccc);position:relative;height:fit-content;min-width:350px;margin-bottom:100px}.grid-container ul li{display:flex;justify-content:space-between;align-items:center;height:fit-content;padding:3px 0!important}.grid-container ul li:not(:last-child){border-bottom:2px solid var(--ccc)}.grid-container ul::after{display:block;padding:0 20px;text-align:center;background-color:var(--ccc);border-radius:10px;position:absolute;top:-11px;left:50%;transform:translate(-50%,-50%);width:250px}.grid-container ul:nth-child(1)::after{content:"ا ب ت ث ج ح خ د ذ ر ز"}.grid-container ul:nth-child(2)::after{content:"س ش ص ض ط ظ ع غ ف ق"}.grid-container ul:nth-child(3)::after{content:"ك ل م ن ه و ي"}.grid-container ul li input{width:50px;height:20px}.grid-container ul li div{width:120px;display:flex;justify-content:space-between}.filtered-container{width:96%;margin:auto}.filtered-container div:not(:last-child){display:grid;grid-template-columns:35px calc(70% - 35px) 10% 10% 10%;text-align:center}.filtered-container div:first-child span{border-top:2px solid var(--black)}.filtered-container div span:first-child{border-right:2px solid var(--black)}.filtered-container div span{border-left:2px solid var(--black);border-bottom:2px solid var(--black);padding:3px 0}.data-container,.listOfItems,.nameOfShop{display:none}#reload,#wayQuantityForm{width:60px;height:60px;background:var(--ccc);position:fixed;bottom:6px;border-radius:50%;cursor:pointer;display:flex;justify-content:center;align-items:center;transition:.6s}#wayQuantityForm{left:6px}#reload{right:6px}#reload:hover,#wayQuantityForm:hover{background:var(--gray)}.localItem{display:flex!important;justify-content:space-between;align-items:center;padding:7px 0;font-size:25px;border:2px solid var(--black);border-radius:26px;margin:3px}.localKey,.localValue{padding:0 30px}.total-price{display:flex;justify-content:center;margin-top:15px}.total-price span{border-top:var(--black) 2px solid;padding:3px 10px 3px 20px!important;border-radius:20px}.search-container{position:absolute;top:3px;right:10px;z-index:1000;box-shadow:0 0 10px rgba(0,0,0,.1);margin:6px;width:fit-content;border-radius:40px;transition:position .3s ease-in-out}.search-container:focus-within{position:fixed}.date-time{display:flex!important;justify-content:space-evenly;margin:7px;border:2px solid var(--black);border-radius:25px;width:330px;padding:3px}.date-time span{border:none!important}.balance-info{margin:10px auto 10px;justify-content:center;align-items:center;display:grid;grid-template-columns:20% 15% 20% 24% 21%!important;text-align:center}.balance-info span{border-top:var(--black) 2px solid;padding:3px 10px 3px 10px!important;display:flex;align-items:center;justify-content:center;height:55px}.balance-message{display:flex!important;justify-content:center;margin:6px 0 0 0;text-align:center}.balance-message span{width:100px;border-top:var(--black) 2px solid;border-radius:25px;padding:4px}.debt{position:absolute;z-index:22222222222;height:fit-content;width:250px;padding:5px 10px 10px;background-color:var(---secondary);border-radius:14px}#listOfNames{position:absolute;z-index:22222222222;right:20px;top:20px;width:60px;height:30px;background:var(--ccc);border-radius:8px;padding:1px;text-align:center;line-height:30px;transition:.5s}#listOfNames:hover{background:var(--gray)}#debtTitle{position:fixed;top:0;right:0}#debtList{padding:1px;margin-bottom:0}#debtList li{border:1px solid #000;display:flex;justify-content:space-around;align-items:center}.add-item-form{position:absolute;z-index:22222222222;left:20px;top:20px;width:60px;height:30px;background:var(--ccc);border-radius:8px;padding:1px;text-align:center;line-height:30px;transition:.5s;direction:ltr}.add-item-form:hover{background:var(--gray)}@media (max-width:500px){#mainForm input{width:250px}#btn,#btn2,#btn3{width:150px}#btn2:hover,#btn3:hover,#btn:hover{width:200px}}</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div id="localStorageData"></div>
+    <div id="listOfNames" class="listOfNames">
+        <div id="debtButton">القائمه</div>
+        <div class="debt" style="display:none">
+            <div>
+                <input type="text" id="debtInput" class="debtInput" style="outline:0;border:none;padding:3px;border-radius:5px" placeholder="اسم العميل">
+                <button type="submit" id="btn4" style="border:solid #fff 2px;border-radius:10px;cursor:pointer">حفظ</button>
+            </div>
+            <ul id="debtList"></ul>
+        </div>
+    </div>
+    <form id="mainForm">
+        <input type="text" id="client" placeholder="اسم العميل" value="عميل">
+        <input type="number" id="phone" placeholder="رقم العميل">
+        <input type="text" id="cashier" placeholder="اسم الكاشير" value="جمال نصار">
+        <input type="date" id="date" placeholder="Enter your date" style="display:none">
+        <input type="hidden" id="time">
+        <button id="btn">التالي</button>
+        <div id="wayQuantityForm">الكمية</div>
+    </form>
+
+    <div class="listOfItems">
+        <div class="grid-container">
+            
+        </div>
+        <div class="btnList">
+            <button id="btn2">التالي</button>
+        </div>
+    </div>
+    <div class="add-item-form">
+        <div id="addButton">اضافه</div>
+        <div class="newItem" style="display:none;background-color:var(---secondary);width:250px;padding:2px 5px 7px;border-radius:20px">
+                <input type="text" id="newItemName" style="outline:0;border:none;padding:3px;border-radius:5px" placeholder="اسم المنتج الجديد">
+                <button id="addNewItem" style="border:solid #fff 2px;border-radius:10px;cursor:pointer">إضافة منتج</button>
+        </div>
+    </div>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Check if "Items" exists in localStorage
+    if (!localStorage.getItem('Items')) {
+            // Define the items array
+        const items=[{id:"a1",name:"**** فيبر",price:575,quantity:33},{id:"a2",name:"**** فيبر محمل",price:590,quantity:38},{id:"a3",name:"**** كلادين",price:750,quantity:40},{id:"a4",name:"**** U.V",price:580,quantity:24},{id:"a5",name:"**** بروديوم",price:755,quantity:2},{id:"a6",name:"**** الومنیوم فضى ك",price:174,quantity:0},{id:"a7",name:"**** الومنیوم رفايع ك",price:188,quantity:0},{id:"a8",name:"**** الومنیوم الدولیة ك",price:207,quantity:0},{id:"a9",name:"**** المنيوم مدهون",price:196,quantity:0},{id:"a10",name:"استرتش ثقیل ١٠سم",price:75,quantity:13},{id:"a11",name:"اكرة بلیة صیني اسود",price:45,quantity:16},{id:"a12",name:"اكرة بلیة صیني بیج الرياض",price:50,quantity:11},{id:"a13",name:"اكرة بلیة كینج بیج",price:50,quantity:44},{id:"a14",name:"اكرة كالون صیني اسود",price:100,quantity:5},{id:"a15",name:"اكرة كالون صیني بیج",price:100,quantity:10},{id:"a16",name:"الانكیة ٢٫٥مم",price:25,quantity:0},{id:"a17",name:"الانكیة ٣مم",price:0,quantity:0},{id:"a18",name:"الانكیة ٤مم",price:0,quantity:0},{id:"a19",name:"الانكیة ٥مم",price:30,quantity:17},{id:"a20",name:"انبوبة فوم",price:98,quantity:25},{id:"a21",name:"علبه برشام ٤*١٢ اسكروستیل",price:175,quantity:8},{id:"a22",name:"بسكوتة خضراء",price:12,quantity:94},{id:"a23",name:"بصمة اسود",price:0.30,quantity:0},{id:"a24",name:"بصمة بیج",price:0.30,quantity:300},{id:"a25",name:"بلاور توتال ٤٠٠وات",price:0,quantity:0},{id:"a26",name:"بنسة ببوز",price:200,quantity:5},{id:"a27",name:"بنطة ٢٫٥مم",price:200,quantity:83},{id:"a28",name:"بنطة ٢مم",price:0,quantity:0},{id:"a29",name:"بنطة ٣مم",price:0,quantity:85},{id:"a30",name:"بنطة ٤مم",price:9,quantity:10},{id:"a31",name:"بنطة ٥مم",price:9,quantity:27},{id:"a32",name:"بنطة ٦مم",price:10,quantity:84},{id:"a33",name:"بنطة تفریز ٣٥مم",price:55,quantity:0},{id:"a34",name:"بنطة تفریز ٥٥مم",price:60,quantity:2},{id:"a35",name:"ترباس PS بلاستیك اسود",price:14,quantity:80},{id:"a36",name:"ترباس PS صیني اسود",price:35,quantity:22},{id:"a37",name:"ترباس PS صیني بیج",price:35,quantity:27},{id:"a38",name:"ترباس السعد جیما",price:38,quantity:0},{id:"a39",name:"ترولى ١٦سم GM",price:575,quantity:1},{id:"a40",name:"ترولى ٣٠سم السلاب",price:0,quantity:0},{id:"a41",name:"ترولى ٣٥سم السلاب",price:600,quantity:2},{id:"a42",name:"ثلاثي ٢٫٥ ابيض SM",price:2.50,quantity:690},{id:"a43",name:"ثلاثي ٢٫٥ اخضر الندي",price:2.70,quantity:397},{id:"a44",name:"ثلاثي ٢٫٥ اسود T",price:2.50,quantity:0},{id:"a45",name:"ثلاثي ٢٫٥ اسود الوادي",price:2.70,quantity:688},{id:"a46",name:"ثلاثي ٢٫٥ اسود SM",price:2.50,quantity:700},{id:"a47",name:"ثلاثي ٢٫٥ اصفر الندي",price:2.50,quantity:242},{id:"a48",name:"ثلاثي ٢٫٥ باذنجاني خلف",price:2.70,quantity:220},{id:"a49",name:"ثلاثي ٢٫٥ بني SM",price:2.50,quantity:257},{id:"a50",name:"ثلاثي ٢٫٥ بيج SM",price:2.50,quantity:1663},{id:"a51",name:"ثلاثي ٢٫٥ بیج الوادي",price:2.70,quantity:1031},{id:"a52",name:"ثلاثي ٢٫٥ بیج خلف",price:2.70,quantity:468},{id:"a53",name:"ثلاثي ٢٫٥ تركواز خلف",price:2.70,quantity:400},{id:"a54",name:"ثلاثي ٢٫٥ رصاصي SM",price:2.50,quantity:570},{id:"a55",name:"ثلاثي ٢٫٥ رصاصي غامق خلف",price:2.70,quantity:569},{id:"a56",name:"ثلاثي ٢٫٥ روز",price:2.50,quantity:447},{id:"a57",name:"ثلاثي ٢٫٥ فوشیا SM",price:2.50,quantity:500},{id:"a58",name:"ثلاثي ٢٫٥ كافي SM",price:2.50,quantity:912},{id:"a59",name:"ثلاثي ٢٫٥ كافي الوادي",price:2.70,quantity:375},{id:"a72",name:"جوز كابولي ماسورة",price:58,quantity:69},{id:"a73",name:"حامل كاسات ٢فرع صیني",price:95,quantity:28},{id:"a74",name:"حامل كاسات ٣فرع صیني",price:105,quantity:6},{id:"a75",name:"حامل مقشات مستورد",price:150,quantity:4},{id:"a76",name:"حامل رف ستالس",price:0,quantity:80},{id:"a77",name:"حرف S بلاستيك بيور",price:5,quantity:53},{id:"a78",name:"حرف S مفرد استانلس",price:8,quantity:326},{id:"a79",name:"دبل بجناح SM",price:0.85,quantity:9440},{id:"a80",name:"دبل بجناح الوادي",price:0.85,quantity:2750},{id:"a81",name:"دبل بجناح خلف",price:0.85,quantity:523},{id:"a82",name:"دبل كبير الجوكر",price:1.25,quantity:776},{id:"a83",name:"دفن ٢٫٥ SM مصمت",price:1.00,quantity:0},{id:"a84",name:"دفن ٢٫٥ مصمت المصطفي",price:0.85,quantity:910},{id:"a85",name:"دفن ٢٫٥ sm منفرجة",price:1.00,quantity:130},{id:"a86",name:"دليل سكينة تانجو",price:8.00,quantity:0},{id:"a87",name:"دليل سكينة صغير اسود",price:0,quantity:391},{id:"a88",name:"دليل سكينة كبير اسود",price:0,quantity:0},{id:"a89",name:"دليل علوي جامبو",price:0,quantity:29},{id:"a90",name:"دوقماق بلاستيك",price:135,quantity:0},{id:"a91",name:"ذراع باكم ١٠٠",price:18,quantity:38},{id:"a92",name:"ذراع باكم ١٢٠",price:18,quantity:50},{id:"a93",name:"ذراع باكم ٨٠",price:18,quantity:229},{id:"a94",name:"ذراع باكم ٨٠ سوفت",price:55,quantity:17},{id:"a95",name:"ذراع ترابيذة ٣٥سم",price:150,quantity:9},{id:"a96",name:"ذراع قلاب ١مرحلة PS صيني",price:50,quantity:56},{id:"a97",name:"ذراع قلاب ٢مرحلة PS صيني",price:50,quantity:37},{id:"a98",name:"ذراع قلاب السعد ١مرحلة تايواني",price:75,quantity:0},{id:"a99",name:"ذراع قلاب السعد ٢مرحلة تايواني",price:75,quantity:44},{id:"a100",name:"رباعي ٤*٤ دوران اسود",price:6,quantity:47},{id:"a101",name:"رجل الكاس ١٠سم مستورد معدن",price:0,quantity:165},{id:"a102",name:"رجل الكاس ٨سم مستورد",price:0,quantity:73},{id:"a103",name:"رجل الكاس بلاستيك ١٠سم",price:5,quantity:408},{id:"a104",name:"رجل بلاستيك (سوكلو)",price:0,quantity:47},{id:"a105",name:"رجل موزة مستوردة",price:28,quantity:84},{id:"a106",name:"رینو السعد ستار",price:7.5,quantity:82},{id:"a107",name:"رینو جامبو GM",price:0,quantity:645},{id:"a108",name:"رینو جرار صغیر جولد",price:6,quantity:1574},{id:"a109",name:"رینو مفصلي جولد",price:7,quantity:334},{id:"a110",name:"زاوية قياس توتال",price:265,quantity:4},{id:"a111",name:"زاوية تجمیع بلاستیك",price:5,quantity:36},{id:"a112",name:"زاوية صاج ٧مم",price:0.30,quantity:2757},{id:"a113",name:"زاوية صاج تانجو",price:0.60,quantity:74.99},{id:"a114",name:"زاوية صاج جامبو",price:1.00,quantity:269},{id:"a115",name:"زاوية صاج درفة محملة",price:0.75,quantity:1613},{id:"a116",name:"زلاقة بیور",price:5.00,quantity:90},{id:"a117",name:"زور كالون طویل",price:45,quantity:7},{id:"a118",name:"زور كالون قصير",price:0,quantity:5},{id:"a119",name:"سبت بلاستیك ابيض",price:55,quantity:1},{id:"a120",name:"سبت بلاستیك اسود",price:55,quantity:27},{id:"a121",name:"سبت بلاستیك بني",price:55,quantity:0},{id:"a122",name:"سبت بلاستیك بیج",price:55,quantity:51},{id:"a123",name:"سبت بلاستیك رصاصي",price:55,quantity:37},{id:"a124",name:"سبت بلاستیك كافي",price:55,quantity:58},{id:"a125",name:"سبت بلاستیك موف",price:0,quantity:21},{id:"a126",name:"سبت بلاستيك روز",price:0,quantity:3},{id:"a127",name:"سبلیونة ٤٢٠ كینج اسود",price:105,quantity:15},{id:"a128",name:"سبلیونة ٤٢٠ كینج بیج",price:105,quantity:0},{id:"a129",name:"سبلیونة ٤٤٠ صیني اسود",price:105,quantity:8},{id:"a130",name:"سبلیونة ٤٤٠ صیني بیج",price:105,quantity:15},{id:"a131",name:"سبلیونة ٤٤٠ كینج اسود",price:105,quantity:0},{id:"a132",name:"سبلیونة DCL محلي بیج",price:95,quantity:37},{id:"a133",name:"سبلیونة جرار DCL صیني بیج",price:140,quantity:25},{id:"a134",name:"سبلیونة جرار DCL كینج اسود",price:170,quantity:10},{id:"a135",name:"سكاك ١ وش كینج ابيض",price:0,quantity:0},{id:"a136",name:"سكاك ١ وش كینج اسود",price:0,quantity:0},{id:"a137",name:"سكاك ١وش صیني اسود",price:0,quantity:0},{id:"a138",name:"سكاك ٢وش صیني اسود",price:70,quantity:14},{id:"a139",name:"سكاك ٢وش صیني بیج",price:70,quantity:20},{id:"a140",name:"سكاك سوستة رشید بیج",price:50,quantity:78},{id:"a141",name:"سكاك سوستة مینا بیج",price:45,quantity:0},{id:"a142",name:"سكاك سوستة نوبیا اسود",price:0,quantity:50},{id:"a143",name:"سكاك سوستة نوبیا بیج",price:0,quantity:0},{id:"a144",name:"سلاح كاتر علبة",price:20,quantity:9},{id:"a145",name:"سلة ٤٠سم GM",price:575,quantity:1},{id:"a146",name:"سلیكون ابيض",price:0,quantity:0},{id:"a147",name:"سلیكون شفاف",price:50,quantity:17},{id:"a148",name:"سلیكون عضم",price:100,quantity:9},{id:"a149",name:"شاكوش بكماشه صغير",price:120,quantity:1},{id:"a150",name:"شاكوش بكماشه كبير",price:140,quantity:1},{id:"a151",name:"شاكوش وزن ٢٠٠جرام",price:130,quantity:7},{id:"a152",name:"شنیور ٤٠٠وات",price:920,quantity:3},{id:"a153",name:"شنیور ٩٠٠وات",price:0,quantity:1},{id:"a154",name:"صاروخ توناك ١١٠٠وات",price:1990,quantity:1},{id:"a155",name:"صينية منشار توناك ١٤٠٠وات",price:2349,quantity:1},{id:"a156",name:"صفایة ٦٠سم السلاب",price:280,quantity:9},{id:"a157",name:"صفایة ٧٠سم السلاب",price:320,quantity:9},{id:"a158",name:"صفایة ٨٠سم السلاب",price:340,quantity:3},{id:"a159",name:"طبة ٤*٤ دوران",price:1.00,quantity:631},{id:"a160",name:"طبة ٤*٤ عدلة",price:4.5,quantity:0},{id:"a161",name:"طبة ٨*٨",price:3,quantity:182},{id:"a162",name:"طبة T مرد اسود",price:5,quantity:148},{id:"a163",name:"طبة T مرد بیج",price:0,quantity:0},{id:"a164",name:"طبة بلت ان ابيض الندي",price:2.25,quantity:200},{id:"a165",name:"طبة بلت ان اسود الندي",price:2.25,quantity:1350},{id:"a166",name:"طبة بلت ان بیج الندي",price:2.25,quantity:950},{id:"a167",name:"طبة مقبض بلت ان رصاصي صغیرة",price:1.75,quantity:450},{id:"a168",name:"طبة مقبض بلت ان كافي صغیرة",price:1.75,quantity:380},{id:"a169",name:"طقم تجمیع ٢*١٠ خارجي",price:6.5,quantity:94},{id:"a170",name:"طقم تجمیع ٢*٨ خارجي",price:6.00,quantity:49},{id:"a171",name:"طقم تجمیع دفن ٢*١٠",price:6.00,quantity:80},{id:"a172",name:"طقم تجمیع دفن ٢*٨",price:5.000,quantity:75},{id:"a173",name:"طقم عجل ٢بوصة احمر فرامل",price:55,quantity:28},{id:"a174",name:"عجل PS دبل محمل",price:120,quantity:0},{id:"a175",name:"عجل P.V.C مزدوج",price:0,quantity:91},{id:"a176",name:"عجل تانجو مفرد طقم",price:75,quantity:48},{id:"a177",name:"عجل سلك جامبو",price:80,quantity:169},{id:"a178",name:"عجل سلك مستورد",price:8.5,quantity:139},{id:"a179",name:"عجل ماك طقم",price:0,quantity:96},{id:"a180",name:"عجل PS محمل",price:55,quantity:30},{id:"a181",name:"عجل PS الخربوطلي",price:0,quantity:30},{id:"a182",name:"عجل PS محلي",price:35,quantity:16},{id:"a183",name:"عصفورة PS صیني اسود",price:35,quantity:41},{id:"a184",name:"عصفورة PS صیني بیج",price:35,quantity:24},{id:"a185",name:"عصفورة السعد اسود",price:17,quantity:25},{id:"a186",name:"عضم ٤سم الشیخ",price:0.75,quantity:1466},{id:"a187",name:"عضم صداد ٢قطع",price:4.5,quantity:155},{id:"a188",name:"عضم جرار ابيض",price:1.75,quantity:826},{id:"a189",name:"عضم سلك السعد ابيض",price:0.75,quantity:509},{id:"a190",name:"عضم سلك ثابت جامبو",price:0.50,quantity:1038},{id:"a191",name:"عضم شبح",price:1.00,quantity:1469},{id:"a192",name:"عضم عراقي",price:1.00,quantity:0},{id:"a193",name:"عضم كلاسیك",price:1.00,quantity:331},{id:"a194",name:"علاقة مطبخ معدني",price:5.00,quantity:24},{id:"a195",name:"غالق ابواب باكم",price:0,quantity:4},{id:"a196",name:"فراشة ٢درفة تركي",price:0,quantity:0},{id:"a197",name:"فراشة ٢درفة صیني اسود",price:85,quantity:12},{id:"a198",name:"فراشة ٢درفة صیني بیج",price:85,quantity:10},{id:"a199",name:"فراشة ٤درفة صیني اسود",price:130,quantity:3},{id:"a200",name:"فرش ٥*٥",price:0,quantity:0},{id:"a201",name:"فرش ٧*٧ م٥٠",price:100,quantity:14},{id:"a202",name:"فرش ٧*٧ م٣٧٥ أرال لفة",price:675,quantity:3},{id:"a203",name:"فرش ٧*٧ مسلح كینج لفة",price:295,quantity:4},{id:"a204",name:"فوم مسدس",price:97,quantity:21},{id:"a205",name:"فیشر ٦مم تایواني",price:0,quantity:0},{id:"a206",name:"فیشر ٦مم مستورد",price:42,quantity:33},{id:"a207",name:"قاطع زجاج",price:0,quantity:2},{id:"a208",name:"ك مسمار الشرق ٣/٤ *١٠",price:95,quantity:0},{id:"a209",name:"ك مسمار الشرق مقاسات",price:95,quantity:0},{id:"a210",name:"كالون اشارة تركي ٣٠مم ابيض",price:390,quantity:4},{id:"a211",name:"كالون اشارة تركي بیج ٣٠مم",price:390,quantity:2},{id:"a212",name:"كالون سواس اھرام",price:285,quantity:4},{id:"a213",name:"كالون سواس عصفورة اھرام",price:310,quantity:6},{id:"a214",name:"كالون فندقى ثقیل",price:310,quantity:4},{id:"a215",name:"كاوتش ١مم ارمو",price:85,quantity:7},{id:"a216",name:"كاوتش ٢مم ارمو",price:85,quantity:5},{id:"a217",name:"كاوتش MR خط٣",price:65,quantity:5.15},{id:"a218",name:"كاوتش ٣مم ارمو",price:0,quantity:0},{id:"a219",name:"كاوتش الشریف",price:50,quantity:10},{id:"a220",name:"كاوتش مستورد MR",price:65,quantity:10},{id:"a221",name:"كاوتش منفاخ MR",price:65,quantity:10},{id:"a222",name:"كاوتش١٠مم الشریف",price:85,quantity:30},{id:"a223",name:"كاوتش١مم الشریف",price:85,quantity:5},{id:"a224",name:"كاوتش٢مم الشریف",price:85,quantity:10},{id:"a225",name:"كاوتش٣مم الشریف",price:85,quantity:10},{id:"a226",name:"كاوتش٤مم الشریف",price:85,quantity:10},{id:"a227",name:"كاوتش٥مم الشریف",price:85,quantity:10},{id:"a228",name:"كاوتش٦مم الشریف",price:85,quantity:10},{id:"a229",name:"كاوتش٧مم الشریف",price:85,quantity:10},{id:"a230",name:"كاوتش٨مم الشریف",price:85,quantity:10},{id:"a231",name:"كلبس بار",price:22,quantity:10},{id:"a232",name:"كورنر سلك جامبو بلاستیك",price:22,quantity:10},{id:"a233",name:"كورنر سلك تانجو",price:22,quantity:10},{id:"a234",name:"لفة سلك ١م صلب مصر الكبري",price:26,quantity:10},{id:"a235",name:"لفة سلك صلب ١٢٠سم مصر الكبري",price:41,quantity:10},{id:"a236",name:"لقمة رباط ٧سم تایواني",price:25,quantity:10},{id:"a237",name:"ماسورة استانلس ٣م",price:105,quantity:10},{id:"a238",name:"مانع اهتزاز بلاستيك",price:32,quantity:10},{id:"a239",name:"متر قیاس ٥م APT",price:110,quantity:10},{id:"a240",name:"مجرة ٣٠سم صیني اسود",price:70,quantity:10},{id:"a241",name:"مجرة ٣٠سم فضي صیني",price:0,quantity:0},{id:"a242",name:"مجرة ٣٥سم صیني اسود",price:70,quantity:0},{id:"a243",name:"مجرة ٤٠سم سوفت كلوز",price:0,quantity:0},{id:"a244",name:"مجرة ٤٠سم صیني اسود",price:70,quantity:0},{id:"a245",name:"مجرة ٤٥ سم صیني اسود",price:78,quantity:0},{id:"a246",name:"مجرة ٤٥سم سوفت كلوز",price:170,quantity:0},{id:"a247",name:"مجرة ٥٠سم سوفت كلوز",price:180,quantity:0},{id:"a248",name:"مجرة ٥٠سم صیني اسود",price:90,quantity:0},{id:"a249",name:"مجرة ٥٥سم صیني اسود",price:95,quantity:5},{id:"a250",name:"مجرة ٥٥سم فضي صیني",price:0,quantity:0},{id:"a251",name:"مجرة ٦٠سم فضي صیني",price:115,quantity:0},{id:"a252",name:"مجموعة اغلاق جنب بلاستيك",price:5.00,quantity:124},{id:"a253",name:"مجموعة اغلاق معدن",price:25,quantity:68},{id:"a254",name:"مجموعة مفكات مقاسات",price:305,quantity:0},{id:"a255",name:"مسدس سلیكون",price:140,quantity:1},{id:"a256",name:"مسمار الشرق ١٫٥*١٠",price:100,quantity:0},{id:"a257",name:"مسمار الشرق ٢*١٠",price:100,quantity:0},{id:"a258",name:"مسمار الشرق ٣*١٠",price:100,quantity:0},{id:"a259",name:"مسمار الشرق ٣/٤*١٠",price:100,quantity:0},{id:"a260",name:"مسمار صیني ١٫٥*١٠  ٢ك",price:220,quantity:0},{id:"a261",name:"مسمار النجار اسود ١/٢ *٦",price:130,quantity:0},{id:"a262",name:"مسمار صیني اسود ١/٢ *٦",price:0,quantity:0},{id:"a263",name:"مسمار اسكروستیل فضي ١/٢ *٦",price:130,quantity:0},{id:"a264",name:"مسمار تایواني فضي ١/٢ *٦",price:170,quantity:0},{id:"a265",name:"مسمار نوفال فضي ١/٢ *٦",price:0,quantity:0},{id:"a266",name:"مسمار البدر اسود ١/٢ *٨",price:0,quantity:0},{id:"a267",name:"مسمار صیني اسود ١/٢ *٨",price:0,quantity:0},{id:"a268",name:"مسمار ٤,٢ *٥٥مم وزن ٢ك",price:230,quantity:0},{id:"a269",name:"مسمار ٣*١٠ وزن ١٫٨ك",price:140,quantity:13},{id:"a270",name:"مسمار تك ٣سم مخوش",price:120,quantity:0},{id:"a271",name:"مسمار تك ٤سم مخوش",price:120,quantity:0},{id:"a272",name:"مسمار تك ٥سم مخوش",price:120,quantity:0},{id:"a273",name:"مسمار سن صاج ٣٫٥سم صیني *٣٠",price:100,quantity:0},{id:"a274",name:"مسمار سن صاج ٤٫٥سم صیني",price:130,quantity:0},{id:"a275",name:"مسمار سن صاج ٥سم صیني",price:130,quantity:0},{id:"a276",name:"مفصلة ٢٦مم طویلة صیني",price:10,quantity:118},{id:"a277",name:"مطرقة حديد ١٫٢٥وزن",price:280,quantity:1},{id:"a278",name:"مطرقة بلاستيك",price:135,quantity:7},{id:"a279",name:"مفصلة ٣٥مم استانلس ماكس",price:10,quantity:252},{id:"a280",name:"مفصلة ٣٥مم الریاض ٤خرم",price:13,quantity:0},{id:"a281",name:"مفصلة ٣٥مم ایطالى",price:17.5,quantity:0},{id:"a282",name:"مفصلة ٣٥مم بلوم",price:10,quantity:0},{id:"a283",name:"مفصلة PS عوف اسود",price:28,quantity:0},{id:"a284",name:"مفصلة PS عوف بیج",price:28,quantity:0},{id:"a285",name:"مفصلة باكم شورت استانلس الریاض",price:21,quantity:0},{id:"a286",name:"مفصلة باكم شورت استانلس المظلوم",price:20,quantity:0},{id:"a287",name:"مفصلة لطش سعد",price:25,quantity:0},{id:"a288",name:"مفك صیني",price:40,quantity:0},{id:"a289",name:"مقبض H (١٢٨) بني",price:32,quantity:0},{id:"a290",name:"مقبض H (١٦٠)",price:25,quantity:0},{id:"a291",name:"مقبض خرطوم ١٩٢",price:0,quantity:0},{id:"a292",name:"مقبض دانا",price:38,quantity:71},{id:"a293",name:"مقبض درفة مسطرة معدني",price:60,quantity:10},{id:"a294",name:"مقبض دولفین ١٢٨",price:12,quantity:165},{id:"a295",name:"مقبض دولفین ١٦٠",price:15,quantity:0},{id:"a296",name:"مقبض سلك بلاستيك اسود",price:8,quantity:0},{id:"a297",name:"مقبض سلك بلاستيك بیج",price:8,quantity:0},{id:"a298",name:"مقبض السعد اسود",price:5,quantity:12},{id:"a299",name:"مقبض شباك",price:60,quantity:24},{id:"a300",name:"مقبض زرار معدني",price:6.5,quantity:170},{id:"a301",name:"مقبض ماسورة ١٢٨ استانلس اسود",price:10,quantity:5},{id:"a302",name:"مقبض ماسورة ١٢٨ فضي ثقیل",price:25,quantity:0},{id:"a303",name:"مقبض ماسورة ١٦٠ استانلس اسود",price:12,quantity:0},{id:"a304",name:"مقبض ماسورة ١٦٠ لمیع",price:12,quantity:0},{id:"a305",name:"مقبض ماسورة ١٢٨ خفيف",price:10,quantity:0},{id:"a306",name:"منشار اركت توتال ٤٠٠وات",price:1250,quantity:1},{id:"a307",name:"منظر طبیعي مطبوع",price:15,quantity:61},{id:"a308",name:"منظم معالق ٣٠سم",price:110,quantity:0},{id:"a309",name:"منظم معالق ٣٥سم",price:115,quantity:0},{id:"a310",name:"منظم معالق ٤٠سم",price:120,quantity:0},{id:"a311",name:"ھواية درج اسود",price:22,quantity:0},{id:"a312",name:"ھواية درج بیج",price:22,quantity:0},{id:"a313",name:"ھواية درج رصاصي",price:22,quantity:0},{id:"a314",name:"ھواية درج كافي",price:22,quantity:0}];
+            // Save the items array to localStorage
+       localStorage.setItem('Items', JSON.stringify(items));
+    }
+});
+
+    document.addEventListener('DOMContentLoaded', function () {
+    // استرجاع العناصر من localStorage
+    const items = JSON.parse(localStorage.getItem('Items')) || [];
+
+    // ترتيب العناصر حسب الاسم
+    items.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+    // تحديد الحاوية
+    const gridContainer = document.querySelector('.grid-container');
+
+    // مسح أي قوائم موجودة مسبقاً
+    gridContainer.innerHTML = '';
+
+    // إنشاء ثلاث قوائم <ul>
+    const ul1 = document.createElement('ul');
+    const ul2 = document.createElement('ul');
+    const ul3 = document.createElement('ul');
+    gridContainer.appendChild(ul1);
+    gridContainer.appendChild(ul2);
+    gridContainer.appendChild(ul3);
+
+    // توزيع العناصر بناءً على الحرف الأول من الاسم
+    items.forEach((item, index) => {
+        const listItem = document.createElement('li');
+        listItem.className = "listItemShow";
+        listItem.innerHTML = `
+            <span>${item.name}</span>
+            <div class="culculate">
+                <span>
+                    <input type="number" class="quantity ${item.id}" placeholder="عدد" min="0" step="0.01">
+                </span>
+                <span class="price">${item.price}</span>
+            </div>
+        `;
+
+
+        // الحصول على الحرف الأول من الاسم
+        const firstLetter = item.name.trim()[0];
+
+        // توزيع العناصر بناءً على الحرف الأول
+        if ("*ابتثجحخدذرز".includes(firstLetter)) {
+            ul1.appendChild(listItem);
+        } else if ("سشصضطظعغفق".includes(firstLetter)) {
+            ul2.appendChild(listItem);
+        } else {
+            ul3.appendChild(listItem);
+        }
+    });
+});
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const addButton = document.getElementById('addButton');
+    const newItemDiv = document.querySelector('.newItem');
+
+    // Toggle visibility of the newItem div when the addButton is clicked
+    addButton.addEventListener('click', function (event) {
+        event.stopPropagation(); // Prevent the click from propagating to the document
+        if (newItemDiv.style.display === 'none' || newItemDiv.style.display === '') {
+            newItemDiv.style.display = 'block';
+        } else {
+            newItemDiv.style.display = 'none';
+        }
+    });
+
+    // Hide the newItem div when clicking outside of it
+    document.addEventListener('click', function (event) {
+        if (!newItemDiv.contains(event.target) && event.target !== addButton) {
+            newItemDiv.style.display = 'none';
+        }
+    });
+});
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const addNewItemButton = document.getElementById('addNewItem');
+        const newItemNameInput = document.getElementById('newItemName');
+
+        addNewItemButton.addEventListener('click', function () {
+            const newItemName = newItemNameInput.value.trim();
+
+            if (newItemName) {
+                // Get the existing items from localStorage
+                const items = JSON.parse(localStorage.getItem('Items')) || [];
+
+                // Generate a new ID for the item
+                const newId = items.length > 0 
+                ? `a${Math.max(...items.map(item => parseInt(item.id.slice(1)))) + 1}` 
+                : 'a1';
+
+                // Create the new item
+                const newItem = {
+                    id: newId,
+                    name: newItemName,
+                    price: 0,
+                    quantity: 0
+                };
+
+                // Add the new item to the items array
+                items.push(newItem);
+
+                // Save the updated items array to localStorage
+                localStorage.setItem('Items', JSON.stringify(items));
+
+                // Clear the input field
+                newItemNameInput.value = '';
+
+                // Optionally, update the UI to reflect the new item
+                const gridContainer = document.querySelector('.grid-container ul');
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span>${newItem.name}</span>
+                    <div class="culculate">
+                        <span>
+                            <input type="number" class="quantity ${newItem.id}" placeholder="عدد" min="0" step="0.01">
+                        </span>
+                        <span class="price">${newItem.price}</span>
+                    </div>
+                `;
+                gridContainer.appendChild(listItem);
+                alert('تمت إضافة المنتج الجديد بنجاح!');
+                location.reload();
+            } else {
+                alert('يرجى إدخال اسم المنتج الجديد.');
+            }
+        });
+    });
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set the date input to today's date
+            const dateInput = document.getElementById('date');
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+    
+            // Function to handle button clicks (including reload functionality)
+            function handleButtonClick(event) {
+                event.preventDefault();
+    
+                // Remove the existing reload div if it exists
+                const reloadDiv = document.getElementById('reload');
+                if (reloadDiv) {
+                    reloadDiv.remove();
+                }
+    
+                // Hide the clicked button
+                const button = event.target;
+                button.style.display = 'none';
+    
+                // Create a new reload div after a short delay
+                setTimeout(() => {
+                    const newReloadDiv = document.createElement('div');
+                    newReloadDiv.id = 'reload';
+                    newReloadDiv.textContent = 'الرئيسية';
+                    document.body.appendChild(newReloadDiv);
+    
+                    // Add a click event listener to the new reload div to reload the page
+                    newReloadDiv.addEventListener('click', () => {
+                        location.reload();
+                    });
+    
+                    // Show the button again
+                    button.style.display = 'block';
+                }, 500);
+            }
+    
+            // Attach the handleButtonClick function to the buttons
+            const buttons = [document.getElementById('btn'), document.getElementById('btn2'), document.getElementById('wayQuantityForm')];
+            buttons.forEach(button => {
+                if (button) {
+                    button.addEventListener('click', handleButtonClick);
+                }
+            });
+    
+            // Handle btn click (form submission and display client data)
+            const btn = document.getElementById('btn');
+            if (btn) {
+                btn.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const clientName = document.getElementById('client').value;
+                    const clientNumber = document.getElementById('phone').value;
+                    const yourName = document.getElementById('cashier').value;
+    
+                    if (clientName && yourName) {
+                        document.querySelector('form').style.display = 'none';
+    
+                        document.querySelector('.listOfItems').style.display = 'block';
+                        document.getElementById('mainForm').style.display = 'none';
+                    }
+                });
+            }
+    
+            // Handle btn2 click (display filtered items and calculate totals)
+            const btn2 = document.getElementById('btn2');
+            if (btn2) {
+                btn2.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const items = JSON.parse(localStorage.getItem('Items')) || []; // Fetch items from localStorage
+                    const enteredQuantities = {}; // Object to store entered quantities
+
+                    // First loop: Process entered quantities and update stock
+                    document.querySelectorAll('.quantity').forEach(quantityElement => {                            //    ظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظظ
+                        const key = quantityElement.classList[1]; // Get the product key
+                        const enteredQuantity = parseFloat(quantityElement.value) || 0; // Get the entered quantity
+
+
+                        if (enteredQuantity >= 0) { // Allow adding quantity even if it's 0
+                            const item = items.find(i => i.id === key); // Find the product in localStorage
+                            if (item) {
+                                if (enteredQuantity > item.quantity) {
+                                    alert(`الكمية المدخلة (${enteredQuantity}) أكبر من المخزون المتاح (${item.quantity}).`);
+                                    return;
+                                }
+
+                                // Deduct the entered quantity from the stock
+                                item.quantity -= enteredQuantity;
+
+                                // Update the quantity in localStorage
+                                localStorage.setItem('Items', JSON.stringify(items));
+
+                                // Store the entered quantity for later use
+                                enteredQuantities[key] = enteredQuantity;
+
+                                // Reset the input field
+                                quantityElement.value = 0;
+                            }
+                        }
+                    });
+
+                    const clientName = document.getElementById('client').value;
+                    const clientNumber = document.getElementById('phone').value;
+                    const yourName = document.getElementById('cashier').value;
+
+                    // Create and append the shop name
+                    const shopNameDiv = document.createElement('div');
+                    shopNameDiv.classList.add('nameOfShop');
+                    shopNameDiv.innerHTML = '<h1>عرض اسعار</h1>';
+                    shopNameDiv.style.display = 'block'; // Make it visible
+                    document.body.appendChild(shopNameDiv);
+
+                    // Create and append the header
+                    const headerDiv = document.createElement('div');
+                    headerDiv.classList.add('header');
+                    headerDiv.innerHTML = `
+                        <p>اسم العميل: ${clientName}</p>
+                        <p>رقم العميل: ${clientNumber}</p>
+                        <p>اسم الكاشير: ${yourName}</p>
+                    `;
+
+                    // Second loop: Generate the bill using stored quantities
+                    const newContainer = document.createElement('div');
+                    newContainer.classList.add('filtered-container');
+                    newContainer.innerHTML = `
+                        <div>
+                            <span>رقم</span>
+                            <span>اسم المنتج</span>
+                            <span>الكمية</span>
+                            <span>السعر</span>
+                            <span>الاجمالي</span>
+                        </div>
+                    `;
+
+                    let counter = 1;
+                    let totalPrice = 0;
+
+                    Object.keys(enteredQuantities).forEach(key => {
+                        const enteredQuantity = enteredQuantities[key];
+                        const item = items.find(i => i.id === key);
+
+                        if (item && enteredQuantity > 0) {
+                            const itemName = item.name;
+                            const itemprice = item.price;
+
+                            const newItemDiv = document.createElement('div');
+                            newItemDiv.innerHTML = `
+                                <span>${counter}</span>
+                                <span>${itemName}</span>
+                                <span>${enteredQuantity}</span>
+                                <span>${itemprice}</span>
+                                <span>${(itemprice * enteredQuantity).toFixed(2)}</span>
+                            `;
+
+                            totalPrice += itemprice * enteredQuantity; // Corrected here
+                            counter++;
+                            newContainer.appendChild(newItemDiv);
+                        }
+                    });
+
+                    const totalPriceElement = document.createElement('div');
+                    totalPriceElement.classList.add('total-price');
+                    totalPriceElement.innerHTML = `<span> المجموع الكلي: ${totalPrice.toFixed(2)}</span>`;
+                    newContainer.appendChild(totalPriceElement);
+
+                    const keyToNameMap = JSON.parse(localStorage.getItem('keyToNameMap')) || {};
+                    const nameDebtsList = JSON.parse(localStorage.getItem('nameDebtsList')) || [];
+                    const clientItem = nameDebtsList.find(item => item.name === clientName);
+                    const isClientInList = !!clientItem;
+
+                    if (isClientInList) {
+                        totalPriceElement.style.display = 'none';
+
+                        const payment = parseFloat(prompt(`ادخل المبلغ المدفوع ==سعر الفاتوره==>${totalPrice.toFixed(2)}`)) || 0;
+                        const discount = parseFloat(prompt("ادخل مبلغ الخصم :")) || 0;
+                        const totalAfterDiscount = totalPrice.toFixed(2) - discount;
+                        const previousBalance = clientItem ? parseFloat(clientItem.price) : 0;
+                        const currentBalance = previousBalance + totalAfterDiscount - payment;
+
+                        clientItem.price = currentBalance.toFixed(2);
+                        localStorage.setItem('nameDebtsList', JSON.stringify(nameDebtsList));
+
+                        newContainer.innerHTML += `
+                            <div class="balance-info">
+                                <span>الفتوره: ${totalPrice}</span>
+                                <span>الخصم: ${discount}</span>
+                                <span>بعد الخصم: ${totalAfterDiscount}</span>
+                                <span>الرصيد السابق: ${previousBalance}</span>
+                                <span>المبلغ المدفوع: ${payment}</span>
+                            </div>
+                            ${currentBalance > 0 ?
+                                `<div class="balance-message"><span>الرصيد عليه ${currentBalance.toFixed(2)}</span></div>` :
+                                currentBalance < 0 ?
+                                `<div class="balance-message"><span>الرصيد ليه ${currentBalance.toFixed(2)}</span></div>` :
+                                `<div class="balance-message"><span>الرصيد خالص</span></div>`
+                            }
+                        `;
+                    }
+
+                    const dateTimeDiv = document.createElement('div');
+                    dateTimeDiv.classList.add('date-time');
+                    dateTimeDiv.innerHTML = `
+                        <span>التاريخ: ${new Date().toLocaleDateString('ar-EG')}</span>
+                        <span>الوقت: ${new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                    `;
+
+                    // Append the dateTimeDiv to the body or a specific container
+                    
+                    // Clear the body and append the elements
+                    document.body.innerHTML = '';
+                    document.body.appendChild(shopNameDiv);
+                    document.body.appendChild(headerDiv);
+                    document.body.appendChild(newContainer);
+                    document.body.appendChild(dateTimeDiv);
+
+                    // Trigger the print dialog
+                    window.print();
+
+                    html2canvas(document.body).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = imgData;
+    
+                        const now = new Date();
+                        const dateStr = now.toISOString().split('T')[0];
+    
+                        link.download = `-${dateStr}-${clientName}-.png`;
+                        link.click();
+
+                    });
+
+
+                });
+            }
+            
+            
+
+
+            // Handle quantity input changes
+            const quantityElements = document.querySelectorAll('.quantity');
+            
+            quantityElements.forEach(quantityElement => {
+
+                quantityElement.addEventListener('input', function () {
+                    const key = this.classList[1]; // الحصول على المفتاح الخاص بالمنتج
+                    const items = JSON.parse(localStorage.getItem('Items')) || [];
+                    const item = items.find(i => i.id === key);
+
+                    
+
+                    if (item) {
+                        const maxQuantity = item.quantity; // الكمية المتاحة في المخزون
+                        let inputValue = parseFloat(this.value) || 0;
+
+                        // التحقق من أن الكمية المدخلة لا تتجاوز المخزون
+                        if (inputValue > maxQuantity) {
+                            alert(`الكمية المدخلة (${inputValue}) أكبر من المخزون المتاح (${maxQuantity}).`);
+                            this.value = maxQuantity; // تعيين القيمة إلى الحد الأقصى المتاح
+                            inputValue = maxQuantity;
+                        }
+
+                        // حساب السعر الإجمالي للمنتج
+                        const price = item.price;
+                        const total = inputValue * price;
+
+                    }
+                });
+
+            });
+
+            document.querySelectorAll('.listItemShow').forEach(item => {
+                const input = item.querySelector('.quantity');
+                if (input) {
+                    input.addEventListener('change', function () {
+                        // Change the background color based on the input value
+                        item.style.backgroundColor = (!isNaN(input.value) && input.value > 0)
+                            ? 'var(---lookGood)' 
+                            : '';
+
+                    });
+                }
+            });
+
+            // Update local storage display
+            function updateLocalStorageDisplay() {
+                const items = JSON.parse(localStorage.getItem('Items')) || []; // Fetch items from localStorage
+
+                // Sort items alphabetically by name
+                items.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+                const localStorageDataDiv = document.getElementById('localStorageData');
+
+                if (localStorageDataDiv) {
+                    localStorageDataDiv.innerHTML = '<span style="font-weight: bold; display: block; text-align: center; margin: 25px;">بيانات التخزين المحلي</span>' +
+                        items.map(item => `
+                            <div class="localItem" data-key="${item.id}">
+                                <span class="localKey">${item.name}</span>
+                                <span class="localValue">${item.quantity}</span>
+                            </div>
+                        `).join('');
+                }
+
+                // Add click event to each localItem for updating quantity
+                document.querySelectorAll('.localItem').forEach(item => {
+                    item.addEventListener('click', function () {
+                        document.querySelectorAll('.localItem').forEach(el => el.style.backgroundColor = '');
+                        this.style.backgroundColor = 'var(---lookGood)';
+
+                        const key = this.getAttribute('data-key');
+                        const currentQuantity = parseFloat(this.querySelector('.localValue').textContent) || 0;
+                        const newQuantity = prompt(`أدخل الكمية الجديدة:=======> ${this.querySelector('.localKey').textContent}`);
+
+                        if (newQuantity !== null && !isNaN(newQuantity) && newQuantity.trim() !== '') {
+                            const addedQuantity = parseFloat(newQuantity.trim());
+                            const updatedQuantity = currentQuantity + addedQuantity;
+
+                            // Update the quantity in localStorage
+                            const items = JSON.parse(localStorage.getItem('Items')) || [];
+                            const itemToUpdate = items.find(i => i.id === key);
+                            if (itemToUpdate) {
+                                itemToUpdate.quantity = updatedQuantity;
+                                localStorage.setItem('Items', JSON.stringify(items));
+                            }
+
+                            // Refresh the display
+                            updateLocalStorageDisplay();
+                        }
+                         else {
+                            alert('يرجى إدخال قيمة صحيحة للكمية.');
+                        }
+                    });
+                });
+            }
+
+            // Call updateLocalStorageDisplay when needed
+            document.getElementById('wayQuantityForm').addEventListener('click', function () {
+                document.getElementById('mainForm').style.display = 'none';
+                document.getElementById('listOfNames').style.display = 'none';
+                updateLocalStorageDisplay();
+
+            });
+
+            // Handle debt list functionality
+            const debtList = document.getElementById('debtList');
+            const clientInput = document.getElementById('client');
+            const debtInput = document.getElementById('debtInput');
+            const saveButton = document.getElementById('btn4');
+            const debtDiv = document.querySelector('.debt');
+
+            const debtButton = document.getElementById('debtButton');
+
+            if (debtButton) {
+                debtButton.addEventListener('click', function () {
+                    if (debtDiv.style.display === 'none' || debtDiv.style.display === '') {
+                        debtDiv.style.display = 'block';
+                    } else {
+                        debtDiv.style.display = 'none';
+                    }
+                });
+            }
+
+            function loadItems() {
+                const items = JSON.parse(localStorage.getItem('nameDebtsList')) || [];
+                items.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<span>${item.name}</span><span>${item.price}</span>`;
+                    listItem.addEventListener('click', function () {
+                        clientInput.value = item.name;
+                    });
+                    debtList.appendChild(listItem);
+                });
+            }
+
+            function saveItem(name, price) {
+                const items = JSON.parse(localStorage.getItem('nameDebtsList')) || [];
+                items.push({ name, price });
+                localStorage.setItem('nameDebtsList', JSON.stringify(items));
+            }
+
+            saveButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                const name = debtInput.value.trim();
+
+                if (name) {
+                    const price = 0; // Set the price to 0
+
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<span>${name}</span><span>${price}</span>`;
+                    listItem.addEventListener('click', function () {
+                        clientInput.value = name;
+                    });
+                    debtList.appendChild(listItem);
+
+                    saveItem(name, price);
+
+                    debtInput.value = '';
+                }
+            });
+
+            loadItems();
+
+            // Hide list of names when btn is clicked
+            document.getElementById('btn').addEventListener('click', function () {
+                document.getElementById('listOfNames').style.display = 'none';
+            });
+
+
+            // Hide debt div when clicking outside
+            debtList.addEventListener('click', function (event) {
+                if (event.target.tagName === 'LI' || event.target.tagName === 'SPAN') {
+                    debtDiv.style.display = 'none';
+                }
+            });
+    
+            document.addEventListener('click', function (event) {
+                if (!debtDiv.contains(event.target) && event.target !== debtButton) {
+                    debtDiv.style.display = 'none';
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const gridContainer = document.querySelector('.grid-container');
+
+            if (gridContainer) {
+                gridContainer.addEventListener('click', function (event) {
+                    const priceElement = event.target.closest('.price');
+                    if (priceElement) {
+                        const listItem = priceElement.closest('li');
+                        const quantityElement = listItem.querySelector('.quantity');
+                        const key = quantityElement.classList[1];
+
+                        // Prompt the user for the new price only
+                        const newPrice = prompt('أدخل السعر الجديد:', priceElement.textContent);
+
+                        // Validate the input
+                        if (newPrice !== null && !isNaN(newPrice) && newPrice.trim() !== '') {
+                            const trimmedPrice = parseFloat(newPrice.trim());
+
+                            // Update the price in localStorage
+                            const items = JSON.parse(localStorage.getItem('Items')) || [];
+                            const item = items.find(i => i.id === key);
+                            if (item) {
+                                item.price = trimmedPrice;
+                                localStorage.setItem('Items', JSON.stringify(items));
+                            }
+
+                            // Update the UI
+                            priceElement.textContent = trimmedPrice;
+
+                            // Optionally refresh the localStorage display
+                            if (typeof updateLocalStorageDisplay === 'function') {
+                                updateLocalStorageDisplay();
+                            }
+                        } else {
+                            alert('يرجى إدخال قيمة صحيحة للسعر.');
+                        }
+                    }
+                });
+            }
+            const addItemForm = document.querySelector('.add-item-form');
+            const btn = document.getElementById('btn');
+            const wayQuantityForm = document.getElementById('wayQuantityForm');
+
+            // Hide the add-item-form when btn is clicked
+            btn.addEventListener('click', function () {
+                addItemForm.style.display = 'none';
+            });
+
+            // Hide the add-item-form when wayQuantityForm is clicked
+            wayQuantityForm.addEventListener('click', function () {
+                addItemForm.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
+
