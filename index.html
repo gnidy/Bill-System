@@ -7,10 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-<<<<<<< HEAD
-=======
             scroll-behavior: smooth;
->>>>>>> backup-master
             --primary: #2c3e50;
             --primary-dark: #1a252f;
             --secondary: #3498db;
@@ -62,35 +59,7 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
-<<<<<<< HEAD
-        
-        .sidebar-header {
-            padding: 25px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .sidebar-header .logo-icon {
-            width: 45px;
-            height: 45px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--secondary);
-        }
-        
-        .sidebar-header h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-=======
 
->>>>>>> backup-master
         
         .sidebar-menu {
             padding: 20px 0;
@@ -209,9 +178,6 @@
             justify-content: center;
         }
         
-<<<<<<< HEAD
-        /* Content Area */
-=======
         /* Pagination Styles */
         .pagination {
             display: flex;
@@ -248,7 +214,6 @@
             opacity: 0.6;
         }
         
->>>>>>> backup-master
         .content-area {
             flex: 1;
             padding: 30px;
@@ -498,35 +463,6 @@
         
         /* Pagination */
         .pagination {
-<<<<<<< HEAD
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            gap: 10px;
-        }
-        
-        .page-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .page-btn.active {
-            background: var(--secondary);
-            color: white;
-            border-color: var(--secondary);
-        }
-        
-        .page-btn:hover:not(.active) {
-            background: var(--light);
-=======
             display: none; /* Initially hidden, shown by JS when needed */
             justify-content: center;
             gap: 8px;
@@ -596,7 +532,6 @@
                 font-size: 13px;
                 padding: 0 6px;
             }
->>>>>>> backup-master
         }
         
         /* Modal Styles */
@@ -683,8 +618,6 @@
             color: var(--text-dark);
         }
         
-<<<<<<< HEAD
-=======
         /* Status badges */
         .status-badge {
             padding: 4px 8px;
@@ -711,7 +644,6 @@
             color: #721c24;
         }
         
->>>>>>> backup-master
         .form-control {
             width: 100%;
             padding: 12px 15px;
@@ -906,13 +838,6 @@
                 overflow: visible;
             }
             
-<<<<<<< HEAD
-            .sidebar-header h1, .menu-item span {
-                display: none;
-            }
-            
-=======
->>>>>>> backup-master
             .menu-item {
                 justify-content: center;
                 padding: 15px;
@@ -947,11 +872,7 @@
                 width: 80px;
             }
             
-<<<<<<< HEAD
-            .sidebar-header h1, .menu-item span {
-=======
             .menu-item span {
->>>>>>> backup-master
                 display: none;
             }
             
@@ -1015,13 +936,6 @@
         }
         
         @media (max-width: 768px) {
-<<<<<<< HEAD
-            .sidebar-header {
-                display: none;
-            }
-            
-=======
->>>>>>> backup-master
             .app-container {
                 flex-direction: column;
             }
@@ -1105,13 +1019,10 @@
                 border-bottom-color: var(--secondary-light);
             }
             
-<<<<<<< HEAD
-=======
             .menu-item.active span {
                 opacity: 1 !important;
             }
             
->>>>>>> backup-master
             .menu-item i {
                 margin: 0 5px;
                 font-size: 1.4rem;
@@ -1181,16 +1092,6 @@
     <div class="app-container">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
-<<<<<<< HEAD
-            <div class="sidebar-header">
-                <div class="logo-icon" id="toggleSidebar">
-                    <i class="fas fa-bars"></i>
-                </div>
-                <h1>نظام المخزون</h1>
-            </div>
-            
-=======
->>>>>>> backup-master
             <div class="sidebar-menu">
                 <div class="menu-item active" data-page="dashboard-page">
                     <i class="fas fa-home"></i>
@@ -1238,11 +1139,7 @@
             <!-- Content Area -->
             <div class="content-area">
                 <!-- Dashboard Page -->
-<<<<<<< HEAD
-                <div id="dashboard-page" style="width: 100%; max-width: 100%; margin: 0; padding: 0; box-sizing: border-box;">
-=======
                 <div id="dashboard-page">
->>>>>>> backup-master
                     <div class="content-header">
                         <h2>لوحة التحكم</h2>
                         <div>
@@ -1299,122 +1196,33 @@
                         </div>
                     </div>
                     
-<<<<<<< HEAD
-                    <!-- Products Table -->
-                    <div class="card fade-in">
-                        <div class="card-header">
-                            <h3>أحدث المنتجات</h3>
-                            <div>
-                                <button class="btn btn-outline">
-                                    <i class="fas fa-sync-alt"></i> تحديث
-                                </button>
-                            </div>
-=======
                     <!-- Latest Products -->
                     <div class="card fade-in">
                         <div class="card-header">
                             <h3>أحدث المنتجات</h3>
->>>>>>> backup-master
                         </div>
                         <div class="card-body">
                             <table class="table">
                                 <thead>
                                     <tr>
-<<<<<<< HEAD
-                                        <th>#</th>
-                                        <th>اسم المنتج</th>
-                                        <th>التصنيف</th>
-                                        <th>السعر</th>
-=======
                                         <th>اسم المنتج</th>
                                         <th>السعر (ج.م)</th>
->>>>>>> backup-master
                                         <th>الكمية</th>
                                         <th>الحالة</th>
                                         <th>الإجراءات</th>
                                     </tr>
                                 </thead>
-<<<<<<< HEAD
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>فيبر محمل</td>
-                                        <td>مواد بناء</td>
-                                        <td>590 ج.م</td>
-                                        <td class="low-stock">8</td>
-                                        <td><span class="status-badge status-warning">كمية منخفضة</span></td>
-                                        <td>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>U.V</td>
-                                        <td>مواد بناء</td>
-                                        <td>580 ج.م</td>
-                                        <td>24</td>
-                                        <td><span class="status-badge status-success">متوفر</span></td>
-                                        <td>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>بروديوم</td>
-                                        <td>مواد بناء</td>
-                                        <td>755 ج.م</td>
-                                        <td class="low-stock">2</td>
-                                        <td><span class="status-badge status-danger">شبه منتهي</span></td>
-                                        <td>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td>استرتش ثقيل ١٠سم</td>
-                                        <td>مواد تغليف</td>
-                                        <td>75 ج.م</td>
-                                        <td>13</td>
-                                        <td><span class="status-badge status-warning">كمية منخفضة</span></td>
-                                        <td>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="pagination">
-                            <div class="page-btn"><i class="fas fa-chevron-right"></i></div>
-                            <div class="page-btn active">1</div>
-                            <div class="page-btn">2</div>
-                            <div class="page-btn">3</div>
-                            <div class="page-btn"><i class="fas fa-chevron-left"></i></div>
-                        </div>
-=======
                                 <tbody id="latest-products-table-body">
                                     <!-- Will be populated by JavaScript -->
                                 </tbody>
                             </table>
                         </div>
->>>>>>> backup-master
                     </div>
                     
                     <!-- Recent Invoices -->
                     <div class="card fade-in">
                         <div class="card-header">
                             <h3>آخر الفواتير</h3>
-<<<<<<< HEAD
-                            <div>
-                                <button class="btn btn-outline">
-                                    <i class="fas fa-eye"></i> عرض الكل
-                                </button>
-                            </div>
-=======
->>>>>>> backup-master
                         </div>
                         <div class="card-body">
                             <table class="table">
@@ -1428,34 +1236,8 @@
                                         <th>الإجراءات</th>
                                     </tr>
                                 </thead>
-<<<<<<< HEAD
-                                <tbody>
-                                    <tr>
-                                        <td>INV-2023-0125</td>
-                                        <td>محمد أحمد</td>
-                                        <td>15/08/2023</td>
-                                        <td>2,450 ج.م</td>
-                                        <td><span class="status-badge status-success">مدفوعة</span></td>
-                                        <td>
-                                            <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn"><i class="fas fa-print"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>INV-2023-0124</td>
-                                        <td>شركة النور</td>
-                                        <td>14/08/2023</td>
-                                        <td>4,780 ج.م</td>
-                                        <td><span class="status-badge status-success">مدفوعة</span></td>
-                                        <td>
-                                            <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn"><i class="fas fa-print"></i></button>
-                                        </td>
-                                    </tr>
-=======
                                 <tbody id="recent-invoices-table-body">
                                     <!-- Will be populated by JavaScript -->
->>>>>>> backup-master
                                 </tbody>
                             </table>
                         </div>
@@ -1463,19 +1245,11 @@
                 </div>
                 
                 <!-- Products Management Page -->
-<<<<<<< HEAD
-                <div id="products-page">
-                    <div class="content-header">
-                        <h2>إدارة المنتجات</h2>
-                        <div>
-                            <button class="btn btn-primary" id="add-product-btn">
-=======
                 <div id="products-page" style="display: none;">
                     <div class="content-header">
                         <h2>إدارة المنتجات</h2>
                         <div>
                             <button class="btn btn-primary" id="add-product-btn" onclick="openAddProductModal()">
->>>>>>> backup-master
                                 <i class="fas fa-plus"></i> إضافة منتج جديد
                             </button>
                         </div>
@@ -1484,34 +1258,12 @@
                     <div class="filter-section">
                         <div class="search-container" style="width: 300px;">
                             <i class="fas fa-search"></i>
-<<<<<<< HEAD
-                            <input type="text" id="product-search" placeholder="ابحث عن منتج...">
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label for="category-filter">التصنيف:</label>
-                            <select id="category-filter" class="filter-select">
-                                <option value="all">جميع التصنيفات</option>
-                                <option value="مواد بناء">مواد بناء</option>
-                                <option value="مواد تغليف">مواد تغليف</option>
-                                <option value="أدوات">أدوات</option>
-                                <option value="مواد لاصقة">مواد لاصقة</option>
-                                <option value="مستهلكات">مستهلكات</option>
-                                <option value="أجهزة">أجهزة</option>
-                                <option value="معدات">معدات</option>
-                            </select>
-=======
                             <input type="text" id="product-search" placeholder="ابحث عن منتج..." onkeyup="filterProducts()">
->>>>>>> backup-master
                         </div>
                         
                         <div class="filter-group">
                             <label for="status-filter">حالة المخزون:</label>
-<<<<<<< HEAD
-                            <select id="status-filter" class="filter-select">
-=======
                             <select id="status-filter" class="filter-select" onchange="filterProducts()">
->>>>>>> backup-master
                                 <option value="all">جميع الحالات</option>
                                 <option value="available">متوفر</option>
                                 <option value="low">كمية منخفضة</option>
@@ -1522,16 +1274,6 @@
                     
                     <div class="card">
                         <div class="card-body">
-<<<<<<< HEAD
-                            <table class="table" id="products-table">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>اسم المنتج</th>
-                                        <th>التصنيف</th>
-                                        <th>السعر (ج.م)</th>
-                                        <th>الكمية</th>
-=======
                             <div class="table-responsive">
                                 <table class="table" id="products-table">
                                     <thead>
@@ -1593,30 +1335,17 @@
                                         <th>العميل</th>
                                         <th>التاريخ</th>
                                         <th>المبلغ</th>
->>>>>>> backup-master
                                         <th>الحالة</th>
                                         <th>الإجراءات</th>
                                     </tr>
                                 </thead>
-<<<<<<< HEAD
-                                <tbody id="products-table-body">
-=======
                                 <tbody id="invoices-table-body">
->>>>>>> backup-master
                                     <!-- سيتم ملؤه بواسطة JavaScript -->
                                 </tbody>
                             </table>
                         </div>
                         <div class="pagination">
-<<<<<<< HEAD
-                            <div class="page-btn"><i class="fas fa-chevron-right"></i></div>
-                            <div class="page-btn active">1</div>
-                            <div class="page-btn">2</div>
-                            <div class="page-btn">3</div>
-                            <div class="page-btn"><i class="fas fa-chevron-left"></i></div>
-=======
                            
->>>>>>> backup-master
                         </div>
                     </div>
                 </div>
@@ -1694,10 +1423,7 @@
                             </button>
                         </div>
                     </div>
-<<<<<<< HEAD
-=======
 
->>>>>>> backup-master
                     
                     <div class="filter-section">
                         <div class="search-container" style="width: 300px;">
@@ -1715,10 +1441,6 @@
                             </select>
                         </div>
                     </div>
-<<<<<<< HEAD
-                    
-=======
->>>>>>> backup-master
                     <div class="card">
                         <div class="card-body">
                             <table class="table" id="invoices-table">
@@ -1733,24 +1455,12 @@
                                     </tr>
                                 </thead>
                                 <tbody id="invoices-table-body">
-<<<<<<< HEAD
-                                    <!-- سيتم ملؤه بواسطة JavaScript -->
-=======
                                     <!-- Will be populated by JavaScript -->
->>>>>>> backup-master
                                 </tbody>
                             </table>
                         </div>
                         <div class="pagination">
-<<<<<<< HEAD
-                            <div class="page-btn"><i class="fas fa-chevron-right"></i></div>
-                            <div class="page-btn active">1</div>
-                            <div class="page-btn">2</div>
-                            <div class="page-btn">3</div>
-                            <div class="page-btn"><i class="fas fa-chevron-left"></i></div>
-=======
                             <!-- Pagination will be populated by JavaScript -->
->>>>>>> backup-master
                         </div>
                     </div>
                 </div>
@@ -1775,23 +1485,6 @@
                         <input type="text" id="product-name" class="form-control" required>
                     </div>
                     
-<<<<<<< HEAD
-                    <div class="form-group">
-                        <label for="product-category">التصنيف *</label>
-                        <select id="product-category" class="form-control" required>
-                            <option value="">اختر التصنيف</option>
-                            <option value="مواد بناء">مواد بناء</option>
-                            <option value="مواد تغليف">مواد تغليف</option>
-                            <option value="أدوات">أدوات</option>
-                            <option value="مواد لاصقة">مواد لاصقة</option>
-                            <option value="مستهلكات">مستهلكات</option>
-                            <option value="أجهزة">أجهزة</option>
-                            <option value="معدات">معدات</option>
-                        </select>
-                    </div>
-                    
-=======
->>>>>>> backup-master
                     <div class="form-row">
                         <div class="form-group">
                             <label for="product-price">السعر (ج.م) *</label>
@@ -1893,64 +1586,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD
-    <script>
-        // جميع المنتجات بعد التنظيف
-        const allProducts = [
-            {id: "a1", name: "فيبر", price: 575, quantity: 33, category: "مواد بناء"},
-            {id: "a2", name: "فيبر محمل", price: 590, quantity: 38, category: "مواد بناء"},
-            {id: "a3", name: "كلادين", price: 750, quantity: 40, category: "مواد بناء"},
-            {id: "a4", name: "U.V", price: 580, quantity: 24, category: "مواد بناء"},
-            {id: "a5", name: "بروديوم", price: 755, quantity: 2, category: "مواد بناء"},
-            {id: "a10", name: "استرتش ثقيل ١٠سم", price: 75, quantity: 13, category: "مواد تغليف"},
-            {id: "a11", name: "اكرة بلية صيني اسود", price: 45, quantity: 16, category: "أدوات"},
-            {id: "a20", name: "انبوبة فوم", price: 98, quantity: 25, category: "مواد لاصقة"},
-            {id: "a22", name: "بسكوتة خضراء", price: 12, quantity: 94, category: "أدوات"},
-            {id: "a31", name: "بنطة ٥مم", price: 9, quantity: 27, category: "أدوات"},
-            {id: "a35", name: "ترباس PS بلاستيك اسود", price: 14, quantity: 80, category: "أدوات"},
-            {id: "a39", name: "ترولي ١٦سم GM", price: 575, quantity: 1, category: "معدات"},
-            {id: "a42", name: "ثلاثي ٢٫٥ ابيض SM", price: 2.50, quantity: 690, category: "مستهلكات"},
-            {id: "a50", name: "ثلاثي ٢٫٥ بيج SM", price: 2.50, quantity: 1663, category: "مستهلكات"},
-            {id: "a79", name: "دبل بجناح SM", price: 0.85, quantity: 9440, category: "مستهلكات"},
-        ];
-        
-        // بيانات الفواتير
-        let invoices = [
-            {
-                id: "INV-2023-0125",
-                customer: "محمد أحمد",
-                date: "2023-08-15",
-                items: [
-                    { productId: "a2", quantity: 2, price: 590 },
-                    { productId: "a20", quantity: 5, price: 98 }
-                ],
-                status: "paid",
-                subtotal: 1680,
-                tax: 235.2,
-                total: 1915.2
-            },
-            {
-                id: "INV-2023-0124",
-                customer: "شركة النور",
-                date: "2023-08-14",
-                items: [
-                    { productId: "a3", quantity: 3, price: 750 },
-                    { productId: "a11", quantity: 10, price: 45 }
-                ],
-                status: "paid",
-                subtotal: 2700,
-                tax: 378,
-                total: 3078
-            }
-        ];
-        
-        // Global variables
-        let dashboardPage, productsPage, invoicesPage, reportsPage, customersPage, suppliersPage, menuItems;
-        let productsTableBody, invoicesTableBody, products;
-        // Use window.invoices to avoid redeclaration
-        if (typeof window.invoices === 'undefined') {
-            window.invoices = [];
-=======
     <!-- External JavaScript Files -->
     <script src="assets.js"></script>
     <script>
@@ -1961,7 +1596,6 @@
         // Initialize products from allProducts if not already set
         if (typeof window.products === 'undefined') {
             window.products = [...allProducts];
->>>>>>> backup-master
         }
         
         // عرض جدول المنتجات
@@ -1991,10 +1625,6 @@
                     <td>${product.name}</td>
                     <td>${product.price.toFixed(2)}</td>
                     <td>${product.quantity}</td>
-<<<<<<< HEAD
-                    <td>${product.category || '-'}</td>
-=======
->>>>>>> backup-master
                     <td>
                         <span class="status-badge ${product.quantity > 10 ? 'success' : product.quantity > 0 ? 'warning' : 'danger'}">
                             ${product.quantity > 10 ? 'متوفر' : product.quantity > 0 ? 'كمية قليلة' : 'غير متوفر'}
@@ -2012,49 +1642,6 @@
             });
         }
         
-<<<<<<< HEAD
-        // عرض جدول الفواتير
-        function renderInvoicesTable(invoicesList) {
-            if (!invoicesTableBody) {
-                invoicesTableBody = document.getElementById('invoices-table-body');
-            }
-            
-            invoicesTableBody.innerHTML = '';
-            
-            if (invoicesList.length === 0) {
-                invoicesTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 30px;">
-                            <i class="fas fa-file-invoice" style="font-size: 3rem; color: var(--light-gray); margin-bottom: 15px;"></i>
-                            <h3 style="color: var(--text-light);">لا توجد فواتير</h3>
-                            <p>استخدم زر "فاتورة جديدة" لإنشاء فاتورة</p>
-                        </td>
-                    </tr>`;
-                return;
-            }
-            
-            invoicesList.forEach((invoice, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${invoice.invoiceNumber}</td>
-                    <td>${invoice.date}</td>
-                    <td>${invoice.customerName}</td>
-                    <td>${invoice.total.toFixed(2)}</td>
-                    <td>
-                        <span class="status-badge ${invoice.status === 'paid' ? 'success' : 'warning'}">
-                            ${invoice.status === 'paid' ? 'مدفوع' : 'غير مدفوع'}
-                        </span>
-                    </td>
-                    <td class="actions">
-                        <button class="btn-icon btn-view" onclick="viewInvoice('${invoice.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn-icon btn-print" onclick="printInvoice('${invoice.id}')">
-                            <i class="fas fa-print"></i>
-                        </button>
-                    </td>`;
-                invoicesTableBody.appendChild(row);
-=======
         // Global variables for pagination
         let currentPage = 1;
         const itemsPerPage = 10;
@@ -2641,25 +2228,11 @@
                     e.stopPropagation();
                     confirmDelete(product.id);
                 });
->>>>>>> backup-master
             });
         }
         
         // Initialize tables and data when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
-<<<<<<< HEAD
-            productsTableBody = document.getElementById('products-table-body');
-            invoicesTableBody = document.getElementById('invoices-table-body');
-            
-            // Initialize products
-            products = [...allProducts];
-            
-            // Ensure invoices is an array
-            if (!Array.isArray(window.invoices)) {
-                window.invoices = [];
-            }
-            
-=======
             // Initialize data from localStorage or use sample data from assets.js
             if (localStorage.getItem('products')) {
                 // Render latest products in dashboard
@@ -2684,16 +2257,10 @@
             // Initialize table body references
             productsTableBody = document.getElementById('products-table-body');
             
->>>>>>> backup-master
             // Set initial page display
             const initialPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard-page';
             showPage(initialPage);
             
-<<<<<<< HEAD
-            // Update URL when navigating
-            menuItems.forEach(item => {
-                item.addEventListener('click', () => {
-=======
             // Render initial tables
             renderProductsTable(window.products);
             renderInvoicesTable(window.invoices, 'invoices-table-body');
@@ -2711,7 +2278,6 @@
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => {
                 item.addEventListener('click', function() {
->>>>>>> backup-master
                     if (item.dataset.page) {
                         window.location.hash = item.dataset.page;
                     }
@@ -2784,10 +2350,6 @@
             const productForm = document.getElementById('product-form');
             const productsTableBody = document.getElementById('products-table-body');
             const productSearch = document.getElementById('product-search');
-<<<<<<< HEAD
-            const categoryFilter = document.getElementById('category-filter');
-=======
->>>>>>> backup-master
             const statusFilter = document.getElementById('status-filter');
             const confirmDeleteBtn = document.getElementById('confirm-delete');
             const cancelDeleteBtn = document.getElementById('cancel-delete');
@@ -2826,10 +2388,6 @@
                 }
             });
             
-<<<<<<< HEAD
-            // عرض جدول المنتجات
-            function renderProductsTable(productsList) {
-=======
             // متغيرات الترقيم الصفحات (استخدام المتغيرات العامة)
             window.currentPage = window.currentPage || 1;
             window.itemsPerPage = 10;
@@ -2884,7 +2442,6 @@
             // عرض جدول المنتجات
             function renderProductsTable(productsList) {
                 const productsTableBody = document.getElementById('products-table-body');
->>>>>>> backup-master
                 productsTableBody.innerHTML = '';
                 
                 if (productsList.length === 0) {
@@ -2897,13 +2454,6 @@
                             </td>
                         </tr>
                     `;
-<<<<<<< HEAD
-                    return;
-                }
-                
-                productsList.forEach((product, index) => {
-                    const row = document.createElement('tr');
-=======
                     document.getElementById('products-pagination').innerHTML = '';
                     return;
                 }
@@ -2920,7 +2470,6 @@
                 paginatedItems.forEach((product, index) => {
                     const row = document.createElement('tr');
                     const actualIndex = startIndex + index + 1;
->>>>>>> backup-master
                     
                     // تحديد حالة المخزون
                     let statusClass, statusText;
@@ -2936,14 +2485,8 @@
                     }
                     
                     row.innerHTML = `
-<<<<<<< HEAD
-                        <td>${index + 1}</td>
-                        <td>${product.name}</td>
-                        <td>${product.category}</td>
-=======
                         <td>${actualIndex}</td>
                         <td>${product.name}</td>
->>>>>>> backup-master
                         <td>${product.price.toFixed(2)} ج.م</td>
                         <td class="${product.quantity === 0 ? 'no-stock' : (product.quantity <= 10 ? 'low-stock' : '')}">
                             ${product.quantity}
@@ -3012,10 +2555,6 @@
                         <td>${invoice.total.toFixed(2)} ج.م</td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                         <td>
-<<<<<<< HEAD
-                            <button class="action-btn"><i class="fas fa-eye"></i></button>
-=======
->>>>>>> backup-master
                             <button class="action-btn"><i class="fas fa-print"></i></button>
                         </td>
                     `;
@@ -3029,10 +2568,6 @@
                 document.getElementById('modal-title').textContent = 'إضافة منتج جديد';
                 document.getElementById('product-id').value = '';
                 document.getElementById('product-name').value = '';
-<<<<<<< HEAD
-                document.getElementById('product-category').value = '';
-=======
->>>>>>> backup-master
                 document.getElementById('product-price').value = '';
                 document.getElementById('product-quantity').value = '0';
                 document.getElementById('product-description').value = '';
@@ -3046,10 +2581,6 @@
                     document.getElementById('modal-title').textContent = 'تعديل المنتج';
                     document.getElementById('product-id').value = product.id;
                     document.getElementById('product-name').value = product.name;
-<<<<<<< HEAD
-                    document.getElementById('product-category').value = product.category;
-=======
->>>>>>> backup-master
                     document.getElementById('product-price').value = product.price;
                     document.getElementById('product-quantity').value = product.quantity;
                     document.getElementById('product-description').value = product.description || '';
@@ -3061,20 +2592,12 @@
             function saveProduct() {
                 const id = document.getElementById('product-id').value;
                 const name = document.getElementById('product-name').value;
-<<<<<<< HEAD
-                const category = document.getElementById('product-category').value;
-=======
->>>>>>> backup-master
                 const price = parseFloat(document.getElementById('product-price').value);
                 const quantity = parseInt(document.getElementById('product-quantity').value);
                 const description = document.getElementById('product-description').value;
                 
                 // التحقق من صحة المدخلات
-<<<<<<< HEAD
-                if(!name || !category || isNaN(price) || isNaN(quantity)) {
-=======
                 if(!name || isNaN(price) || isNaN(quantity)) {
->>>>>>> backup-master
                     showAlert('يرجى ملء جميع الحقول المطلوبة بشكل صحيح', 'danger');
                     return;
                 }
@@ -3086,10 +2609,6 @@
                         products[index] = { 
                             ...products[index], 
                             name, 
-<<<<<<< HEAD
-                            category, 
-=======
->>>>>>> backup-master
                             price, 
                             quantity, 
                             description 
@@ -3102,10 +2621,6 @@
                     products.push({
                         id: newId,
                         name,
-<<<<<<< HEAD
-                        category,
-=======
->>>>>>> backup-master
                         price,
                         quantity,
                         description
@@ -3292,10 +2807,6 @@
             // تصفية المنتجات
             function filterProducts() {
                 const searchTerm = productSearch.value.toLowerCase();
-<<<<<<< HEAD
-                const category = categoryFilter.value;
-=======
->>>>>>> backup-master
                 const status = statusFilter.value;
                 
                 let filtered = [...products]; // العمل على نسخة من المنتجات الحالية
@@ -3304,21 +2815,9 @@
                 if(searchTerm) {
                     filtered = filtered.filter(p => 
                         p.name.toLowerCase().includes(searchTerm) || 
-<<<<<<< HEAD
-                        (p.description && p.description.toLowerCase().includes(searchTerm)) ||
-                        p.category.toLowerCase().includes(searchTerm)
-                    );
-                }
-                
-                // تطبيق تصفية التصنيف
-                if(category !== 'all') {
-                    filtered = filtered.filter(p => p.category === category);
-                }
-=======
                         (p.description && p.description.toLowerCase().includes(searchTerm))
                     );
                 } 
->>>>>>> backup-master
                 
                 // تطبيق تصفية حالة المخزون
                 if(status !== 'all') {
@@ -3429,10 +2928,6 @@
             addInvoiceItemBtn.addEventListener('click', addNewInvoiceItem);
             
             productSearch.addEventListener('input', filterProducts);
-<<<<<<< HEAD
-            categoryFilter.addEventListener('change', filterProducts);
-=======
->>>>>>> backup-master
             statusFilter.addEventListener('change', filterProducts);
             
             invoiceSearch.addEventListener('input', filterInvoices);

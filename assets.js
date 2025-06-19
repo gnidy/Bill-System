@@ -128,17 +128,6 @@ const sampleInvoices = [
         total: 2710
     },
     {
-        id: "INV-2023-0125",
-        customer: "محمد أحمد",
-        date: "2023-08-15",
-        items: [
-            { productId: "a2", quantity: 2, price: 590 },
-            { productId: "a20", quantity: 5, price: 98 }
-        ],
-        status: "paid",
-        total: 1680
-    },
-    {
         id: "INV-2023-0124",
         customer: "شركة النور",
         date: "2023-08-14",
