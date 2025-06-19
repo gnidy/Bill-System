@@ -29,45 +29,67 @@
             --text-light: #636e72;
         }
         
-        /* Pagination Styles */
+        /* Pagination Styles - Consolidated */
         .pagination {
             display: flex;
             justify-content: center;
-            margin: 20px 0;
-            gap: 5px;
+            align-items: center;
+            margin: 25px 0;
+            gap: 8px;
             flex-wrap: wrap;
-            padding: 10px;
+            padding: 15px 0;
+            direction: rtl;
+            width: 100%;
         }
         
-        .pagination button {
-            padding: 8px 15px;
-            margin: 0 3px;
+        .pagination button, .pagination .pagination-btn {
+            padding: 8px 12px;
             border: 1px solid #e0e0e0;
             background: #fff;
             color: #333;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             font-size: 14px;
-            min-width: 40px;
-            text-align: center;
+            min-width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: inherit;
+            line-height: 1;
+            margin: 2px;
         }
         
-        .pagination button:hover {
-            background: #f5f5f5;
+        .pagination .pagination-ellipsis {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 36px;
+            color: #666;
+            user-select: none;
+            padding: 0 8px;
+        }
+        
+        .pagination button:hover:not(.active):not(:disabled),
+        .pagination .pagination-btn:hover:not(.active):not(:disabled) {
+            background-color: #f5f5f5;
+            border-color: #d0d0d0;
             transform: translateY(-1px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
-        .pagination button.active {
+        .pagination button.active, .pagination .pagination-btn.active {
             background-color: var(--primary);
             color: white;
             border-color: var(--primary);
             font-weight: 600;
         }
         
-        .pagination button:disabled {
-            opacity: 0.6;
+        .pagination button:disabled,
+        .pagination .pagination-btn:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
@@ -76,11 +98,13 @@
         @media (max-width: 768px) {
             .pagination {
                 gap: 3px;
+                padding: 5px;
             }
             
             .pagination button {
                 padding: 6px 10px;
-                min-width: 35px;
+                min-width: 32px;
+                height: 32px;
                 font-size: 13px;
             }
         }
@@ -195,6 +219,111 @@
             color: var(--gray);
         }
         
+        /* Customers Page Styles */
+        #customers-page .card {
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        #customers-page .card-body {
+            padding: 0;
+        }
+        
+        #customers-page .table-responsive {
+            overflow-x: auto;
+            border-radius: 8px;
+        }
+        
+        #customers-page .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        #customers-page .data-table th {
+            background-color: #f8f9fa;
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        #customers-page .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+        
+        #customers-page .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        #customers-page .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        #customers-page .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0 2px;
+        }
+        
+        #customers-page .btn-edit {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        #customers-page .btn-edit:hover {
+            background-color: #bbdefb;
+        }
+        
+        #customers-page .btn-delete {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+        
+        #customers-page .btn-delete:hover {
+            background-color: #ffcdd2;
+        }
+        
+        #customers-page .text-success {
+            color: #2e7d32;
+            font-weight: 500;
+        }
+        
+        #customers-page .actions {
+            white-space: nowrap;
+        }
+        
+        #customers-page .no-customers {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        #customers-page .no-customers i {
+            font-size: 48px;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+        
+        #customers-page .no-customers h3 {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        #customers-page .no-customers p {
+            color: #adb5bd;
+            margin: 0;
+        }
+        
         .user-info {
             display: flex;
             align-items: center;
@@ -234,41 +363,7 @@
             justify-content: center;
         }
         
-        /* Pagination Styles */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-            gap: 5px;
-            padding: 10px 0;
-        }
-        
-        .pagination button {
-            padding: 8px 15px;
-            margin: 0 3px;
-            border: 1px solid #ddd;
-            background-color: #fff;
-            color: #333;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .pagination button:hover {
-            background-color: #f0f0f0;
-        }
-        
-        .pagination button.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .pagination button:disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
+        /* Pagination Styles - Using consolidated styles from above */
         
         .content-area {
             flex: 1;
@@ -1433,16 +1528,31 @@
                         <h2>إدارة العملاء</h2>
                         <div>
                             <button class="btn btn-primary" id="add-customer-btn">
-                                <i class="fas fa-plus"></i> إضافة عميل
+                                <i class="fas fa-plus"></i> إضافة عميل جديد
                             </button>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
-                            <div style="text-align: center; padding: 40px 0;">
-                                <i class="fas fa-users" style="font-size: 64px; color: #27ae60; margin-bottom: 20px;"></i>
-                                <h3>إدارة العملاء</h3>
-                                <p>سيتم إضافة إدارة العملاء هنا قريباً</p>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>الاسم</th>
+                                            <th>رقم الهاتف</th>
+                                            <th>الرصيد</th>
+                                            <th>تاريخ الانضمام</th>
+                                            <th>الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="customers-table-body">
+                                        <!-- Customers will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination" id="customers-pagination">
+                                <!-- Pagination will be added here by JavaScript -->
                             </div>
                         </div>
                     </div>
@@ -1566,9 +1676,44 @@
         </div>
     </div>
     
-        <!-- Invoice Modal -->
-        <div class="modal-overlay" id="invoice-modal">
-            <div class="modal" style="max-width: 800px;">
+        <!-- Edit Customer Modal -->
+    <div class="modal-overlay" id="edit-customer-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>تعديل بيانات العميل</h3>
+                <button class="close-btn close-edit-customer">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-customer-form">
+                    <input type="hidden" id="edit-customer-id">
+                    <div class="form-group">
+                        <label for="edit-customer-name">اسم العميل</label>
+                        <input type="text" id="edit-customer-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-customer-phone">رقم الهاتف</label>
+                        <input type="tel" id="edit-customer-phone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-customer-balance">الرصيد (ج.م)</label>
+                        <input type="number" step="0.01" id="edit-customer-balance" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-customer-date">تاريخ الانضمام</label>
+                        <input type="date" id="edit-customer-date" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-edit-customer">إلغاء</button>
+                <button type="button" class="btn btn-primary" id="save-customer-btn">حفظ التغييرات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Modal -->
+    <div class="modal-overlay" id="invoice-modal">
+        <div class="modal" style="max-width: 800px;">
                 <div class="modal-header">
                     <h3 id="invoice-modal-title">إضافة فاتورة جديدة</h3>
                     <button class="close-btn" id="close-invoice-modal">
@@ -1678,15 +1823,57 @@
             window.products = [...allProducts];
         }
         
+        // Initialize customers data
+        if (typeof window.customers === 'undefined') {
+            window.customers = [
+                {
+                    id: "CUST-001",
+                    name: "محمد أحمد",
+                    phone: "0123456789",
+                    balance: 0,
+                    joinDate: "2023-01-15"
+                },
+                {
+                    id: "CUST-002",
+                    name: "شركة النور للمقاولات",
+                    phone: "0111223344",
+                    balance: 1250.50,
+                    joinDate: "2022-11-05"
+                },
+                {
+                    id: "CUST-003",
+                    name: "أحمد علي",
+                    phone: "0109876543",
+                    balance: 0,
+                    joinDate: "2023-03-22"
+                },
+                {
+                    id: "CUST-004",
+                    name: "مؤسسة المدينة المنورة",
+                    phone: "0155555555",
+                    balance: 3750.25,
+                    joinDate: "2022-09-10"
+                },
+                {
+                    id: "CUST-005",
+                    name: "سارة محمود",
+                    phone: "0123456000",
+                    balance: 0,
+                    joinDate: "2023-05-18"
+                }
+            ];
+        }
+        
         // عرض جدول المنتجات
         function renderProductsTable(productsList) {
             if (!productsTableBody) {
                 productsTableBody = document.getElementById('products-table-body');
             }
             
+            // Clear existing rows
             productsTableBody.innerHTML = '';
             
-            if (productsList.length === 0) {
+            if (!Array.isArray(productsList) || productsList.length === 0) {
                 productsTableBody.innerHTML = `
                     <tr>
                         <td colspan="7" style="text-align: center; padding: 30px;">
@@ -1695,31 +1882,47 @@
                             <p>استخدم زر "إضافة منتج جديد" لإضافة منتجات إلى المخزون</p>
                         </td>
                     </tr>`;
+                
+                // Hide pagination if no products
+                const pagination = document.querySelector('#products-page .pagination');
+                if (pagination) pagination.style.display = 'none';
+                
                 return;
             }
             
-            productsList.forEach((product, index) => {
+            // Calculate pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedProducts = productsList.slice(startIndex, endIndex);
+            
+            // Render the current page of products
+            paginatedProducts.forEach((product, index) => {
                 const row = document.createElement('tr');
+                const actualIndex = startIndex + index + 1;
+                
                 row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${product.name}</td>
-                    <td>${product.price.toFixed(2)}</td>
-                    <td>${product.quantity}</td>
+                    <td>${actualIndex}</td>
+                    <td>${product.name || 'غير محدد'}</td>
+                    <td>${product.price ? product.price.toFixed(2) : '0.00'}</td>
+                    <td>${product.quantity || 0}</td>
                     <td>
                         <span class="status-badge ${product.quantity > 10 ? 'success' : product.quantity > 0 ? 'warning' : 'danger'}">
                             ${product.quantity > 10 ? 'متوفر' : product.quantity > 0 ? 'كمية قليلة' : 'غير متوفر'}
                         </span>
                     </td>
                     <td class="actions">
-                        <button class="btn-icon btn-edit" onclick="editProduct('${product.id}')">
+                        <button class="btn-icon btn-edit" onclick="editProduct('${product.id || ''}')">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn-icon btn-delete" onclick="confirmDelete('${product.id}')">
+                        <button class="btn-icon btn-delete" onclick="confirmDelete('${product.id || ''}')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>`;
                 productsTableBody.appendChild(row);
             });
+            
+            // Render pagination
+            renderPagination(productsList.length, 'products');
         }
         
         // Global variables for pagination
@@ -1771,8 +1974,8 @@
                     const endIndex = startIndex + itemsPerPage;
                     invoicesToShow = sortedInvoices.slice(startIndex, endIndex);
                     
-                    // Render pagination controls
-                    renderPagination(sortedInvoices.length);
+                    // Render pagination controls for invoices
+                    renderPagination(sortedInvoices.length, 'invoices');
                 }
                 
                 // Render the current page of invoices
@@ -1831,35 +2034,55 @@
         }
         
         // Function to render pagination controls
-        function renderPagination(totalItems) {
+        function renderPagination(totalItems, pageType = 'invoices') {
             const totalPages = Math.ceil(totalItems / itemsPerPage);
-            const pagination = document.querySelector('.pagination');
+            const pagination = document.querySelector(`#${pageType}-page .pagination`);
             
-            if (!pagination) return;
+            if (!pagination) {
+                console.error(`Pagination container not found for ${pageType} page`);
+                return;
+            }
             
             // Clear existing pagination
             pagination.innerHTML = '';
             
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            pagination.style.display = 'flex';
+            
             // Previous button
-            const prevBtn = document.createElement('div');
-            prevBtn.className = `page-btn ${currentPage === 1 ? 'disabled' : ''}`;
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pagination-btn';
+            prevBtn.disabled = currentPage === 1;
             prevBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
             prevBtn.onclick = () => {
                 if (currentPage > 1) {
                     currentPage--;
-                    renderInvoicesTable(window.invoices, 'invoices-table-body');
+                    if (pageType === 'invoices') {
+                        renderInvoicesTable(window.invoices, 'invoices-table-body');
+                    } else {
+                        renderProductsTable(window.products);
+                    }
                     window.scrollTo(0, 0);
                 }
             };
             
             // Next button
-            const nextBtn = document.createElement('div');
-            nextBtn.className = `page-btn ${currentPage === totalPages ? 'disabled' : ''}`;
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pagination-btn';
+            nextBtn.disabled = currentPage === totalPages;
             nextBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
             nextBtn.onclick = () => {
                 if (currentPage < totalPages) {
                     currentPage++;
-                    renderInvoicesTable(window.invoices, 'invoices-table-body');
+                    if (pageType === 'invoices') {
+                        renderInvoicesTable(window.invoices, 'invoices-table-body');
+                    } else {
+                        renderProductsTable(window.products);
+                    }
                     window.scrollTo(0, 0);
                 }
             };
@@ -1889,13 +2112,17 @@
             
             // Add page number buttons
             for (let i = startPage; i <= endPage; i++) {
-                const pageBtn = document.createElement('div');
-                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
                 pageBtn.textContent = i;
                 pageBtn.onclick = () => {
                     if (i !== currentPage) {
                         currentPage = i;
-                        renderInvoicesTable(window.invoices, 'invoices-table-body');
+                        if (pageType === 'invoices') {
+                            renderInvoicesTable(window.invoices, 'invoices-table-body');
+                        } else {
+                            renderProductsTable(window.products);
+                        }
                         window.scrollTo(0, 0);
                     }
                 };
@@ -1904,11 +2131,68 @@
             
             // Add all elements to pagination
             pagination.appendChild(prevBtn);
+            
+            // Add first page button if needed
+            if (startPage > 1) {
+                const firstPageBtn = document.createElement('button');
+                firstPageBtn.className = 'pagination-btn';
+                firstPageBtn.textContent = '1';
+                firstPageBtn.onclick = () => {
+                    currentPage = 1;
+                    if (pageType === 'invoices') {
+                        renderInvoicesTable(window.invoices, 'invoices-table-body');
+                    } else {
+                        renderProductsTable(window.products);
+                    }
+                    window.scrollTo(0, 0);
+                };
+                pagination.appendChild(firstPageBtn);
+                
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'pagination-ellipsis';
+                    ellipsis.textContent = '...';
+                    pagination.appendChild(ellipsis);
+                }
+            }
+            
+            // Add page number buttons
             pageNumbers.forEach(btn => pagination.appendChild(btn));
+            
+            // Add last page button if needed
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'pagination-ellipsis';
+                    ellipsis.textContent = '...';
+                    pagination.appendChild(ellipsis);
+                }
+                
+                const lastPageBtn = document.createElement('button');
+                lastPageBtn.className = 'pagination-btn';
+                lastPageBtn.textContent = totalPages;
+                lastPageBtn.onclick = () => {
+                    currentPage = totalPages;
+                    if (pageType === 'invoices') {
+                        renderInvoicesTable(window.invoices, 'invoices-table-body');
+                    } else {
+                        renderProductsTable(window.products);
+                    }
+                    window.scrollTo(0, 0);
+                };
+                pagination.appendChild(lastPageBtn);
+            }
+            
             pagination.appendChild(nextBtn);
             
-            // Show pagination
-            pagination.style.display = 'flex';
+            // Update active state for all buttons
+            pagination.querySelectorAll('.pagination-btn').forEach(btn => {
+                if (parseInt(btn.textContent) === currentPage) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
         }
         
         // Render recent invoices (top 3)
@@ -3187,6 +3471,198 @@
             
             // تمت إزالة تبديل القائمة الجانبية
             
+            // Sample customers data
+            window.customers = [
+                {
+                    id: 'CUST-001',
+                    name: 'محمد أحمد',
+                    phone: '0123456789',
+                    balance: 0,
+                    joinDate: '2023-01-15'
+                },
+                {
+                    id: 'CUST-002',
+                    name: 'شركة النور للمقاولات',
+                    phone: '0111223344',
+                    balance: 1250.50,
+                    joinDate: '2022-11-05'
+                },
+                {
+                    id: 'CUST-003',
+                    name: 'أحمد علي',
+                    phone: '0109876543',
+                    balance: 0,
+                    joinDate: '2023-03-22'
+                },
+                {
+                    id: 'CUST-004',
+                    name: 'مؤسسة المدينة المنورة',
+                    phone: '0155555555',
+                    balance: 3750.25,
+                    joinDate: '2022-09-10'
+                },
+                {
+                    id: 'CUST-005',
+                    name: 'سارة محمود',
+                    phone: '0123456000',
+                    balance: 0,
+                    joinDate: '2023-05-18'
+                }
+            ];
+
+            // Initialize customer page elements
+            const addCustomerBtn = document.getElementById('add-customer-btn');
+            if (addCustomerBtn) {
+                addCustomerBtn.addEventListener('click', openAddCustomerModal);
+            }
+            
+            // Initialize edit customer modal
+            const editCustomerModal = document.getElementById('edit-customer-modal');
+            const saveCustomerBtn = document.getElementById('save-customer-btn');
+            const closeEditCustomerBtns = document.querySelectorAll('.close-edit-customer');
+            
+            if (saveCustomerBtn) {
+                saveCustomerBtn.addEventListener('click', saveCustomerChanges);
+            }
+            
+            closeEditCustomerBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    editCustomerModal.classList.remove('active');
+                });
+            });
+            
+            // Close modal when clicking outside
+            editCustomerModal.addEventListener('click', (e) => {
+                if (e.target === editCustomerModal) {
+                    editCustomerModal.classList.remove('active');
+                }
+            });
+
+            // Function to render customers table
+            function renderCustomersTable(customersList) {
+                const tableBody = document.getElementById('customers-table-body');
+                if (!tableBody) return;
+                
+                tableBody.innerHTML = '';
+                
+                if (!Array.isArray(customersList) || customersList.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 30px;">
+                                <i class="fas fa-users" style="font-size: 3rem; color: var(--light-gray); margin-bottom: 15px;"></i>
+                                <h3 style="color: var(--text-light);">لا يوجد عملاء مسجلين</h3>
+                                <p>استخدم زر "إضافة عميل جديد" لإضافة عملاء جدد</p>
+                            </td>
+                        </tr>`;
+                    return;
+                }
+                
+                customersList.forEach((customer, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Format balance
+                    const formattedBalance = customer.balance.toLocaleString('ar-EG', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    
+                    // Format join date
+                    const joinDate = new Date(customer.joinDate);
+                    const formattedDate = joinDate.toLocaleDateString('ar-EG');
+                    
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${customer.name || 'غير محدد'}</td>
+                        <td>${customer.phone || 'غير محدد'}</td>
+                        <td class="${customer.balance > 0 ? 'text-success' : ''}">${formattedBalance} ج.م</td>
+                        <td>${formattedDate}</td>
+                        <td class="actions">
+                            <button class="btn-icon btn-edit" onclick="editCustomer('${customer.id || ''}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon btn-delete" onclick="confirmDeleteCustomer('${customer.id || ''}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>`;
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Function to open add customer modal
+            function openAddCustomerModal() {
+                // Reset the form
+                document.getElementById('edit-customer-form').reset();
+                document.getElementById('edit-customer-id').value = '';
+                
+                // Set today's date as default
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('edit-customer-date').value = today;
+                
+                // Change modal title
+                document.querySelector('#edit-customer-modal .modal-header h3').textContent = 'إضافة عميل جديد';
+                document.getElementById('save-customer-btn').textContent = 'إضافة عميل';
+                
+                // Show the modal
+                document.getElementById('edit-customer-modal').classList.add('active');
+                
+                // Focus on the name field
+                setTimeout(() => {
+                    document.getElementById('edit-customer-name').focus();
+                }, 100);
+            }
+
+            // Function to edit customer
+            function editCustomer(customerId) {
+                const customer = window.customers.find(c => c.id === customerId);
+                if (!customer) return;
+                
+                // Fill the form with customer data
+                document.getElementById('edit-customer-id').value = customer.id;
+                document.getElementById('edit-customer-name').value = customer.name;
+                document.getElementById('edit-customer-phone').value = customer.phone;
+                document.getElementById('edit-customer-balance').value = customer.balance;
+                
+                // Format date for the date input (YYYY-MM-DD)
+                const joinDate = new Date(customer.joinDate);
+                const formattedDate = joinDate.toISOString().split('T')[0];
+                document.getElementById('edit-customer-date').value = formattedDate;
+                
+                // Show the modal
+                document.getElementById('edit-customer-modal').classList.add('active');
+            }
+            
+            // Function to save customer changes
+            function saveCustomerChanges() {
+                const customerId = document.getElementById('edit-customer-id').value;
+                const customer = window.customers.find(c => c.id === customerId);
+                if (!customer) return;
+                
+                // Update customer data
+                customer.name = document.getElementById('edit-customer-name').value;
+                customer.phone = document.getElementById('edit-customer-phone').value;
+                customer.balance = parseFloat(document.getElementById('edit-customer-balance').value) || 0;
+                customer.joinDate = document.getElementById('edit-customer-date').value;
+                
+                // Update the table
+                renderCustomersTable(window.customers);
+                
+                // Close the modal
+                document.getElementById('edit-customer-modal').classList.remove('active');
+                
+                // Show success message
+                showAlert('تم تحديث بيانات العميل بنجاح', 'success');
+            }
+
+            // Function to confirm customer deletion
+            function confirmDeleteCustomer(customerId) {
+                if (confirm('هل أنت متأكد من حذف هذا العميل؟')) {
+                    window.customers = window.customers.filter(c => c.id !== customerId);
+                    renderCustomersTable(window.customers);
+                    showAlert('تم حذف العميل بنجاح', 'success');
+                }
+            }
+            
             // بدء النظام
             console.log('النظام جاهز للعمل!');
             console.log(`تم تحميل ${products.length} منتج في النظام`);
@@ -3197,7 +3673,9 @@
             // تعبئة الجداول بالبيانات
             renderProductsTable(products);
             renderInvoicesTable(invoices);
+            renderCustomersTable(window.customers);
         });
     </script>
+</script>
 </body>
 </html>

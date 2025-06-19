@@ -30,7 +30,6 @@ const sampleCustomers = [
         id: "CUST-001",
         name: "محمد أحمد",
         phone: "0123456789",
-        address: "القاهرة - مصر الجديدة",
         balance: 0,
         joinDate: "2023-01-15"
     },
@@ -38,7 +37,6 @@ const sampleCustomers = [
         id: "CUST-002",
         name: "شركة النور للمقاولات",
         phone: "0111223344",
-        address: "الجيزة - الدقى",
         balance: 1250.50,
         joinDate: "2022-11-05"
     },
@@ -46,7 +44,6 @@ const sampleCustomers = [
         id: "CUST-003",
         name: "أحمد علي",
         phone: "0109876543",
-        address: "الإسكندرية - سموحة",
         balance: 0,
         joinDate: "2023-03-22"
     },
@@ -54,7 +51,6 @@ const sampleCustomers = [
         id: "CUST-004",
         name: "مؤسسة المدينة المنورة",
         phone: "0155555555",
-        address: "المنصورة - شارع الجلاء",
         balance: 3750.25,
         joinDate: "2022-09-10"
     },
@@ -62,7 +58,6 @@ const sampleCustomers = [
         id: "CUST-005",
         name: "سارة محمود",
         phone: "0123456000",
-        address: "المنيا - مدينة المنيا الجديدة",
         balance: 0,
         joinDate: "2023-05-18"
     }
@@ -100,7 +95,7 @@ const sampleInvoices = [
             { productId: "a22", quantity: 30, price: 12 },
             { productId: "a31", quantity: 50, price: 9 }
         ],
-        status: "pending",
+        status: "unpaid",
         total: 810
     },
     {
@@ -146,7 +141,7 @@ const sampleInvoices = [
             { productId: "a3", quantity: 3, price: 750 },
             { productId: "a11", quantity: 10, price: 45 }
         ],
-        status: "pending",
+        status: "unpaid",
         total: 2700
     },
     {
@@ -180,7 +175,7 @@ const sampleInvoices = [
             { productId: "a79", quantity: 500, price: 0.85 },
             { productId: "a42", quantity: 100, price: 2.50 }
         ],
-        status: "pending",
+        status: "unpaid",
         total: 925
     },
     {
@@ -213,7 +208,7 @@ const sampleInvoices = [
             { productId: "a22", quantity: 50, price: 12 },
             { productId: "a31", quantity: 30, price: 9 }
         ],
-        status: "pending",
+        status: "unpaid",
         total: 870
     },
     {
@@ -270,7 +265,7 @@ const sampleInvoices = [
             { productId: "a79", quantity: 300, price: 0.85 },
             { productId: "a42", quantity: 200, price: 2.50 }
         ],
-        status: "pending",
+        status: "unpaid",
         total: 1055
     },
     {
