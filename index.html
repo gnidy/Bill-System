@@ -1662,11 +1662,6 @@
                             <input type="number" id="product-quantity" class="form-control" min="0" required>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="product-description">الوصف (اختياري)</label>
-                        <textarea id="product-description" class="form-control" rows="3"></textarea>
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -1777,6 +1772,13 @@
     <div class="modal-overlay" id="delete-modal">
         <div class="modal">
             <div class="confirmation-dialog">
+                <div class="modal-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
                 <h3>تأكيد الحذف</h3>
                 <p>هل أنت متأكد أنك تريد حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.</p>
                 <div class="confirmation-buttons">
@@ -1786,6 +1788,149 @@
             </div>
         </div>
     </div>
+    
+    <style>
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Modal */
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Confirmation Dialog */
+        .confirmation-dialog {
+            padding: 24px;
+            text-align: center;
+        }
+
+        .modal-icon {
+            margin: 0 auto 16px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fde8e8;
+            border-radius: 50%;
+        }
+
+        .confirmation-dialog h3 {
+            margin: 0 0 12px;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .confirmation-dialog p {
+            margin: 0 0 24px;
+            color: #7f8c8d;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+
+        /* Buttons */
+        .confirmation-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            border: 2px solid transparent;
+        }
+
+        .btn-outline {
+            background: white;
+            border-color: #bdc3c7;
+            color: #34495e;
+        }
+
+        .btn-outline:hover {
+            background: #f8f9fa;
+            border-color: #95a5a6;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            border-color: #c0392b;
+        }
+    </style>
+    
+    <script>
+        // Show modal function
+        function showDeleteModal() {
+            const modal = document.getElementById('delete-modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Hide modal function
+        function hideDeleteModal() {
+            const modal = document.getElementById('delete-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Example of how to use these functions:
+        // Show modal: showDeleteModal();
+        // Hide modal: hideDeleteModal();
+
+        // Close modal when clicking outside
+        document.getElementById('delete-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideDeleteModal();
+            }
+        });
+
+        // Close modal with cancel button
+        document.getElementById('cancel-delete').addEventListener('click', hideDeleteModal);
+    </script>
 
     <!-- External JavaScript Files -->
     <script src="assets.js"></script>
@@ -1818,6 +1963,24 @@
             }
         }
         
+        // فتح نموذج تعديل منتج
+        function editProduct(productId) {
+            // Use window.products to ensure we're accessing the global variable
+            const product = window.products.find(p => p.id === productId);
+            if(product) {
+                document.getElementById('modal-title').textContent = 'تعديل المنتج';
+                document.getElementById('product-id').value = product.id;
+                document.getElementById('product-name').value = product.name;
+                document.getElementById('product-price').value = product.price;
+                document.getElementById('product-quantity').value = product.quantity;
+                // Make sure productModal is defined
+                const productModal = document.getElementById('product-modal');
+                if (productModal) {
+                    productModal.classList.add('active');
+                }
+            }
+        }
+
         // Initialize products from allProducts if not already set
         if (typeof window.products === 'undefined') {
             window.products = [...allProducts];
@@ -2008,10 +2171,6 @@
                                 <button class="action-btn" onclick="printInvoice('${invoiceId}')">
                                     <i class="fas fa-print"></i>
                                 </button>
-                                ${targetId === 'invoices-table-body' ? `
-                                <button class="action-btn text-danger" onclick="if(confirm('هل أنت متأكد من حذف هذه الفاتورة؟')) { deleteInvoice('${invoiceId}'); }">
-                                    <i class="fas fa-trash"></i>
-                                </button>` : ''}
                             </td>
                         `;
                         
@@ -2371,10 +2530,7 @@
             };
             
             // Validate
-            if (!productData.name || isNaN(productData.price) || isNaN(productData.quantity)) {
-                showToast('الرجاء ملء جميع الحقول المطلوبة', 'error');
-                return;
-            }
+            
             
             // Add or update product
             const existingIndex = window.products.findIndex(p => p.id === productData.id);
@@ -2822,6 +2978,8 @@
                 wrapper.appendChild(nextButton);
             }
             
+
+            
             // عرض جدول المنتجات مع الترقيم الصفحات
             function renderProductsTable(productsList) {
                 console.log('renderProductsTable called with:', productsList);
@@ -3082,23 +3240,10 @@
                 document.getElementById('product-name').value = '';
                 document.getElementById('product-price').value = '';
                 document.getElementById('product-quantity').value = '0';
-                document.getElementById('product-description').value = '';
                 productModal.classList.add('active');
             }
             
-            // فتح نموذج تعديل منتج
-            function editProduct(productId) {
-                const product = products.find(p => p.id === productId);
-                if(product) {
-                    document.getElementById('modal-title').textContent = 'تعديل المنتج';
-                    document.getElementById('product-id').value = product.id;
-                    document.getElementById('product-name').value = product.name;
-                    document.getElementById('product-price').value = product.price;
-                    document.getElementById('product-quantity').value = product.quantity;
-                    document.getElementById('product-description').value = product.description || '';
-                    productModal.classList.add('active');
-                }
-            }
+
             
             // حفظ المنتج (إضافة/تعديل)
             function saveProduct() {
@@ -3106,7 +3251,6 @@
                 const name = document.getElementById('product-name').value;
                 const price = parseFloat(document.getElementById('product-price').value);
                 const quantity = parseInt(document.getElementById('product-quantity').value);
-                const description = document.getElementById('product-description').value;
                 
                 // التحقق من صحة المدخلات
                 if(!name || isNaN(price) || isNaN(quantity)) {
@@ -3116,26 +3260,24 @@
                 
                 if(id) {
                     // تعديل منتج موجود
-                    const index = products.findIndex(p => p.id === id);
+                    const index = window.products.findIndex(p => p.id === id);
                     if(index !== -1) {
-                        products[index] = { 
-                            ...products[index], 
+                        window.products[index] = { 
+                            ...window.products[index], 
                             name, 
                             price, 
-                            quantity, 
-                            description 
+                            quantity
                         };
                         showAlert('تم تحديث المنتج بنجاح!', 'success');
                     }
                 } else {
                     // إضافة منتج جديد
                     const newId = 'a' + (Date.now().toString().substr(-6)); // توليد ID فريد
-                    products.push({
+                    window.products.push({
                         id: newId,
                         name,
                         price,
-                        quantity,
-                        description
+                        quantity
                     });
                     showAlert('تم إضافة المنتج بنجاح!', 'success');
                 }
