@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المخزون والفواتير الاحترافي</title>
+    <title>نظام إدارة المخزون والفواتير </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -118,6 +118,10 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            min-width: 0; /* Allows the flex item to shrink below its minimum content size */
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden; /* Prevents content from overflowing */
         }
         
         .topbar {
@@ -202,6 +206,24 @@
             flex: 1;
             padding: 30px;
             overflow-y: auto;
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            min-width: 0; /* Allows content to shrink below its minimum content size */
+        }
+        
+        /* Ensure content doesn't overflow */
+        .card {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .content-header {
@@ -730,7 +752,46 @@
         }
         
         /* Responsive Design */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 80px;
+                overflow: visible;
+            }
+            
+            .sidebar-header h1, .menu-item span {
+                display: none;
+            }
+            
+            .menu-item {
+                justify-content: center;
+                padding: 15px;
+                position: relative;
+            }
+            
+            .menu-item i {
+                width: auto;
+                font-size: 1.3rem;
+            }
+            
+            .menu-item.active span {
+                display: block !important;
+                position: static;
+                background: transparent;
+                padding: 0 0 0 10px;
+                white-space: nowrap;
+                margin: 0;
+                animation: fadeIn 0.3s ease;
+            }
+        }
+        
         @media (max-width: 992px) {
+            .content-area {
+                padding: 20px;
+                width: 100%;
+                margin-left: auto;
+                box-sizing: border-box;
+            }
+            
             .sidebar {
                 width: 80px;
             }
@@ -745,17 +806,16 @@
             }
             
             .menu-item i {
-                width: auto;
+                margin: 0;
+                font-size: 1.3rem;
             }
-        }
-        
-        @media (max-width: 768px) {
+            
             .summary-cards {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .search-container {
-                width: 200px;
+                width: 250px;
             }
             
             .content-header {
@@ -773,35 +833,171 @@
                 flex-direction: column;
                 align-items: stretch;
             }
+            
+            .table-responsive {
+                overflow-x: auto;
+            }
         }
         
-        @media (max-width: 576px) {
-            .topbar {
-                flex-direction: column;
-                gap: 15px;
+        @media (max-width: 768px) {
+            .content-area {
+                width: 100%;
                 padding: 15px;
+                margin: 0;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-container {
+                width: 200px;
+            }
+            
+            .topbar {
+                padding: 10px 15px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar-header {
+                display: none;
+            }
+            
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 60px;
+                overflow: hidden;
+                transition: width 0.3s ease;
+            }
+            
+            .sidebar.expanded {
+                width: 260px;
+            }
+            
+            .sidebar-menu .menu-item span {
+                white-space: nowrap;
+                opacity: 0;
+                transition: opacity 0.3s ease 0.1s;
+            }
+            
+            .sidebar.expanded .menu-item span {
+                opacity: 1;
+            }
+            
+            .menu-item {
+                position: relative;
+            }
+            
+            .menu-item i {
+                min-width: 30px;
+                display: inline-block;
+                text-align: center;
+            }
+            
+            #dashboard-page {
+                display: block;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none; /* Hide scrollbar for Firefox */
+            }
+            
+            .sidebar::-webkit-scrollbar {
+                display: none; /* Hide scrollbar for Chrome/Safari */
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                width: max-content; /* Allow menu to be as wide as its content */
+                min-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .menu-item {
+                padding: 15px 20px;
+                white-space: nowrap;
+                border: none;
+                border-bottom: 3px solid transparent;
+                flex-shrink: 0; /* Prevent items from shrinking */
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                background: transparent;
+                color: white;
+            }
+            
+            .menu-item:hover, .menu-item.active {
+                background: var(--sidebar-hover);
+                border-bottom-color: var(--secondary-light);
+            }
+            
+            .menu-item i {
+                margin: 0 5px;
+                font-size: 1.4rem;
+                min-width: 24px;
+                text-align: center;
+            }
+            
+            .topbar {
+                flex-direction: row;
+                padding: 10px;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
             }
             
             .search-container {
                 width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
             }
             
-            .sidebar {
-                width: 0;
-                overflow: hidden;
-            }
-            
-            .sidebar.open {
-                width: 260px;
-            }
-            
-            .products-actions, .invoices-actions {
-                flex-direction: column;
+            .content-area {
+                padding: 15px;
                 width: 100%;
+                max-width: 100%;
+                margin: 0;
             }
             
-            .products-actions .btn, .invoices-actions .btn {
+            .card {
+                margin-bottom: 15px;
+            }
+            
+            .table {
                 width: 100%;
+                margin: 0;
+            }
+            
+            .table th, .table td {
+                padding: 8px 5px;
+                font-size: 0.9rem;
+                min-width: 100px;
+            }
+            
+            .table td:first-child,
+            .table th:first-child {
+                padding-right: 15px;
+            }
+            
+            .table td:last-child,
+            .table th:last-child {
+                padding-left: 15px;
             }
         }
         
@@ -819,10 +1015,10 @@
 <body>
     <div class="app-container">
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo-icon">
-                    <i class="fas fa-boxes"></i>
+                <div class="logo-icon" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
                 </div>
                 <h1>نظام المخزون</h1>
             </div>
@@ -840,21 +1036,17 @@
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span>الفواتير</span>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" data-page="reports-page">
                     <i class="fas fa-chart-bar"></i>
                     <span>التقارير</span>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" data-page="customers-page">
                     <i class="fas fa-users"></i>
                     <span>العملاء</span>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" data-page="suppliers-page">
                     <i class="fas fa-truck"></i>
                     <span>الموردين</span>
-                </div>
-                <div class="menu-item">
-                    <i class="fas fa-cog"></i>
-                    <span>الإعدادات</span>
                 </div>
             </div>
         </div>
@@ -863,11 +1055,7 @@
         <div class="main-content">
             <!-- Topbar -->
             <div class="topbar">
-                <div>
-                    <button class="btn btn-outline" id="sidebar-toggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
+                <div></div>
                 
                 <div class="search-container">
                     <i class="fas fa-search"></i>
@@ -875,22 +1063,14 @@
                 </div>
                 
                 <div class="user-info">
-                    <div class="notification-icon">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">5</span>
-                    </div>
-                    <div class="user-avatar">م</div>
-                    <div>
-                        <div style="font-weight: 600;">محمد أحمد</div>
-                        <div style="font-size: 0.85rem; color: var(--gray);">مدير النظام</div>
-                    </div>
+                    <!-- User information has been removed -->
                 </div>
             </div>
             
             <!-- Content Area -->
             <div class="content-area">
                 <!-- Dashboard Page -->
-                <div id="dashboard-page">
+                <div id="dashboard-page" style="width: 100%; max-width: 100%; margin: 0; padding: 0; box-sizing: border-box;">
                     <div class="content-header">
                         <h2>لوحة التحكم</h2>
                         <div>
@@ -1153,8 +1333,71 @@
                     </div>
                 </div>
                 
+                <!-- Reports Page -->
+                <div id="reports-page" class="page" style="display: none;">
+                    <div class="content-header">
+                        <h2>التقارير</h2>
+                        <div>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-file-export"></i> تصدير
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div style="text-align: center; padding: 40px 0;">
+                                <i class="fas fa-chart-bar" style="font-size: 64px; color: #3498db; margin-bottom: 20px;"></i>
+                                <h3>لوحة التقارير</h3>
+                                <p>سيتم إضافة التقارير والتحليلات هنا قريباً</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Customers Page -->
+                <div id="customers-page" class="page" style="display: none;">
+                    <div class="content-header">
+                        <h2>إدارة العملاء</h2>
+                        <div>
+                            <button class="btn btn-primary" id="add-customer-btn">
+                                <i class="fas fa-plus"></i> إضافة عميل
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div style="text-align: center; padding: 40px 0;">
+                                <i class="fas fa-users" style="font-size: 64px; color: #27ae60; margin-bottom: 20px;"></i>
+                                <h3>إدارة العملاء</h3>
+                                <p>سيتم إضافة إدارة العملاء هنا قريباً</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Suppliers Page -->
+                <div id="suppliers-page" class="page" style="display: none;">
+                    <div class="content-header">
+                        <h2>إدارة الموردين</h2>
+                        <div>
+                            <button class="btn btn-primary" id="add-supplier-btn">
+                                <i class="fas fa-plus"></i> إضافة مورد
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div style="text-align: center; padding: 40px 0;">
+                                <i class="fas fa-truck" style="font-size: 64px; color: #e74c3c; margin-bottom: 20px;"></i>
+                                <h3>إدارة الموردين</h3>
+                                <p>سيتم إضافة إدارة الموردين هنا قريباً</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Invoices Management Page -->
-                <div id="invoices-page">
+                <div id="invoices-page" style="display: none;">
                     <div class="content-header">
                         <h2>إدارة الفواتير</h2>
                         <div>
@@ -1307,10 +1550,6 @@
                                 <span>المجموع الفرعي:</span>
                                 <span id="invoice-subtotal">0.00 ج.م</span>
                             </div>
-                            <div class="summary-row">
-                                <span>الضريبة (14%):</span>
-                                <span id="invoice-tax">0.00 ج.م</span>
-                            </div>
                             <div class="summary-row summary-total">
                                 <span>الإجمالي:</span>
                                 <span id="invoice-total">0.00 ج.م</span>
@@ -1398,13 +1637,187 @@
             }
         ];
         
+        // Global variables
+        let dashboardPage, productsPage, invoicesPage, reportsPage, customersPage, suppliersPage, menuItems;
+        let productsTableBody, invoicesTableBody, products;
+        // Use window.invoices to avoid redeclaration
+        if (typeof window.invoices === 'undefined') {
+            window.invoices = [];
+        }
+        
+        // عرض جدول المنتجات
+        function renderProductsTable(productsList) {
+            if (!productsTableBody) {
+                productsTableBody = document.getElementById('products-table-body');
+            }
+            
+            productsTableBody.innerHTML = '';
+            
+            if (productsList.length === 0) {
+                productsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px;">
+                            <i class="fas fa-box-open" style="font-size: 3rem; color: var(--light-gray); margin-bottom: 15px;"></i>
+                            <h3 style="color: var(--text-light);">لا توجد منتجات متاحة</h3>
+                            <p>استخدم زر "إضافة منتج جديد" لإضافة منتجات إلى المخزون</p>
+                        </td>
+                    </tr>`;
+                return;
+            }
+            
+            productsList.forEach((product, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price.toFixed(2)}</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.category || '-'}</td>
+                    <td>
+                        <span class="status-badge ${product.quantity > 10 ? 'success' : product.quantity > 0 ? 'warning' : 'danger'}">
+                            ${product.quantity > 10 ? 'متوفر' : product.quantity > 0 ? 'كمية قليلة' : 'غير متوفر'}
+                        </span>
+                    </td>
+                    <td class="actions">
+                        <button class="btn-icon btn-edit" onclick="editProduct('${product.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon btn-delete" onclick="confirmDelete('${product.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>`;
+                productsTableBody.appendChild(row);
+            });
+        }
+        
+        // عرض جدول الفواتير
+        function renderInvoicesTable(invoicesList) {
+            if (!invoicesTableBody) {
+                invoicesTableBody = document.getElementById('invoices-table-body');
+            }
+            
+            invoicesTableBody.innerHTML = '';
+            
+            if (invoicesList.length === 0) {
+                invoicesTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px;">
+                            <i class="fas fa-file-invoice" style="font-size: 3rem; color: var(--light-gray); margin-bottom: 15px;"></i>
+                            <h3 style="color: var(--text-light);">لا توجد فواتير</h3>
+                            <p>استخدم زر "فاتورة جديدة" لإنشاء فاتورة</p>
+                        </td>
+                    </tr>`;
+                return;
+            }
+            
+            invoicesList.forEach((invoice, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${invoice.invoiceNumber}</td>
+                    <td>${invoice.date}</td>
+                    <td>${invoice.customerName}</td>
+                    <td>${invoice.total.toFixed(2)}</td>
+                    <td>
+                        <span class="status-badge ${invoice.status === 'paid' ? 'success' : 'warning'}">
+                            ${invoice.status === 'paid' ? 'مدفوع' : 'غير مدفوع'}
+                        </span>
+                    </td>
+                    <td class="actions">
+                        <button class="btn-icon btn-view" onclick="viewInvoice('${invoice.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon btn-print" onclick="printInvoice('${invoice.id}')">
+                            <i class="fas fa-print"></i>
+                        </button>
+                    </td>`;
+                invoicesTableBody.appendChild(row);
+            });
+        }
+        
+        // Initialize tables and data when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            productsTableBody = document.getElementById('products-table-body');
+            invoicesTableBody = document.getElementById('invoices-table-body');
+            
+            // Initialize products
+            products = [...allProducts];
+            
+            // Ensure invoices is an array
+            if (!Array.isArray(window.invoices)) {
+                window.invoices = [];
+            }
+            
+            // Set initial page display
+            const initialPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard-page';
+            showPage(initialPage);
+            
+            // Update URL when navigating
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    if (item.dataset.page) {
+                        window.location.hash = item.dataset.page;
+                    }
+                });
+            });
+            
+            // Handle back/forward navigation
+            window.addEventListener('popstate', () => {
+                const page = window.location.hash ? window.location.hash.substring(1) : 'dashboard-page';
+                showPage(page);
+            });
+        });
+        
+        // تبديل الصفحات
+        function showPage(pageId) {
+            // Initialize pages if not already done
+            if (!dashboardPage) {
+                dashboardPage = document.getElementById('dashboard-page');
+                productsPage = document.getElementById('products-page');
+                invoicesPage = document.getElementById('invoices-page');
+                reportsPage = document.getElementById('reports-page');
+                customersPage = document.getElementById('customers-page');
+                suppliersPage = document.getElementById('suppliers-page');
+                menuItems = document.querySelectorAll('.menu-item');
+            }
+            
+            // Hide all pages
+            const allPages = [dashboardPage, productsPage, invoicesPage, reportsPage, customersPage, suppliersPage];
+            allPages.forEach(page => {
+                if (page) page.style.display = 'none';
+            });
+            
+            // Show the requested page
+            const pageToShow = document.getElementById(pageId);
+            if (pageToShow) {
+                pageToShow.style.display = 'block';
+            }
+            
+            // Update active menu item
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === pageId) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Update tables if needed
+            if (pageId === 'products-page' && products) {
+                renderProductsTable(products);
+            } else if (pageId === 'invoices-page' && window.invoices) {
+                renderInvoicesTable(window.invoices);
+            }
+        }
+        
         // بدء النظام
         document.addEventListener('DOMContentLoaded', function() {
             // عناصر DOM
-            const dashboardPage = document.getElementById('dashboard-page');
-            const productsPage = document.getElementById('products-page');
-            const invoicesPage = document.getElementById('invoices-page');
-            const menuItems = document.querySelectorAll('.menu-item');
+            dashboardPage = document.getElementById('dashboard-page');
+            productsPage = document.getElementById('products-page');
+            invoicesPage = document.getElementById('invoices-page');
+            reportsPage = document.getElementById('reports-page');
+            customersPage = document.getElementById('customers-page');
+            suppliersPage = document.getElementById('suppliers-page');
+            menuItems = document.querySelectorAll('.menu-item');
             const addProductBtn = document.getElementById('add-product-btn');
             const productModal = document.getElementById('product-modal');
             const deleteModal = document.getElementById('delete-modal');
@@ -1435,31 +1848,22 @@
             let currentProductId = null;
             let products = [...allProducts];
             
-            // تبديل الصفحات
-            function showPage(pageId) {
-                dashboardPage.style.display = 'none';
-                productsPage.style.display = 'none';
-                invoicesPage.style.display = 'none';
-                
-                document.getElementById(pageId).style.display = 'block';
-                
-                // تحديث القائمة الجانبية
-                menuItems.forEach(item => {
-                    item.classList.remove('active');
-                    if(item.dataset.page === pageId) {
-                        item.classList.add('active');
-                    }
-                });
-                
-                // إذا كانت صفحة المنتجات، نحدث الجدول
-                if(pageId === 'products-page') {
-                    renderProductsTable(products);
+            // Initialize all pages as hidden
+            const allPages = [dashboardPage, productsPage, invoicesPage, reportsPage, customersPage, suppliersPage];
+            allPages.forEach(page => {
+                if (page) page.style.display = 'none';
+            });
+            
+            // Show dashboard by default
+            if (dashboardPage) dashboardPage.style.display = 'block';
+            
+            // Handle menu item clicks using event delegation
+            document.querySelector('.sidebar-menu').addEventListener('click', function(e) {
+                const menuItem = e.target.closest('.menu-item');
+                if (menuItem && menuItem.dataset.page) {
+                    showPage(menuItem.dataset.page);
                 }
-                // إذا كانت صفحة الفواتير، نحدث الجدول
-                else if(pageId === 'invoices-page') {
-                    renderInvoicesTable(invoices);
-                }
-            }
+            });
             
             // عرض جدول المنتجات
             function renderProductsTable(productsList) {
@@ -1728,12 +2132,9 @@
                     subtotal += quantity * price;
                 });
                 
-                const tax = subtotal * 0.14; // ضريبة 14%
-                const total = subtotal + tax;
-                
+                // تحديث القيم في الواجهة
                 document.getElementById('invoice-subtotal').textContent = subtotal.toFixed(2) + ' ج.م';
-                document.getElementById('invoice-tax').textContent = tax.toFixed(2) + ' ج.م';
-                document.getElementById('invoice-total').textContent = total.toFixed(2) + ' ج.م';
+                document.getElementById('invoice-total').textContent = subtotal.toFixed(2) + ' ج.م';
             }
             
             // حفظ الفاتورة
@@ -1921,7 +2322,13 @@
             
             // إعداد معالجات الأحداث
             menuItems.forEach(item => {
-                item.addEventListener('click', () => {
+                item.addEventListener('click', (e) => {
+                    // Toggle active class for mobile menu items
+                    if (window.innerWidth <= 576) {
+                        menuItems.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                    }
+                    
                     if(item.dataset.page) {
                         showPage(item.dataset.page);
                     }
@@ -1979,10 +2386,7 @@
                 }
             });
             
-            // تبديل القائمة الجانبية
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
+            // تمت إزالة تبديل القائمة الجانبية
             
             // بدء النظام
             console.log('النظام جاهز للعمل!');
