@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
+<<<<<<< HEAD
+=======
+            scroll-behavior: smooth;
+>>>>>>> backup-master
             --primary: #2c3e50;
             --primary-dark: #1a252f;
             --secondary: #3498db;
@@ -58,6 +62,7 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
+<<<<<<< HEAD
         
         .sidebar-header {
             padding: 25px 20px;
@@ -83,6 +88,9 @@
             font-size: 1.4rem;
             font-weight: 600;
         }
+=======
+
+>>>>>>> backup-master
         
         .sidebar-menu {
             padding: 20px 0;
@@ -201,7 +209,46 @@
             justify-content: center;
         }
         
+<<<<<<< HEAD
         /* Content Area */
+=======
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 10px 0;
+        }
+        
+        .pagination button {
+            padding: 8px 15px;
+            margin: 0 3px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .pagination button.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+>>>>>>> backup-master
         .content-area {
             flex: 1;
             padding: 30px;
@@ -451,6 +498,7 @@
         
         /* Pagination */
         .pagination {
+<<<<<<< HEAD
             display: flex;
             justify-content: center;
             padding: 20px;
@@ -478,6 +526,77 @@
         
         .page-btn:hover:not(.active) {
             background: var(--light);
+=======
+            display: none; /* Initially hidden, shown by JS when needed */
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+            padding: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .page-btn {
+            min-width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            background-color: #fff;
+            transition: all 0.2s ease;
+            margin: 2px;
+            padding: 0 8px;
+        }
+        
+        .page-btn i {
+            font-size: 12px;
+        }
+        
+        .page-btn:not(.active):not(.disabled):hover {
+            background-color: #f5f5f5;
+            border-color: #d0d0d0;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .page-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f9f9f9;
+        }
+        
+        .page-btn:active:not(.disabled) {
+            transform: translateY(0);
+            transition: none;
+        }
+        
+        @media (max-width: 768px) {
+            .pagination {
+                gap: 4px;
+                padding: 10px 5px;
+            }
+            
+            .page-btn {
+                min-width: 32px;
+                height: 32px;
+                font-size: 13px;
+                padding: 0 6px;
+            }
+>>>>>>> backup-master
         }
         
         /* Modal Styles */
@@ -564,6 +683,35 @@
             color: var(--text-dark);
         }
         
+<<<<<<< HEAD
+=======
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            display: inline-block;
+            min-width: 80px;
+        }
+        
+        .status-available {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-unavailable {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+>>>>>>> backup-master
         .form-control {
             width: 100%;
             padding: 12px 15px;
@@ -758,10 +906,13 @@
                 overflow: visible;
             }
             
+<<<<<<< HEAD
             .sidebar-header h1, .menu-item span {
                 display: none;
             }
             
+=======
+>>>>>>> backup-master
             .menu-item {
                 justify-content: center;
                 padding: 15px;
@@ -796,7 +947,11 @@
                 width: 80px;
             }
             
+<<<<<<< HEAD
             .sidebar-header h1, .menu-item span {
+=======
+            .menu-item span {
+>>>>>>> backup-master
                 display: none;
             }
             
@@ -860,10 +1015,13 @@
         }
         
         @media (max-width: 768px) {
+<<<<<<< HEAD
             .sidebar-header {
                 display: none;
             }
             
+=======
+>>>>>>> backup-master
             .app-container {
                 flex-direction: column;
             }
@@ -947,6 +1105,13 @@
                 border-bottom-color: var(--secondary-light);
             }
             
+<<<<<<< HEAD
+=======
+            .menu-item.active span {
+                opacity: 1 !important;
+            }
+            
+>>>>>>> backup-master
             .menu-item i {
                 margin: 0 5px;
                 font-size: 1.4rem;
@@ -1016,6 +1181,7 @@
     <div class="app-container">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
+<<<<<<< HEAD
             <div class="sidebar-header">
                 <div class="logo-icon" id="toggleSidebar">
                     <i class="fas fa-bars"></i>
@@ -1023,6 +1189,8 @@
                 <h1>نظام المخزون</h1>
             </div>
             
+=======
+>>>>>>> backup-master
             <div class="sidebar-menu">
                 <div class="menu-item active" data-page="dashboard-page">
                     <i class="fas fa-home"></i>
@@ -1070,7 +1238,11 @@
             <!-- Content Area -->
             <div class="content-area">
                 <!-- Dashboard Page -->
+<<<<<<< HEAD
                 <div id="dashboard-page" style="width: 100%; max-width: 100%; margin: 0; padding: 0; box-sizing: border-box;">
+=======
+                <div id="dashboard-page">
+>>>>>>> backup-master
                     <div class="content-header">
                         <h2>لوحة التحكم</h2>
                         <div>
@@ -1127,6 +1299,7 @@
                         </div>
                     </div>
                     
+<<<<<<< HEAD
                     <!-- Products Table -->
                     <div class="card fade-in">
                         <div class="card-header">
@@ -1136,20 +1309,32 @@
                                     <i class="fas fa-sync-alt"></i> تحديث
                                 </button>
                             </div>
+=======
+                    <!-- Latest Products -->
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <h3>أحدث المنتجات</h3>
+>>>>>>> backup-master
                         </div>
                         <div class="card-body">
                             <table class="table">
                                 <thead>
                                     <tr>
+<<<<<<< HEAD
                                         <th>#</th>
                                         <th>اسم المنتج</th>
                                         <th>التصنيف</th>
                                         <th>السعر</th>
+=======
+                                        <th>اسم المنتج</th>
+                                        <th>السعر (ج.م)</th>
+>>>>>>> backup-master
                                         <th>الكمية</th>
                                         <th>الحالة</th>
                                         <th>الإجراءات</th>
                                     </tr>
                                 </thead>
+<<<<<<< HEAD
                                 <tbody>
                                     <tr>
                                         <td>1</td>
@@ -1209,17 +1394,27 @@
                             <div class="page-btn">3</div>
                             <div class="page-btn"><i class="fas fa-chevron-left"></i></div>
                         </div>
+=======
+                                <tbody id="latest-products-table-body">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+>>>>>>> backup-master
                     </div>
                     
                     <!-- Recent Invoices -->
                     <div class="card fade-in">
                         <div class="card-header">
                             <h3>آخر الفواتير</h3>
+<<<<<<< HEAD
                             <div>
                                 <button class="btn btn-outline">
                                     <i class="fas fa-eye"></i> عرض الكل
                                 </button>
                             </div>
+=======
+>>>>>>> backup-master
                         </div>
                         <div class="card-body">
                             <table class="table">
@@ -1233,6 +1428,7 @@
                                         <th>الإجراءات</th>
                                     </tr>
                                 </thead>
+<<<<<<< HEAD
                                 <tbody>
                                     <tr>
                                         <td>INV-2023-0125</td>
@@ -1256,6 +1452,10 @@
                                             <button class="action-btn"><i class="fas fa-print"></i></button>
                                         </td>
                                     </tr>
+=======
+                                <tbody id="recent-invoices-table-body">
+                                    <!-- Will be populated by JavaScript -->
+>>>>>>> backup-master
                                 </tbody>
                             </table>
                         </div>
@@ -1263,11 +1463,19 @@
                 </div>
                 
                 <!-- Products Management Page -->
+<<<<<<< HEAD
                 <div id="products-page">
                     <div class="content-header">
                         <h2>إدارة المنتجات</h2>
                         <div>
                             <button class="btn btn-primary" id="add-product-btn">
+=======
+                <div id="products-page" style="display: none;">
+                    <div class="content-header">
+                        <h2>إدارة المنتجات</h2>
+                        <div>
+                            <button class="btn btn-primary" id="add-product-btn" onclick="openAddProductModal()">
+>>>>>>> backup-master
                                 <i class="fas fa-plus"></i> إضافة منتج جديد
                             </button>
                         </div>
@@ -1276,6 +1484,7 @@
                     <div class="filter-section">
                         <div class="search-container" style="width: 300px;">
                             <i class="fas fa-search"></i>
+<<<<<<< HEAD
                             <input type="text" id="product-search" placeholder="ابحث عن منتج...">
                         </div>
                         
@@ -1291,11 +1500,18 @@
                                 <option value="أجهزة">أجهزة</option>
                                 <option value="معدات">معدات</option>
                             </select>
+=======
+                            <input type="text" id="product-search" placeholder="ابحث عن منتج..." onkeyup="filterProducts()">
+>>>>>>> backup-master
                         </div>
                         
                         <div class="filter-group">
                             <label for="status-filter">حالة المخزون:</label>
+<<<<<<< HEAD
                             <select id="status-filter" class="filter-select">
+=======
+                            <select id="status-filter" class="filter-select" onchange="filterProducts()">
+>>>>>>> backup-master
                                 <option value="all">جميع الحالات</option>
                                 <option value="available">متوفر</option>
                                 <option value="low">كمية منخفضة</option>
@@ -1306,6 +1522,7 @@
                     
                     <div class="card">
                         <div class="card-body">
+<<<<<<< HEAD
                             <table class="table" id="products-table">
                                 <thead>
                                     <tr>
@@ -1314,21 +1531,92 @@
                                         <th>التصنيف</th>
                                         <th>السعر (ج.م)</th>
                                         <th>الكمية</th>
+=======
+                            <div class="table-responsive">
+                                <table class="table" id="products-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>اسم المنتج</th>
+                                            <th>السعر</th>
+                                            <th>الكمية</th>
+                                            <th>الحالة</th>
+                                            <th>الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="products-table-body">
+                                        <!-- سيتم ملء هذا الجدول بالبيانات من JavaScript -->
+                                    </tbody>
+                                </table>
+                                <div class="pagination" id="products-pagination">
+                                    <!-- سيتم إضافة أزرار الترقيم الصفحات هنا -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Invoices Management Page -->
+                <div id="invoices-page">
+                    <div class="content-header">
+                        <h2>إدارة الفواتير</h2>
+                        <div>
+                            <button class="btn btn-primary" id="add-invoice-btn">
+                                <i class="fas fa-plus"></i> إضافة فاتورة جديدة
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <div class="search-container" style="width: 300px;">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="invoice-search" placeholder="ابحث عن فاتورة...">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="status-invoice-filter">حالة الفاتورة:</label>
+                            <select id="status-invoice-filter" class="filter-select">
+                                <option value="all">جميع الحالات</option>
+                                <option value="paid">مدفوعة</option>
+                                <option value="pending">قيد المراجعة</option>
+                                <option value="unpaid">غير مدفوعة</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table" id="invoices-table">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الفاتورة</th>
+                                        <th>العميل</th>
+                                        <th>التاريخ</th>
+                                        <th>المبلغ</th>
+>>>>>>> backup-master
                                         <th>الحالة</th>
                                         <th>الإجراءات</th>
                                     </tr>
                                 </thead>
+<<<<<<< HEAD
                                 <tbody id="products-table-body">
+=======
+                                <tbody id="invoices-table-body">
+>>>>>>> backup-master
                                     <!-- سيتم ملؤه بواسطة JavaScript -->
                                 </tbody>
                             </table>
                         </div>
                         <div class="pagination">
+<<<<<<< HEAD
                             <div class="page-btn"><i class="fas fa-chevron-right"></i></div>
                             <div class="page-btn active">1</div>
                             <div class="page-btn">2</div>
                             <div class="page-btn">3</div>
                             <div class="page-btn"><i class="fas fa-chevron-left"></i></div>
+=======
+                           
+>>>>>>> backup-master
                         </div>
                     </div>
                 </div>
@@ -1406,6 +1694,10 @@
                             </button>
                         </div>
                     </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> backup-master
                     
                     <div class="filter-section">
                         <div class="search-container" style="width: 300px;">
@@ -1423,7 +1715,10 @@
                             </select>
                         </div>
                     </div>
+<<<<<<< HEAD
                     
+=======
+>>>>>>> backup-master
                     <div class="card">
                         <div class="card-body">
                             <table class="table" id="invoices-table">
@@ -1438,16 +1733,24 @@
                                     </tr>
                                 </thead>
                                 <tbody id="invoices-table-body">
+<<<<<<< HEAD
                                     <!-- سيتم ملؤه بواسطة JavaScript -->
+=======
+                                    <!-- Will be populated by JavaScript -->
+>>>>>>> backup-master
                                 </tbody>
                             </table>
                         </div>
                         <div class="pagination">
+<<<<<<< HEAD
                             <div class="page-btn"><i class="fas fa-chevron-right"></i></div>
                             <div class="page-btn active">1</div>
                             <div class="page-btn">2</div>
                             <div class="page-btn">3</div>
                             <div class="page-btn"><i class="fas fa-chevron-left"></i></div>
+=======
+                            <!-- Pagination will be populated by JavaScript -->
+>>>>>>> backup-master
                         </div>
                     </div>
                 </div>
@@ -1472,6 +1775,7 @@
                         <input type="text" id="product-name" class="form-control" required>
                     </div>
                     
+<<<<<<< HEAD
                     <div class="form-group">
                         <label for="product-category">التصنيف *</label>
                         <select id="product-category" class="form-control" required>
@@ -1486,6 +1790,8 @@
                         </select>
                     </div>
                     
+=======
+>>>>>>> backup-master
                     <div class="form-row">
                         <div class="form-group">
                             <label for="product-price">السعر (ج.م) *</label>
@@ -1587,6 +1893,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <script>
         // جميع المنتجات بعد التنظيف
         const allProducts = [
@@ -1643,6 +1950,18 @@
         // Use window.invoices to avoid redeclaration
         if (typeof window.invoices === 'undefined') {
             window.invoices = [];
+=======
+    <!-- External JavaScript Files -->
+    <script src="assets.js"></script>
+    <script>
+        // Global variables
+        let dashboardPage, productsPage, invoicesPage, reportsPage, customersPage, suppliersPage, menuItems;
+        let productsTableBody, invoicesTableBody, products;
+        
+        // Initialize products from allProducts if not already set
+        if (typeof window.products === 'undefined') {
+            window.products = [...allProducts];
+>>>>>>> backup-master
         }
         
         // عرض جدول المنتجات
@@ -1672,7 +1991,10 @@
                     <td>${product.name}</td>
                     <td>${product.price.toFixed(2)}</td>
                     <td>${product.quantity}</td>
+<<<<<<< HEAD
                     <td>${product.category || '-'}</td>
+=======
+>>>>>>> backup-master
                     <td>
                         <span class="status-badge ${product.quantity > 10 ? 'success' : product.quantity > 0 ? 'warning' : 'danger'}">
                             ${product.quantity > 10 ? 'متوفر' : product.quantity > 0 ? 'كمية قليلة' : 'غير متوفر'}
@@ -1690,6 +2012,7 @@
             });
         }
         
+<<<<<<< HEAD
         // عرض جدول الفواتير
         function renderInvoicesTable(invoicesList) {
             if (!invoicesTableBody) {
@@ -1731,11 +2054,600 @@
                         </button>
                     </td>`;
                 invoicesTableBody.appendChild(row);
+=======
+        // Global variables for pagination
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        
+        // Render invoices table with pagination
+        function renderInvoicesTable(invoicesList, targetId = 'invoices-table-body', limit = null) {
+            const tableBody = document.getElementById(targetId);
+            if (!tableBody) {
+                console.error('Table body not found:', targetId);
+                return;
+            }
+            
+            // Clear existing rows
+            tableBody.innerHTML = '';
+            
+            // Ensure invoicesList is an array
+            const validInvoices = Array.isArray(invoicesList) ? invoicesList : [];
+            
+            if (validInvoices.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center">لا توجد فواتير لعرضها</td>
+                    </tr>`;
+                // Hide pagination if no invoices
+                const pagination = document.querySelector('.pagination');
+                if (pagination) pagination.style.display = 'none';
+                return;
+            }
+            
+            try {
+                // Sort invoices by date (newest first)
+                const sortedInvoices = [...validInvoices].sort((a, b) => {
+                    try {
+                        return new Date(b.date) - new Date(a.date);
+                    } catch (e) {
+                        console.error('Error sorting invoices:', e);
+                        return 0;
+                    }
+                });
+                
+                // Apply limit if specified (for recent invoices)
+                let invoicesToShow = limit ? sortedInvoices.slice(0, limit) : sortedInvoices;
+                
+                // Handle pagination if not limited (for main invoices page)
+                if (!limit && targetId === 'invoices-table-body') {
+                    const startIndex = (currentPage - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    invoicesToShow = sortedInvoices.slice(startIndex, endIndex);
+                    
+                    // Render pagination controls
+                    renderPagination(sortedInvoices.length);
+                }
+                
+                // Render the current page of invoices
+                invoicesToShow.forEach(invoice => {
+                    try {
+                        const row = document.createElement('tr');
+                        
+                        // Safely get invoice data with defaults
+                        const invoiceId = invoice.id || 'N/A';
+                        const customer = invoice.customer || 'عميل';
+                        const invoiceDate = invoice.date ? new Date(invoice.date) : new Date();
+                        const formattedDate = invoiceDate.toLocaleDateString('ar-EG');
+                        const total = typeof invoice.total === 'number' ? invoice.total : 0;
+                        const formattedTotal = total.toLocaleString('ar-EG');
+                        
+                        // Get status badge class and text
+                        const status = invoice.status || 'pending';
+                        const statusClass = status === 'paid' ? 'status-success' : 
+                                         status === 'pending' ? 'status-warning' : 'status-danger';
+                        const statusText = status === 'paid' ? 'مدفوعة' : 
+                                         status === 'pending' ? 'قيد المراجعة' : 'غير مدفوعة';
+                        
+                        row.innerHTML = `
+                            <td>${invoiceId}</td>
+                            <td>${customer}</td>
+                            <td>${formattedDate}</td>
+                            <td>${formattedTotal} ج.م</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td class="actions">
+                                <button class="action-btn" onclick="printInvoice('${invoiceId}')">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                                ${targetId === 'invoices-table-body' ? `
+                                <button class="action-btn text-danger" onclick="if(confirm('هل أنت متأكد من حذف هذه الفاتورة؟')) { deleteInvoice('${invoiceId}'); }">
+                                    <i class="fas fa-trash"></i>
+                                </button>` : ''}
+                            </td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    } catch (e) {
+                        console.error('Error rendering invoice row:', e);
+                    }
+                });
+                
+            } catch (e) {
+                console.error('Error rendering invoices table:', e);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-danger">حدث خطأ في تحميل الفواتير</td>
+                    </tr>`;
+                // Hide pagination on error
+                const pagination = document.querySelector('.pagination');
+                if (pagination) pagination.style.display = 'none';
+            }
+        }
+        
+        // Function to render pagination controls
+        function renderPagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const pagination = document.querySelector('.pagination');
+            
+            if (!pagination) return;
+            
+            // Clear existing pagination
+            pagination.innerHTML = '';
+            
+            // Previous button
+            const prevBtn = document.createElement('div');
+            prevBtn.className = `page-btn ${currentPage === 1 ? 'disabled' : ''}`;
+            prevBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderInvoicesTable(window.invoices, 'invoices-table-body');
+                    window.scrollTo(0, 0);
+                }
+            };
+            
+            // Next button
+            const nextBtn = document.createElement('div');
+            nextBtn.className = `page-btn ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderInvoicesTable(window.invoices, 'invoices-table-body');
+                    window.scrollTo(0, 0);
+                }
+            };
+            
+            // Add page numbers
+            const pageNumbers = [];
+            const maxPagesToShow = 5; // Show maximum 5 page numbers
+            let startPage, endPage;
+            
+            if (totalPages <= maxPagesToShow) {
+                // Show all pages if less than maxPagesToShow
+                startPage = 1;
+                endPage = totalPages;
+            } else {
+                // Calculate start and end pages
+                if (currentPage <= Math.ceil(maxPagesToShow / 2)) {
+                    startPage = 1;
+                    endPage = maxPagesToShow;
+                } else if (currentPage + Math.floor(maxPagesToShow / 2) >= totalPages) {
+                    startPage = totalPages - maxPagesToShow + 1;
+                    endPage = totalPages;
+                } else {
+                    startPage = currentPage - Math.floor(maxPagesToShow / 2);
+                    endPage = currentPage + Math.floor(maxPagesToShow / 2);
+                }
+            }
+            
+            // Add page number buttons
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('div');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => {
+                    if (i !== currentPage) {
+                        currentPage = i;
+                        renderInvoicesTable(window.invoices, 'invoices-table-body');
+                        window.scrollTo(0, 0);
+                    }
+                };
+                pageNumbers.push(pageBtn);
+            }
+            
+            // Add all elements to pagination
+            pagination.appendChild(prevBtn);
+            pageNumbers.forEach(btn => pagination.appendChild(btn));
+            pagination.appendChild(nextBtn);
+            
+            // Show pagination
+            pagination.style.display = 'flex';
+        }
+        
+        // Render recent invoices (top 3)
+        function renderRecentInvoices() {
+            if (!window.invoices) {
+                console.error('Invoices data not loaded');
+                return;
+            }
+            // Reset to first page when showing recent invoices
+            currentPage = 1;
+            renderInvoicesTable(window.invoices, 'recent-invoices-table-body', 3);
+        }
+        
+        // Delete an invoice by ID
+        function deleteInvoice(invoiceId) {
+            try {
+                // Find the index of the invoice to delete
+                const invoiceIndex = window.invoices.findIndex(inv => inv.id === invoiceId);
+                
+                if (invoiceIndex === -1) {
+                    console.error('Invoice not found:', invoiceId);
+                    return;
+                }
+                
+                // Remove the invoice from the array
+                window.invoices.splice(invoiceIndex, 1);
+                
+                // Update localStorage
+                localStorage.setItem('invoices', JSON.stringify(window.invoices));
+                
+                // Show success message
+                showToast('تم حذف الفاتورة بنجاح', 'success');
+                
+                // Re-render the invoices tables
+                renderInvoicesTable(window.invoices, 'invoices-table-body');
+                renderRecentInvoices();
+                
+            } catch (e) {
+                console.error('Error deleting invoice:', e);
+                showToast('حدث خطأ أثناء حذف الفاتورة', 'error');
+            }
+        }
+        
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            // You can implement a toast notification system here
+            // For now, we'll use a simple alert
+            alert(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // Open the add product modal
+        function openAddProductModal() {
+            const modal = document.getElementById('product-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const productForm = document.getElementById('product-form');
+            
+            // Reset form and set title
+            if (productForm) productForm.reset();
+            if (modalTitle) modalTitle.textContent = 'إضافة منتج جديد';
+            
+            // Reset hidden fields
+            const productIdField = document.getElementById('product-id');
+            if (productIdField) productIdField.value = '';
+            
+            // Show the modal
+            if (modal) modal.style.display = 'flex';
+        }
+        
+        // Open the add invoice modal
+        function openAddInvoiceModal() {
+            const modal = document.getElementById('invoice-modal');
+            const invoiceForm = document.getElementById('invoice-form');
+            
+            // Reset form
+            if (invoiceForm) {
+                invoiceForm.reset();
+                // Clear any existing invoice items
+                const itemsContainer = document.getElementById('invoice-items');
+                if (itemsContainer) {
+                    itemsContainer.innerHTML = '';
+                }
+                // Add first empty row
+                addNewInvoiceItem();
+            }
+            
+            // Show the modal
+            if (modal) modal.style.display = 'flex';
+        }
+        
+        // Add new invoice item row
+        function addNewInvoiceItem() {
+            const itemsContainer = document.getElementById('invoice-items');
+            if (!itemsContainer) return;
+            
+            const row = document.createElement('div');
+            row.className = 'invoice-item-row';
+            row.innerHTML = `
+                <select class="form-control" name="productId" required>
+                    <option value="">اختر المنتج</option>
+                    ${window.products.map(p => `<option value="${p.id}">${p.name} - ${p.price} ر.س</option>`).join('')}
+                </select>
+                <input type="number" class="form-control" name="quantity" placeholder="الكمية" min="1" value="1" required>
+                <input type="number" class="form-control" name="price" placeholder="السعر" step="0.01" min="0" required>
+                <button type="button" class="btn btn-danger remove-item">حذف</button>
+            `;
+            
+            // Add remove item functionality
+            const removeBtn = row.querySelector('.remove-item');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', function() {
+                    if (itemsContainer.children.length > 1) {
+                        row.remove();
+                        calculateInvoiceTotal();
+                    }
+                });
+            }
+            
+            // Add change event for product selection to auto-fill price
+            const productSelect = row.querySelector('select[name="productId"]');
+            if (productSelect) {
+                productSelect.addEventListener('change', function() {
+                    const productId = this.value;
+                    const product = window.products.find(p => p.id === productId);
+                    if (product) {
+                        const priceInput = row.querySelector('input[name="price"]');
+                        if (priceInput) priceInput.value = product.price;
+                        calculateInvoiceTotal();
+                    }
+                });
+            }
+            
+            // Add input events for quantity and price to update total
+            const quantityInput = row.querySelector('input[name="quantity"]');
+            const priceInput = row.querySelector('input[name="price"]');
+            
+            if (quantityInput) {
+                quantityInput.addEventListener('input', calculateInvoiceTotal);
+            }
+            if (priceInput) {
+                priceInput.addEventListener('input', calculateInvoiceTotal);
+            }
+            
+            itemsContainer.appendChild(row);
+            calculateInvoiceTotal();
+        }
+        
+        // Calculate invoice total
+        function calculateInvoiceTotal() {
+            const rows = document.querySelectorAll('.invoice-item-row');
+            let total = 0;
+            
+            rows.forEach(row => {
+                const quantity = parseFloat(row.querySelector('input[name="quantity"]')?.value) || 0;
+                const price = parseFloat(row.querySelector('input[name="price"]')?.value) || 0;
+                total += quantity * price;
+            });
+            
+            const totalElement = document.getElementById('invoice-total');
+            if (totalElement) {
+                totalElement.textContent = total.toFixed(2);
+            }
+        }
+        
+        // Save product
+        function saveProduct() {
+            const form = document.getElementById('product-form');
+            if (!form) return;
+            
+            const formData = new FormData(form);
+            const productId = formData.get('product-id');
+            const productData = {
+                id: formData.get('id') || `prod-${Date.now()}`,
+                name: formData.get('name'),
+                price: parseFloat(formData.get('price')),
+                quantity: parseInt(formData.get('quantity'), 10)
+            };
+            
+            // Validate
+            if (!productData.name || isNaN(productData.price) || isNaN(productData.quantity)) {
+                showToast('الرجاء ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
+            
+            // Add or update product
+            const existingIndex = window.products.findIndex(p => p.id === productData.id);
+            if (existingIndex >= 0) {
+                // Update existing
+                window.products[existingIndex] = productData;
+                showToast('تم تحديث المنتج بنجاح', 'success');
+            } else {
+                // Add new
+                window.products.push(productData);
+                showToast('تمت إضافة المنتج بنجاح', 'success');
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('products', JSON.stringify(window.products));
+            
+            // Update UI
+            renderProductsTable(window.products);
+            
+            // Close modal
+            const modal = document.getElementById('product-modal');
+            if (modal) modal.style.display = 'none';
+        }
+        
+        // Save invoice
+        function saveInvoice() {
+            const form = document.getElementById('invoice-form');
+            if (!form) return;
+            
+            const formData = new FormData(form);
+            const invoiceItems = [];
+            let total = 0;
+            
+            // Collect items
+            document.querySelectorAll('.invoice-item-row').forEach(row => {
+                const productId = row.querySelector('select[name="productId"]')?.value;
+                const quantity = parseInt(row.querySelector('input[name="quantity"]')?.value, 10);
+                const price = parseFloat(row.querySelector('input[name="price"]')?.value);
+                
+                if (productId && !isNaN(quantity) && !isNaN(price) && quantity > 0 && price > 0) {
+                    invoiceItems.push({
+                        productId,
+                        quantity,
+                        price
+                    });
+                    total += quantity * price;
+                }
+            });
+            
+            // Validate
+            if (invoiceItems.length === 0) {
+                showToast('الرجاء إضافة منتجات للفاتورة', 'error');
+                return;
+            }
+            
+            // Create invoice
+            const invoiceData = {
+                id: `INV-${Date.now()}`,
+                customer: formData.get('customer') || 'عميل نقدي',
+                date: new Date().toISOString().split('T')[0],
+                items: invoiceItems,
+                status: 'pending',
+                total: total
+            };
+            
+            // Add to invoices
+            window.invoices.unshift(invoiceData);
+            
+            // Update stock
+            invoiceItems.forEach(item => {
+                const product = window.products.find(p => p.id === item.productId);
+                if (product) {
+                    product.quantity -= item.quantity;
+                    if (product.quantity < 0) product.quantity = 0; // Prevent negative stock
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('invoices', JSON.stringify(window.invoices));
+            localStorage.setItem('products', JSON.stringify(window.products));
+            
+            // Update UI
+            renderInvoicesTable(window.invoices);
+            renderProductsTable(window.products);
+            
+            // Show success message
+            showToast('تم حفظ الفاتورة بنجاح', 'success');
+            
+            // Close modal
+            const modal = document.getElementById('invoice-modal');
+            if (modal) modal.style.display = 'none';
+        }
+        
+        // Filter products
+        function filterProducts() {
+            const searchTerm = document.getElementById('product-search')?.value.toLowerCase() || '';
+            const filtered = window.products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.id.toLowerCase().includes(searchTerm)
+            );
+            renderProductsTable(filtered);
+        }
+        
+        // Filter invoices
+        function filterInvoices() {
+            const searchTerm = document.getElementById('invoice-search')?.value.toLowerCase() || '';
+            const filtered = window.invoices.filter(invoice => 
+                invoice.id.toLowerCase().includes(searchTerm) ||
+                (invoice.customer && invoice.customer.toLowerCase().includes(searchTerm))
+            );
+            renderInvoicesTable(filtered);
+        }
+        
+        // Set up all event listeners for the application
+        function setupEventListeners() {
+            // Add event listeners for modals
+            const addProductBtn = document.getElementById('add-product-btn');
+            const addInvoiceBtn = document.getElementById('add-invoice-btn');
+            const closeModalBtn = document.getElementById('close-modal');
+            const closeInvoiceModalBtn = document.getElementById('close-invoice-modal');
+            const addInvoiceItemBtn = document.getElementById('add-invoice-item');
+            const saveProductBtn = document.getElementById('save-product');
+            const saveInvoiceBtn = document.getElementById('save-invoice');
+            const productSearch = document.getElementById('product-search');
+            const invoiceSearch = document.getElementById('invoice-search');
+            
+            if (addProductBtn) addProductBtn.addEventListener('click', openAddProductModal);
+            if (addInvoiceBtn) addInvoiceBtn.addEventListener('click', openAddInvoiceModal);
+            
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', () => {
+                    document.getElementById('product-modal').style.display = 'none';
+                });
+            }
+            
+            if (closeInvoiceModalBtn) {
+                closeInvoiceModalBtn.addEventListener('click', () => {
+                    document.getElementById('invoice-modal').style.display = 'none';
+                });
+            }
+            
+            if (addInvoiceItemBtn) addInvoiceItemBtn.addEventListener('click', addNewInvoiceItem);
+            if (saveProductBtn) saveProductBtn.addEventListener('click', saveProduct);
+            if (saveInvoiceBtn) saveInvoiceBtn.addEventListener('click', saveInvoice);
+            if (productSearch) productSearch.addEventListener('input', filterProducts);
+            if (invoiceSearch) invoiceSearch.addEventListener('input', filterInvoices);
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-overlay')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        }
+        
+        // Render latest products in dashboard
+        function renderLatestProducts() {
+            const products = JSON.parse(localStorage.getItem('products')) || allProducts;
+            const tbody = document.getElementById('latest-products-table-body');
+            
+            if (!tbody) return;
+            
+            // Sort products by ID in descending order to get the latest ones
+            const sortedProducts = [...products].sort((a, b) => {
+                // Extract numeric part of the ID for comparison
+                const numA = parseInt(a.id.replace(/\\D/g, '')) || 0;
+                const numB = parseInt(b.id.replace(/\\D/g, '')) || 0;
+                return numB - numA;
+            }).slice(0, 5); // Get top 5 latest products
+            
+            // Clear existing rows
+            tbody.innerHTML = '';
+            
+            // Add product rows
+            sortedProducts.forEach((product, index) => {
+                // Determine product status
+                let statusClass, statusText;
+                if (product.quantity === 0) {
+                    statusClass = 'status-danger';
+                    statusText = 'منتهي';
+                } else if (product.quantity <= 10) {
+                    statusClass = 'status-warning';
+                    statusText = 'كمية منخفضة';
+                } else {
+                    statusClass = 'status-success';
+                    statusText = 'متوفر';
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.price.toFixed(2)}</td>
+                    <td class="${product.quantity === 0 ? 'no-stock' : (product.quantity <= 10 ? 'low-stock' : '')}">
+                        ${product.quantity}
+                    </td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="action-btn edit" data-id="${product.id}" title="تعديل">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete" data-id="${product.id}" title="حذف">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+                
+                // Add event listeners for the action buttons
+                row.querySelector('.action-btn.edit').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    editProduct(product.id);
+                });
+                
+                row.querySelector('.action-btn.delete').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    confirmDelete(product.id);
+                });
+>>>>>>> backup-master
             });
         }
         
         // Initialize tables and data when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
+<<<<<<< HEAD
             productsTableBody = document.getElementById('products-table-body');
             invoicesTableBody = document.getElementById('invoices-table-body');
             
@@ -1747,13 +2659,59 @@
                 window.invoices = [];
             }
             
+=======
+            // Initialize data from localStorage or use sample data from assets.js
+            if (localStorage.getItem('products')) {
+                // Render latest products in dashboard
+                renderLatestProducts();
+                window.products = JSON.parse(localStorage.getItem('products'));
+            } else if (typeof allProducts !== 'undefined') {
+                window.products = [...allProducts];
+                localStorage.setItem('products', JSON.stringify(window.products));
+            } else {
+                window.products = [];
+            }
+            
+            if (localStorage.getItem('invoices')) {
+                window.invoices = JSON.parse(localStorage.getItem('invoices'));
+            } else if (typeof invoices !== 'undefined') {
+                window.invoices = [...invoices];
+                localStorage.setItem('invoices', JSON.stringify(window.invoices));
+            } else {
+                window.invoices = [];
+            }
+            
+            // Initialize table body references
+            productsTableBody = document.getElementById('products-table-body');
+            
+>>>>>>> backup-master
             // Set initial page display
             const initialPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard-page';
             showPage(initialPage);
             
+<<<<<<< HEAD
             // Update URL when navigating
             menuItems.forEach(item => {
                 item.addEventListener('click', () => {
+=======
+            // Render initial tables
+            renderProductsTable(window.products);
+            renderInvoicesTable(window.invoices, 'invoices-table-body');
+            renderRecentInvoices();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            console.log('System initialized with:', {
+                products: window.products.length,
+                invoices: window.invoices.length
+            });
+            
+            // Update URL when navigating
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+>>>>>>> backup-master
                     if (item.dataset.page) {
                         window.location.hash = item.dataset.page;
                     }
@@ -1826,7 +2784,10 @@
             const productForm = document.getElementById('product-form');
             const productsTableBody = document.getElementById('products-table-body');
             const productSearch = document.getElementById('product-search');
+<<<<<<< HEAD
             const categoryFilter = document.getElementById('category-filter');
+=======
+>>>>>>> backup-master
             const statusFilter = document.getElementById('status-filter');
             const confirmDeleteBtn = document.getElementById('confirm-delete');
             const cancelDeleteBtn = document.getElementById('cancel-delete');
@@ -1865,8 +2826,65 @@
                 }
             });
             
+<<<<<<< HEAD
             // عرض جدول المنتجات
             function renderProductsTable(productsList) {
+=======
+            // متغيرات الترقيم الصفحات (استخدام المتغيرات العامة)
+            window.currentPage = window.currentPage || 1;
+            window.itemsPerPage = 10;
+            
+            // دالة إنشاء أزرار الترقيم
+            function setupPagination(items, wrapper, rowsPerPage, currentPage) {
+                wrapper.innerHTML = '';
+                
+                const pageCount = Math.ceil(items.length / rowsPerPage);
+                
+                if (pageCount <= 1) return;
+                
+                // زر الصفحة السابقة
+                const prevButton = document.createElement('button');
+                prevButton.innerHTML = '&laquo;';
+                prevButton.disabled = currentPage === 1;
+                prevButton.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        window.currentPage--;
+                        renderProductsTable(items);
+                    }
+                });
+                wrapper.appendChild(prevButton);
+                
+                // أزرار الأرقام
+                for (let i = 1; i <= pageCount; i++) {
+                    const button = document.createElement('button');
+                    button.innerText = i;
+                    if (i === window.currentPage) {
+                        button.classList.add('active');
+                    }
+                    button.addEventListener('click', () => {
+                        currentPage = i;
+                        renderProductsTable(items);
+                    });
+                    wrapper.appendChild(button);
+                }
+                
+                // زر الصفحة التالية
+                const nextButton = document.createElement('button');
+                nextButton.innerHTML = '&raquo;';
+                nextButton.disabled = window.currentPage === pageCount;
+                nextButton.addEventListener('click', () => {
+                    if (window.currentPage < pageCount) {
+                        window.currentPage++;
+                        renderProductsTable(items);
+                    }
+                });
+                wrapper.appendChild(nextButton);
+            }
+            
+            // عرض جدول المنتجات
+            function renderProductsTable(productsList) {
+                const productsTableBody = document.getElementById('products-table-body');
+>>>>>>> backup-master
                 productsTableBody.innerHTML = '';
                 
                 if (productsList.length === 0) {
@@ -1879,11 +2897,30 @@
                             </td>
                         </tr>
                     `;
+<<<<<<< HEAD
                     return;
                 }
                 
                 productsList.forEach((product, index) => {
                     const row = document.createElement('tr');
+=======
+                    document.getElementById('products-pagination').innerHTML = '';
+                    return;
+                }
+                
+                // تطبيق الترقيم الصفحات
+                const startIndex = (window.currentPage - 1) * window.itemsPerPage;
+                const paginatedItems = productsList.slice(startIndex, startIndex + window.itemsPerPage);
+                
+                // إعداد الترقيم الصفحات
+                const paginationWrapper = document.getElementById('products-pagination');
+                setupPagination(productsList, paginationWrapper, window.itemsPerPage, window.currentPage);
+                
+                // عرض العناصر في الصفحة الحالية
+                paginatedItems.forEach((product, index) => {
+                    const row = document.createElement('tr');
+                    const actualIndex = startIndex + index + 1;
+>>>>>>> backup-master
                     
                     // تحديد حالة المخزون
                     let statusClass, statusText;
@@ -1899,9 +2936,14 @@
                     }
                     
                     row.innerHTML = `
+<<<<<<< HEAD
                         <td>${index + 1}</td>
                         <td>${product.name}</td>
                         <td>${product.category}</td>
+=======
+                        <td>${actualIndex}</td>
+                        <td>${product.name}</td>
+>>>>>>> backup-master
                         <td>${product.price.toFixed(2)} ج.م</td>
                         <td class="${product.quantity === 0 ? 'no-stock' : (product.quantity <= 10 ? 'low-stock' : '')}">
                             ${product.quantity}
@@ -1970,7 +3012,10 @@
                         <td>${invoice.total.toFixed(2)} ج.م</td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                         <td>
+<<<<<<< HEAD
                             <button class="action-btn"><i class="fas fa-eye"></i></button>
+=======
+>>>>>>> backup-master
                             <button class="action-btn"><i class="fas fa-print"></i></button>
                         </td>
                     `;
@@ -1984,7 +3029,10 @@
                 document.getElementById('modal-title').textContent = 'إضافة منتج جديد';
                 document.getElementById('product-id').value = '';
                 document.getElementById('product-name').value = '';
+<<<<<<< HEAD
                 document.getElementById('product-category').value = '';
+=======
+>>>>>>> backup-master
                 document.getElementById('product-price').value = '';
                 document.getElementById('product-quantity').value = '0';
                 document.getElementById('product-description').value = '';
@@ -1998,7 +3046,10 @@
                     document.getElementById('modal-title').textContent = 'تعديل المنتج';
                     document.getElementById('product-id').value = product.id;
                     document.getElementById('product-name').value = product.name;
+<<<<<<< HEAD
                     document.getElementById('product-category').value = product.category;
+=======
+>>>>>>> backup-master
                     document.getElementById('product-price').value = product.price;
                     document.getElementById('product-quantity').value = product.quantity;
                     document.getElementById('product-description').value = product.description || '';
@@ -2010,13 +3061,20 @@
             function saveProduct() {
                 const id = document.getElementById('product-id').value;
                 const name = document.getElementById('product-name').value;
+<<<<<<< HEAD
                 const category = document.getElementById('product-category').value;
+=======
+>>>>>>> backup-master
                 const price = parseFloat(document.getElementById('product-price').value);
                 const quantity = parseInt(document.getElementById('product-quantity').value);
                 const description = document.getElementById('product-description').value;
                 
                 // التحقق من صحة المدخلات
+<<<<<<< HEAD
                 if(!name || !category || isNaN(price) || isNaN(quantity)) {
+=======
+                if(!name || isNaN(price) || isNaN(quantity)) {
+>>>>>>> backup-master
                     showAlert('يرجى ملء جميع الحقول المطلوبة بشكل صحيح', 'danger');
                     return;
                 }
@@ -2028,7 +3086,10 @@
                         products[index] = { 
                             ...products[index], 
                             name, 
+<<<<<<< HEAD
                             category, 
+=======
+>>>>>>> backup-master
                             price, 
                             quantity, 
                             description 
@@ -2041,7 +3102,10 @@
                     products.push({
                         id: newId,
                         name,
+<<<<<<< HEAD
                         category,
+=======
+>>>>>>> backup-master
                         price,
                         quantity,
                         description
@@ -2228,7 +3292,10 @@
             // تصفية المنتجات
             function filterProducts() {
                 const searchTerm = productSearch.value.toLowerCase();
+<<<<<<< HEAD
                 const category = categoryFilter.value;
+=======
+>>>>>>> backup-master
                 const status = statusFilter.value;
                 
                 let filtered = [...products]; // العمل على نسخة من المنتجات الحالية
@@ -2237,6 +3304,7 @@
                 if(searchTerm) {
                     filtered = filtered.filter(p => 
                         p.name.toLowerCase().includes(searchTerm) || 
+<<<<<<< HEAD
                         (p.description && p.description.toLowerCase().includes(searchTerm)) ||
                         p.category.toLowerCase().includes(searchTerm)
                     );
@@ -2246,6 +3314,11 @@
                 if(category !== 'all') {
                     filtered = filtered.filter(p => p.category === category);
                 }
+=======
+                        (p.description && p.description.toLowerCase().includes(searchTerm))
+                    );
+                } 
+>>>>>>> backup-master
                 
                 // تطبيق تصفية حالة المخزون
                 if(status !== 'all') {
@@ -2356,7 +3429,10 @@
             addInvoiceItemBtn.addEventListener('click', addNewInvoiceItem);
             
             productSearch.addEventListener('input', filterProducts);
+<<<<<<< HEAD
             categoryFilter.addEventListener('change', filterProducts);
+=======
+>>>>>>> backup-master
             statusFilter.addEventListener('change', filterProducts);
             
             invoiceSearch.addEventListener('input', filterInvoices);
