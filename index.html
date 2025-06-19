@@ -29,6 +29,62 @@
             --text-light: #636e72;
         }
         
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 5px;
+            flex-wrap: wrap;
+            padding: 10px;
+        }
+        
+        .pagination button {
+            padding: 8px 15px;
+            margin: 0 3px;
+            border: 1px solid #e0e0e0;
+            background: #fff;
+            color: #333;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .pagination button:hover {
+            background: #f5f5f5;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .pagination button.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        @media (max-width: 768px) {
+            .pagination {
+                gap: 3px;
+            }
+            
+            .pagination button {
+                padding: 6px 10px;
+                min-width: 35px;
+                font-size: 13px;
+            }
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -1290,8 +1346,8 @@
                                         <!-- سيتم ملء هذا الجدول بالبيانات من JavaScript -->
                                     </tbody>
                                 </table>
-                                <div class="pagination" id="products-pagination">
-                                    <!-- سيتم إضافة أزرار الترقيم الصفحات هنا -->
+                                <div class="pagination">
+                                    <!-- سيتم إضافة أزرار الترقيم الصفحات هنا عبر JavaScript -->
                                 </div>
                             </div>
                         </div>
@@ -1592,6 +1648,30 @@
         // Global variables
         let dashboardPage, productsPage, invoicesPage, reportsPage, customersPage, suppliersPage, menuItems;
         let productsTableBody, invoicesTableBody, products;
+        
+        // Initialize pagination state
+        const paginationState = {
+            products: {
+                currentPage: 1,
+                itemsPerPage: 10
+            },
+            invoices: {
+                currentPage: 1,
+                itemsPerPage: 10
+            }
+        };
+        
+        // Get current pagination state based on active page
+        function getCurrentPaginationState() {
+            const activePage = document.querySelector('.page.active') || document.querySelector('.content-area > div:not(.page)');
+            if (!activePage) return paginationState.products;
+            
+            if (activePage.id === 'invoices-page') {
+                return paginationState.invoices;
+            } else {
+                return paginationState.products;
+            }
+        }
         
         // Initialize products from allProducts if not already set
         if (typeof window.products === 'undefined') {
@@ -2233,24 +2313,37 @@
         
         // Initialize tables and data when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+            console.log('allProducts from assets.js:', typeof allProducts !== 'undefined' ? allProducts : 'Not found');
+            
             // Initialize data from localStorage or use sample data from assets.js
             if (localStorage.getItem('products')) {
+                console.log('Loading products from localStorage');
                 // Render latest products in dashboard
                 renderLatestProducts();
                 window.products = JSON.parse(localStorage.getItem('products'));
             } else if (typeof allProducts !== 'undefined') {
+                console.log('Loading products from allProducts');
                 window.products = [...allProducts];
                 localStorage.setItem('products', JSON.stringify(window.products));
             } else {
+                console.warn('No products found in localStorage or allProducts');
                 window.products = [];
             }
             
-            if (localStorage.getItem('invoices')) {
-                window.invoices = JSON.parse(localStorage.getItem('invoices'));
-            } else if (typeof invoices !== 'undefined') {
-                window.invoices = [...invoices];
+            console.log('Loaded products:', window.products);
+            
+            // Always load from sampleInvoices to ensure we have all data
+            if (typeof sampleInvoices !== 'undefined') {
+                console.log('Loading invoices from sampleInvoices');
+                window.invoices = [...sampleInvoices];
                 localStorage.setItem('invoices', JSON.stringify(window.invoices));
+                console.log('Loaded and saved', window.invoices.length, 'invoices');
+            } else if (localStorage.getItem('invoices')) {
+                window.invoices = JSON.parse(localStorage.getItem('invoices'));
+                console.log('Loaded invoices from localStorage:', window.invoices.length);
             } else {
+                console.warn('No invoices data found');
                 window.invoices = [];
             }
             
@@ -2259,6 +2352,12 @@
             
             // Set initial page display
             const initialPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard-page';
+            // Reset pagination state when changing pages
+            if (initialPage === 'invoices-page') {
+                paginationState.invoices = { currentPage: 1 };
+            } else if (initialPage === 'products-page') {
+                paginationState.products = { currentPage: 1 };
+            }
             showPage(initialPage);
             
             // Render initial tables
@@ -2388,26 +2487,26 @@
                 }
             });
             
-            // متغيرات الترقيم الصفحات (استخدام المتغيرات العامة)
-            window.currentPage = window.currentPage || 1;
-            window.itemsPerPage = 10;
+            // Using global paginationState for products and invoices
             
             // دالة إنشاء أزرار الترقيم
-            function setupPagination(items, wrapper, rowsPerPage, currentPage) {
+            function setupPagination(items, wrapper, rowsPerPage, currentPage, onPageChange) {
                 wrapper.innerHTML = '';
                 
                 const pageCount = Math.ceil(items.length / rowsPerPage);
                 
                 if (pageCount <= 1) return;
                 
+                const paginationState = getCurrentPaginationState();
+                
                 // زر الصفحة السابقة
                 const prevButton = document.createElement('button');
                 prevButton.innerHTML = '&laquo;';
-                prevButton.disabled = currentPage === 1;
+                prevButton.disabled = paginationState.currentPage === 1;
                 prevButton.addEventListener('click', () => {
-                    if (currentPage > 1) {
-                        window.currentPage--;
-                        renderProductsTable(items);
+                    if (paginationState.currentPage > 1) {
+                        paginationState.currentPage--;
+                        onPageChange();
                     }
                 });
                 wrapper.appendChild(prevButton);
@@ -2416,12 +2515,12 @@
                 for (let i = 1; i <= pageCount; i++) {
                     const button = document.createElement('button');
                     button.innerText = i;
-                    if (i === window.currentPage) {
+                    if (i === paginationState.currentPage) {
                         button.classList.add('active');
                     }
                     button.addEventListener('click', () => {
-                        currentPage = i;
-                        renderProductsTable(items);
+                        paginationState.currentPage = i;
+                        onPageChange();
                     });
                     wrapper.appendChild(button);
                 }
@@ -2429,20 +2528,26 @@
                 // زر الصفحة التالية
                 const nextButton = document.createElement('button');
                 nextButton.innerHTML = '&raquo;';
-                nextButton.disabled = window.currentPage === pageCount;
+                nextButton.disabled = paginationState.currentPage === pageCount;
                 nextButton.addEventListener('click', () => {
-                    if (window.currentPage < pageCount) {
-                        window.currentPage++;
-                        renderProductsTable(items);
+                    if (paginationState.currentPage < pageCount) {
+                        paginationState.currentPage++;
+                        onPageChange();
                     }
                 });
                 wrapper.appendChild(nextButton);
             }
             
-            // عرض جدول المنتجات
+            // عرض جدول المنتجات مع الترقيم الصفحات
             function renderProductsTable(productsList) {
+                console.log('renderProductsTable called with:', productsList);
+                
                 const productsTableBody = document.getElementById('products-table-body');
+                const paginationWrapper = document.querySelector('#products-page .pagination');
+                const paginationState = getCurrentPaginationState();
+                
                 productsTableBody.innerHTML = '';
+                paginationWrapper.innerHTML = '';
                 
                 if (productsList.length === 0) {
                     productsTableBody.innerHTML = `
@@ -2454,19 +2559,32 @@
                             </td>
                         </tr>
                     `;
-                    document.getElementById('products-pagination').innerHTML = '';
                     return;
                 }
                 
-                // تطبيق الترقيم الصفحات
-                const startIndex = (window.currentPage - 1) * window.itemsPerPage;
-                const paginatedItems = productsList.slice(startIndex, startIndex + window.itemsPerPage);
-                
                 // إعداد الترقيم الصفحات
-                const paginationWrapper = document.getElementById('products-pagination');
-                setupPagination(productsList, paginationWrapper, window.itemsPerPage, window.currentPage);
+                const itemsPerPage = 10; // عدد العناصر في كل صفحة
                 
-                // عرض العناصر في الصفحة الحالية
+                // حساب عدد الصفحات
+                const pageCount = Math.ceil(productsList.length / itemsPerPage);
+                let currentPage = (paginationState.products && paginationState.products.currentPage) || 1;
+                
+                // التأكد من أن الصفحة الحالية ضمن النطاق الصحيح
+                if (currentPage < 1) currentPage = 1;
+                if (currentPage > pageCount) currentPage = pageCount;
+                
+                // حساب العناصر التي ستظهر في الصفحة الحالية
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, productsList.length);
+                const paginatedItems = productsList.slice(startIndex, endIndex);
+                
+                console.log(`Showing ${startIndex + 1}-${endIndex} of ${productsList.length} products (Page ${currentPage}/${pageCount})`);
+                
+                // تحديث حالة الترقيم
+                if (!paginationState.products) paginationState.products = {};
+                paginationState.products.currentPage = currentPage;
+                
+                // عرض المنتجات في الصفحة الحالية
                 paginatedItems.forEach((product, index) => {
                     const row = document.createElement('tr');
                     const actualIndex = startIndex + index + 1;
@@ -2505,6 +2623,49 @@
                     productsTableBody.appendChild(row);
                 });
                 
+                // إنشاء أزرار الترقيم
+                if (pageCount > 1) {
+                    paginationWrapper.style.display = 'flex';
+                    
+                    // زر الصفحة السابقة
+                    if (currentPage > 1) {
+                        const prevButton = document.createElement('button');
+                        prevButton.innerHTML = '&laquo;';
+                        prevButton.addEventListener('click', () => {
+                            paginationState.products.currentPage--;
+                            renderProductsTable(productsList);
+                        });
+                        paginationWrapper.appendChild(prevButton);
+                    }
+                    
+                    // أزرار أرقام الصفحات
+                    for (let i = 1; i <= pageCount; i++) {
+                        const pageButton = document.createElement('button');
+                        pageButton.textContent = i;
+                        if (i === currentPage) {
+                            pageButton.classList.add('active');
+                        }
+                        pageButton.addEventListener('click', () => {
+                            paginationState.products.currentPage = i;
+                            renderProductsTable(productsList);
+                        });
+                        paginationWrapper.appendChild(pageButton);
+                    }
+                    
+                    // زر الصفحة التالية
+                    if (currentPage < pageCount) {
+                        const nextButton = document.createElement('button');
+                        nextButton.innerHTML = '&raquo;';
+                        nextButton.addEventListener('click', () => {
+                            paginationState.products.currentPage++;
+                            renderProductsTable(productsList);
+                        });
+                        paginationWrapper.appendChild(nextButton);
+                    }
+                } else {
+                    paginationWrapper.style.display = 'none';
+                }
+                
                 // إضافة معالجات الأحداث للأزرار
                 document.querySelectorAll('.action-btn.edit').forEach(btn => {
                     btn.addEventListener('click', () => editProduct(btn.dataset.id));
@@ -2515,9 +2676,14 @@
                 });
             }
             
-            // عرض جدول الفواتير
+            // عرض جدول الفواتير مع الترقيم الصفحات
             function renderInvoicesTable(invoicesList) {
+                const invoicesTableBody = document.getElementById('invoices-table-body');
+                const paginationWrapper = document.querySelector('#invoices-page .pagination');
+                const paginationState = getCurrentPaginationState();
+                
                 invoicesTableBody.innerHTML = '';
+                paginationWrapper.innerHTML = '';
                 
                 if (invoicesList.length === 0) {
                     invoicesTableBody.innerHTML = `
@@ -2532,7 +2698,26 @@
                     return;
                 }
                 
-                invoicesList.forEach(invoice => {
+                // إعداد الترقيم الصفحات
+                const itemsPerPage = 10; // عدد العناصر في كل صفحة
+                
+                // حساب عدد الصفحات
+                const pageCount = Math.ceil(invoicesList.length / itemsPerPage);
+                let currentPage = paginationState.currentPage || 1;
+                
+                // التأكد من أن الصفحة الحالية ضمن النطاق الصحيح
+                if (currentPage < 1) currentPage = 1;
+                if (currentPage > pageCount) currentPage = pageCount;
+                
+                // حساب العناصر التي ستظهر في الصفحة الحالية
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, invoicesList.length);
+                const paginatedInvoices = invoicesList.slice(startIndex, endIndex);
+                
+                console.log(`Showing ${startIndex + 1}-${endIndex} of ${invoicesList.length} invoices (Page ${currentPage}/${pageCount})`);
+                
+                // عرض الفواتير في الصفحة الحالية
+                paginatedInvoices.forEach(invoice => {
                     const row = document.createElement('tr');
                     
                     // تحديد حالة الفاتورة
@@ -2561,6 +2746,49 @@
                     
                     invoicesTableBody.appendChild(row);
                 });
+                
+                // إنشاء أزرار الترقيم
+                if (pageCount > 1) {
+                    paginationWrapper.style.display = 'flex';
+                    
+                    // زر الصفحة السابقة
+                    if (currentPage > 1) {
+                        const prevButton = document.createElement('button');
+                        prevButton.innerHTML = '&laquo;';
+                        prevButton.addEventListener('click', () => {
+                            paginationState.currentPage--;
+                            renderInvoicesTable(invoicesList);
+                        });
+                        paginationWrapper.appendChild(prevButton);
+                    }
+                    
+                    // أزرار أرقام الصفحات
+                    for (let i = 1; i <= pageCount; i++) {
+                        const pageButton = document.createElement('button');
+                        pageButton.textContent = i;
+                        if (i === currentPage) {
+                            pageButton.classList.add('active');
+                        }
+                        pageButton.addEventListener('click', () => {
+                            paginationState.currentPage = i;
+                            renderInvoicesTable(invoicesList);
+                        });
+                        paginationWrapper.appendChild(pageButton);
+                    }
+                    
+                    // زر الصفحة التالية
+                    if (currentPage < pageCount) {
+                        const nextButton = document.createElement('button');
+                        nextButton.innerHTML = '&raquo;';
+                        nextButton.addEventListener('click', () => {
+                            paginationState.currentPage++;
+                            renderInvoicesTable(invoicesList);
+                        });
+                        paginationWrapper.appendChild(nextButton);
+                    }
+                } else {
+                    paginationWrapper.style.display = 'none';
+                }
             }
             
             // فتح نموذج إضافة منتج

@@ -128,6 +128,17 @@ const sampleInvoices = [
         total: 2710
     },
     {
+        id: "INV-2023-0125",
+        customer: "محمد أحمد",
+        date: "2023-08-15",
+        items: [
+            { productId: "a2", quantity: 2, price: 590 },
+            { productId: "a20", quantity: 5, price: 98 }
+        ],
+        status: "paid",
+        total: 1680
+    },
+    {
         id: "INV-2023-0124",
         customer: "شركة النور",
         date: "2023-08-14",
@@ -171,8 +182,123 @@ const sampleInvoices = [
         ],
         status: "pending",
         total: 925
+    },
+    {
+        id: "INV-2023-0120",
+        customer: "محمد أحمد",
+        date: "2023-08-10",
+        items: [
+            { productId: "a3", quantity: 2, price: 750 },
+            { productId: "a11", quantity: 15, price: 45 }
+        ],
+        status: "paid",
+        total: 2175
+    },
+    {
+        id: "INV-2023-0119",
+        customer: "شركة النور للمقاولات",
+        date: "2023-08-09",
+        items: [
+            { productId: "a1", quantity: 5, price: 575 },
+            { productId: "a4", quantity: 5, price: 580 }
+        ],
+        status: "paid",
+        total: 5775
+    },
+    {
+        id: "INV-2023-0118",
+        customer: "أحمد علي",
+        date: "2023-08-08",
+        items: [
+            { productId: "a22", quantity: 50, price: 12 },
+            { productId: "a31", quantity: 30, price: 9 }
+        ],
+        status: "pending",
+        total: 870
+    },
+    {
+        id: "INV-2023-0117",
+        customer: "مؤسسة المدينة المنورة",
+        date: "2023-08-07",
+        items: [
+            { productId: "a3", quantity: 4, price: 750 },
+            { productId: "a20", quantity: 8, price: 98 },
+            { productId: "a79", quantity: 150, price: 0.85 }
+        ],
+        status: "paid",
+        total: 4467.5
+    },
+    {
+        id: "INV-2023-0116",
+        customer: "سارة محمود",
+        date: "2023-08-06",
+        items: [
+            { productId: "a2", quantity: 2, price: 590 },
+            { productId: "a11", quantity: 12, price: 45 },
+            { productId: "a35", quantity: 15, price: 14 }
+        ],
+        status: "paid",
+        total: 2170
+    },
+    {
+        id: "INV-2023-0115",
+        customer: "محمد أحمد",
+        date: "2023-08-05",
+        items: [
+            { productId: "a1", quantity: 3, price: 575 },
+            { productId: "a4", quantity: 3, price: 580 }
+        ],
+        status: "paid",
+        total: 3465
+    },
+    {
+        id: "INV-2023-0114",
+        customer: "شركة النور للمقاولات",
+        date: "2023-08-04",
+        items: [
+            { productId: "a5", quantity: 1, price: 755 },
+            { productId: "a10", quantity: 8, price: 75 }
+        ],
+        status: "paid",
+        total: 1355
+    },
+    {
+        id: "INV-2023-0113",
+        customer: "أحمد علي",
+        date: "2023-08-03",
+        items: [
+            { productId: "a79", quantity: 300, price: 0.85 },
+            { productId: "a42", quantity: 200, price: 2.50 }
+        ],
+        status: "pending",
+        total: 1055
+    },
+    {
+        id: "INV-2023-0112",
+        customer: "مؤسسة المدينة المنورة",
+        date: "2023-08-02",
+        items: [
+            { productId: "a3", quantity: 2, price: 750 },
+            { productId: "a11", quantity: 20, price: 45 }
+        ],
+        status: "paid",
+        total: 2400
+    },
+    {
+        id: "INV-2023-0111",
+        customer: "سارة محمود",
+        date: "2023-08-01",
+        items: [
+            { productId: "a1", quantity: 4, price: 575 },
+            { productId: "a4", quantity: 4, price: 580 }
+        ],
+        status: "paid",
+        total: 4620
     }
 ];
+
+// Make sampleInvoices globally available
+window.sampleInvoices = sampleInvoices;
 
 // Initialize data when the script loads
 (function() {
