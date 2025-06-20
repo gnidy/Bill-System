@@ -952,10 +952,6 @@
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span>الفواتير</span>
                 </div>
-                <div class="menu-item" data-page="reports-page">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>التقارير</span>
-                </div>
                 <div class="menu-item" data-page="customers-page">
                     <i class="fas fa-users"></i>
                     <span>العملاء</span>
@@ -1285,6 +1281,8 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Reports Page Removed -->
             </div>
         </div>
     </div>
@@ -1626,6 +1624,9 @@
         </div>
     </div>
 
+    <!-- Add Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets.js"></script>
     <script>
         // Main Application Class
         class InventorySystem {
@@ -1944,7 +1945,7 @@
                     }
                 });
                 
-                // Update tables if needed
+                // Update content based on the page
                 switch(pageId) {
                     case 'products-page':
                         this.renderProductsTable();
@@ -1958,6 +1959,20 @@
                     case 'suppliers-page':
                         console.log('Rendering suppliers table...');
                         this.renderSuppliersTable();
+                        break;
+                    case 'reports-page':
+                        console.log('Initializing reports page...');
+                        // Make sure the reports page is visible
+                        const reportsPage = document.getElementById('reports-page');
+                        if (reportsPage) {
+                            reportsPage.style.display = 'block';
+                            // Call the updateReportsPage function if it exists
+                            if (typeof window.updateReportsPage === 'function') {
+                                window.updateReportsPage();
+                            } else {
+                                console.error('updateReportsPage function not found');
+                            }
+                        }
                         break;
                     case 'dashboard-page':
                         this.updateDashboard();
@@ -3145,10 +3160,57 @@
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             window.inventorySystem = new InventorySystem();
+            
+            // Initialize reports page if it's the active page on load
+            const reportsPage = document.getElementById('reports-page');
+            if (reportsPage && window.getComputedStyle(reportsPage).display !== 'none') {
+                console.log('Reports page is active, initializing...');
+                window.updateReportsPage();
+            }
         });
     </script>
     
     <!-- Load sample data -->
     <script src="assets.js"></script>
+    
+    <!-- Main application script -->
+    <script>
+        // Set up event listeners when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM fully loaded, initializing application...');
+            
+            // Set up click handler for all menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const pageId = e.currentTarget.getAttribute('data-page');
+                    console.log('Menu item clicked:', pageId);
+                    
+                    // Hide all pages
+                    document.querySelectorAll('[id$="-page"]').forEach(page => {
+                        page.style.display = 'none';
+                    });
+                    
+                    // Show selected page
+                    const selectedPage = document.getElementById(pageId);
+                    if (selectedPage) {
+                        selectedPage.style.display = 'block';
+                    }
+                    
+                    // Update active menu item
+                    document.querySelectorAll('.menu-item').forEach(menuItem => {
+                        menuItem.classList.remove('active');
+                    });
+                    e.currentTarget.classList.add('active');
+                });
+            });
+            
+            // Show the dashboard by default
+            const defaultPage = document.getElementById('dashboard-page');
+            if (defaultPage) {
+                defaultPage.style.display = 'block';
+                document.querySelector('.menu-item[data-page="dashboard-page"]')?.classList.add('active');
+            }
+        });
+    </script>
 </body>
 </html>
