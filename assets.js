@@ -259,6 +259,20 @@ window.sampleInvoices = [
     }
 ];
 
+// Sample suppliers data
+window.sampleSuppliers = [
+    { id: 'sup-1', name: 'شركة مواد البناء الحديثة', phone: '01123456789' },
+    { id: 'sup-2', name: 'مؤسسة النور للمواد الكهربائية', phone: '01234567890' },
+    { id: 'sup-3', name: 'شركة المصنع العربي للحديد', phone: '01098765432' },
+    { id: 'sup-4', name: 'مؤسسة الأصيل للأدوات الصحية', phone: '0155554433' },
+    { id: 'sup-5', name: 'شركة النصر للألوان والدهانات', phone: '01112223334' },
+    { id: 'sup-6', name: 'شركة الأمانة للمواد الكهربائية', phone: '01223334455' },
+    { id: 'sup-7', name: 'مؤسسة النهضة للمواد الإنشائية', phone: '01004445556' },
+    { id: 'sup-8', name: 'شركة التقوى للأدوات المنزلية', phone: '01116667778' },
+    { id: 'sup-9', name: 'مؤسسة الرشاد للأدوات الصحية', phone: '01228889990' },
+    { id: 'sup-10', name: 'شركة النيل للمواد العازلة', phone: '01001112223' }
+];
+
 // Sample customers data
 window.sampleCustomers = [
     { id: 'cust-1', name: 'محمد أحمد', phone: '0123456789', balance: 1500.00 },

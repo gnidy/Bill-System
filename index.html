@@ -831,6 +831,18 @@
             }
         }
         
+        /* Search Box Hover & Focus Styles */
+        .search-input:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+            background-color: #fff !important;
+        }
+        
+        .search-input:hover {
+            border-color: #9ca3af;
+            background-color: #fff !important;
+        }
+        
         @media (max-width: 768px) {
             .content-area {
                 padding: 15px;
@@ -1231,20 +1243,44 @@
                 
                 <!-- Suppliers Page -->
                 <div id="suppliers-page" style="display: none;">
-                    <div class="content-header">
-                        <h2>إدارة الموردين</h2>
-                        <div>
-                            <button class="btn btn-primary" id="add-supplier-btn">
-                                <i class="fas fa-plus"></i> إضافة مورد
+                    <div class="content-header" style="align-items: center;">
+                        <h2 style="margin: 0;">إدارة الموردين</h2>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <div class="search-box" style="position: relative; margin: 0;">
+                                <i class="fas fa-search" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
+                                <input type="text" id="supplier-search" class="search-input" placeholder="ابحث عن مورد..." 
+                                    style="padding: 10px 40px 10px 15px; border: 1px solid #e0e0e0; border-radius: 8px; 
+                                    width: 300px; font-size: 14px; transition: all 0.3s ease;
+                                    background-color: #f8f9fa; outline: none;
+                                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                                    height: 42px;
+                                    border-color: #d1d5db;">
+                            </div>
+                            <button class="btn btn-primary" id="add-supplier-btn" 
+                                style="white-space: nowrap; padding: 10px 20px; font-weight: 500;">
+                                <i class="fas fa-plus"></i> إضافة مورد جديد
                             </button>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
-                            <div class="empty-state">
-                                <i class="fas fa-truck"></i>
-                                <h3>إدارة الموردين</h3>
-                                <p>سيتم إضافة إدارة الموردين هنا قريباً</p>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>اسم المورد</th>
+                                            <th>رقم الهاتف</th>
+                                            <th>الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="suppliers-table-body">
+                                        <!-- Suppliers will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination" id="suppliers-pagination">
+                                <!-- Pagination will be added here by JavaScript -->
                             </div>
                         </div>
                     </div>
@@ -1327,6 +1363,36 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" id="cancel-customer-modal">إلغاء</button>
                 <button type="button" class="btn btn-success" id="save-customer">حفظ العميل</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Supplier Modal -->
+    <div class="modal-overlay" id="supplier-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="supplier-modal-title">إضافة مورد جديد</h3>
+                <button class="close-btn" id="close-supplier-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="supplier-form">
+                    <input type="hidden" id="supplier-id">
+                    <div class="form-group">
+                        <label for="supplier-name">اسم المورد *</label>
+                        <input type="text" id="supplier-name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="supplier-phone">رقم الهاتف *</label>
+                        <input type="tel" id="supplier-phone" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-supplier-modal">إلغاء</button>
+                <button type="button" class="btn btn-success" id="save-supplier">حفظ المورد</button>
             </div>
         </div>
     </div>
@@ -1571,7 +1637,8 @@
                 this.currentPage = {
                     products: 1,
                     invoices: 1,
-                    customers: 1
+                    customers: 1,
+                    suppliers: 1
                 };
                 this.itemsPerPage = 10;
                 this.currentDeleteId = null;
@@ -1605,6 +1672,7 @@
                     products: document.getElementById('products-table-body'),
                     invoices: document.getElementById('invoices-table-body'),
                     customers: document.getElementById('customers-table-body'),
+                    suppliers: document.getElementById('suppliers-table-body'),
                     invoiceItems: document.getElementById('invoice-items-body')
                 };
                 
@@ -1612,14 +1680,16 @@
                 this.pagination = {
                     products: document.getElementById('products-pagination'),
                     invoices: document.getElementById('invoices-pagination'),
-                    customers: document.getElementById('customers-pagination')
+                    customers: document.getElementById('customers-pagination'),
+                    suppliers: document.getElementById('suppliers-pagination')
                 };
                 
                 // Search and filter inputs
                 this.searchInputs = {
                     global: document.getElementById('global-search'),
                     products: document.getElementById('product-search'),
-                    invoices: document.getElementById('invoice-search')
+                    invoices: document.getElementById('invoice-search'),
+                    suppliers: document.getElementById('supplier-search')
                 };
                 
                 this.filterSelects = {
@@ -1630,7 +1700,7 @@
                 // Buttons
                 this.buttons = {
                     addProduct: document.getElementById('add-product-btn'),
-                    addInvoice: document.getElementById('add-invoice-btn'),
+                    // We'll handle the addInvoice buttons separately in the event listeners
                     addCustomer: document.getElementById('add-customer-btn'),
                     addSupplier: document.getElementById('add-supplier-btn'),
                     addInvoiceItem: document.getElementById('add-invoice-item'),
@@ -1638,14 +1708,18 @@
                     saveInvoice: document.getElementById('save-invoice'),
                     printInvoice: document.getElementById('print-invoice'),
                     saveCustomer: document.getElementById('save-customer'),
+                    saveSupplier: document.getElementById('save-supplier'),
                     cancelDelete: document.getElementById('cancel-delete'),
-                    confirmDelete: document.getElementById('confirm-delete')
+                    confirmDelete: document.getElementById('confirm-delete'),
+                    cancelCustomer: document.getElementById('cancel-customer-modal'),
+                    cancelSupplier: document.getElementById('cancel-supplier-modal')
                 };
                 
                 // Modals
                 this.modals = {
                     product: document.getElementById('product-modal'),
                     customer: document.getElementById('customer-modal'),
+                    supplier: document.getElementById('supplier-modal'),
                     invoice: document.getElementById('invoice-modal'),
                     delete: document.getElementById('delete-modal')
                 };
@@ -1683,6 +1757,11 @@
                         balance: document.getElementById('customer-balance'),
                         address: document.getElementById('customer-address'),
                         date: document.getElementById('customer-date')
+                    },
+                    supplier: {
+                        id: document.getElementById('supplier-id'),
+                        name: document.getElementById('supplier-name'),
+                        phone: document.getElementById('supplier-phone')
                     },
                     invoice: {
                         id: document.getElementById('invoice-id'),
@@ -1723,7 +1802,12 @@
                     this.customers = savedCustomers ? JSON.parse(savedCustomers) : 
                         (typeof sampleCustomers !== 'undefined' ? [...sampleCustomers] : []);
                     
-                    // Save initial data if not exists
+                    // Load suppliers
+                    const savedSuppliers = localStorage.getItem('suppliers');
+                    this.suppliers = savedSuppliers ? JSON.parse(savedSuppliers) : 
+                        (window.sampleSuppliers ? [...window.sampleSuppliers] : []);
+                    
+                    // Save sample data to localStorage if it doesn't exist
                     if (!savedProducts && this.products.length > 0) {
                         localStorage.setItem('products', JSON.stringify(this.products));
                     }
@@ -1733,12 +1817,18 @@
                     if (!savedCustomers && this.customers.length > 0) {
                         localStorage.setItem('customers', JSON.stringify(this.customers));
                     }
+                    if (!savedSuppliers && this.suppliers.length > 0) {
+                        localStorage.setItem('suppliers', JSON.stringify(this.suppliers));
+                    }
+                    
+                    console.log('Loaded suppliers:', this.suppliers);
                 } catch (error) {
                     console.error('Error loading data:', error);
                     // Initialize empty arrays if there's an error
                     this.products = this.products || [];
                     this.invoices = this.invoices || [];
                     this.customers = this.customers || [];
+                    this.suppliers = this.suppliers || [];
                 }
             }
             
@@ -1746,6 +1836,7 @@
                 localStorage.setItem('products', JSON.stringify(this.products));
                 localStorage.setItem('invoices', JSON.stringify(this.invoices));
                 localStorage.setItem('customers', JSON.stringify(this.customers));
+                localStorage.setItem('suppliers', JSON.stringify(this.suppliers));
             }
             
             setupEventListeners() {
@@ -1768,26 +1859,49 @@
                 
                 // Add buttons
                 this.buttons.addProduct.addEventListener('click', () => this.openProductModal());
-                this.buttons.addInvoice.addEventListener('click', () => this.openInvoiceModal());
                 this.buttons.addCustomer.addEventListener('click', () => this.openCustomerModal());
+                this.buttons.addSupplier.addEventListener('click', () => this.openSupplierModal());
                 this.buttons.addInvoiceItem.addEventListener('click', () => this.addInvoiceItem());
                 
+                // Function to handle invoice button click
+                function handleInvoiceButtonClick(e) {
+                    e.preventDefault();
+                    console.log('Add invoice button clicked');
+                    this.openModal('invoice');
+                }
+                
+                // Add click event to all buttons that contain "إضافة فاتورة" text
+                const allButtons = document.getElementsByTagName('button');
+                Array.from(allButtons).forEach(button => {
+                    if (button.textContent.includes('إضافة فاتورة')) {
+                        console.log('Found invoice button:', button);
+                        button.addEventListener('click', handleInvoiceButtonClick.bind(this));
+                    }
+                });
+                
                 // Save buttons
-                this.buttons.saveProduct.addEventListener('click', () => this.saveProduct());
-                this.buttons.saveInvoice.addEventListener('click', () => this.saveInvoice());
-                this.buttons.saveCustomer.addEventListener('click', () => this.saveCustomer());
+                if (this.buttons.saveProduct) this.buttons.saveProduct.addEventListener('click', () => this.saveProduct());
+                if (this.buttons.saveInvoice) this.buttons.saveInvoice.addEventListener('click', () => this.saveInvoice());
+                if (this.buttons.saveCustomer) this.buttons.saveCustomer.addEventListener('click', () => this.saveCustomer());
+                if (this.buttons.saveSupplier) this.buttons.saveSupplier.addEventListener('click', () => this.saveSupplier());
+                
+                // Cancel buttons
+                if (this.buttons.cancelCustomer) this.buttons.cancelCustomer.addEventListener('click', () => this.closeModal('customer'));
+                if (this.buttons.cancelSupplier) this.buttons.cancelSupplier.addEventListener('click', () => this.closeModal('supplier'));
                 
                 // Delete confirmation
-                this.buttons.cancelDelete.addEventListener('click', () => this.closeModal('delete'));
-                this.buttons.confirmDelete.addEventListener('click', () => this.confirmDelete());
+                if (this.buttons.cancelDelete) this.buttons.cancelDelete.addEventListener('click', () => this.closeModal('delete'));
+                if (this.buttons.confirmDelete) this.buttons.confirmDelete.addEventListener('click', () => this.confirmDelete());
                 
                 // Modal close buttons
-                this.modalCloseButtons.product.addEventListener('click', () => this.closeModal('product'));
-                this.modalCloseButtons.customer.addEventListener('click', () => this.closeModal('customer'));
-                this.modalCloseButtons.invoice.addEventListener('click', () => this.closeModal('invoice'));
-                this.modalCloseButtons.cancelProduct.addEventListener('click', () => this.closeModal('product'));
-                this.modalCloseButtons.cancelCustomer.addEventListener('click', () => this.closeModal('customer'));
-                this.modalCloseButtons.cancelInvoice.addEventListener('click', () => this.closeModal('invoice'));
+                if (this.modalCloseButtons.product) this.modalCloseButtons.product.addEventListener('click', () => this.closeModal('product'));
+                if (this.modalCloseButtons.customer) this.modalCloseButtons.customer.addEventListener('click', () => this.closeModal('customer'));
+                if (this.modalCloseButtons.supplier) this.modalCloseButtons.supplier.addEventListener('click', () => this.closeModal('supplier'));
+                if (this.modalCloseButtons.invoice) this.modalCloseButtons.invoice.addEventListener('click', () => this.closeModal('invoice'));
+                if (this.modalCloseButtons.cancelProduct) this.modalCloseButtons.cancelProduct.addEventListener('click', () => this.closeModal('product'));
+                if (this.modalCloseButtons.cancelCustomer) this.modalCloseButtons.cancelCustomer.addEventListener('click', () => this.closeModal('customer'));
+                if (this.modalCloseButtons.cancelSupplier) this.modalCloseButtons.cancelSupplier.addEventListener('click', () => this.closeModal('supplier'));
+                if (this.modalCloseButtons.cancelInvoice) this.modalCloseButtons.cancelInvoice.addEventListener('click', () => this.closeModal('invoice'));
                 
                 // Close modals when clicking outside
                 Object.values(this.modals).forEach(modal => {
@@ -1799,16 +1913,18 @@
                 });
                 
                 // Search and filter events
-                this.searchInputs.products.addEventListener('input', () => this.filterProducts());
-                this.searchInputs.invoices.addEventListener('input', () => this.filterInvoices());
-                this.filterSelects.products.addEventListener('change', () => this.filterProducts());
-                this.filterSelects.invoices.addEventListener('change', () => this.filterInvoices());
+                if (this.searchInputs.products) this.searchInputs.products.addEventListener('input', () => this.filterProducts());
+                if (this.searchInputs.invoices) this.searchInputs.invoices.addEventListener('input', () => this.filterInvoices());
+                if (this.searchInputs.suppliers) this.searchInputs.suppliers.addEventListener('input', () => this.filterSuppliers());
+                if (this.filterSelects.products) this.filterSelects.products.addEventListener('change', () => this.filterProducts());
+                if (this.filterSelects.invoices) this.filterSelects.invoices.addEventListener('change', () => this.filterInvoices());
                 
                 // Initialize print button
-                this.buttons.printInvoice.addEventListener('click', () => this.printInvoice());
+                if (this.buttons.printInvoice) this.buttons.printInvoice.addEventListener('click', () => this.printInvoice());
             }
             
             showPage(pageId) {
+                console.log('Showing page:', pageId);
                 // Hide all pages
                 Object.values(this.pages).forEach(page => {
                     if (page) page.style.display = 'none';
@@ -1839,6 +1955,10 @@
                     case 'customers-page':
                         this.renderCustomersTable();
                         break;
+                    case 'suppliers-page':
+                        console.log('Rendering suppliers table...');
+                        this.renderSuppliersTable();
+                        break;
                     case 'dashboard-page':
                         this.updateDashboard();
                         break;
@@ -1853,11 +1973,11 @@
                     const item = this[`get${modalType.charAt(0).toUpperCase() + modalType.slice(1)}`](id);
                     if (item) {
                         this.fillForm(modalType, item);
-                        document.getElementById(`${modalType}-modal-title`).textContent = `تعديل ${modalType === 'product' ? 'منتج' : modalType === 'customer' ? 'عميل' : 'فاتورة'}`;
+                        document.getElementById(`${modalType}-modal-title`).textContent = `تعديل ${modalType === 'product' ? 'منتج' : modalType === 'customer' ? 'عميل' : modalType === 'supplier' ? 'مورد' : 'فاتورة'}`;
                     }
                 } else {
                     // Adding new item
-                    document.getElementById(`${modalType}-modal-title`).textContent = `إضافة ${modalType === 'product' ? 'منتج جديد' : modalType === 'customer' ? 'عميل جديد' : 'فاتورة جديدة'}`;
+                    document.getElementById(`${modalType}-modal-title`).textContent = `إضافة ${modalType === 'product' ? 'منتج جديد' : modalType === 'customer' ? 'عميل جديد' : modalType === 'supplier' ? 'مورد جديد' : 'فاتورة جديدة'}`;
                     
                     // Set default values for new items
                     if (modalType === 'invoice') {
@@ -1908,53 +2028,36 @@
             
             openCustomerModal(id = null) {
                 this.openModal('customer', id);
-            }
-            
-            openInvoiceModal(id = null) {
-                this.openModal('invoice', id);
-                
-                // Populate customer dropdown
-                this.formFields.invoice.customer.innerHTML = '<option value="">اختر العميل</option>';
-                this.customers.forEach(customer => {
-                    const option = document.createElement('option');
-                    option.value = customer.id;
-                    option.textContent = customer.name;
-                    this.formFields.invoice.customer.appendChild(option);
-                });
                 
                 if (id) {
-                    // Editing existing invoice
-                    const invoice = this.getInvoice(id);
-                    if (invoice) {
-                        this.formFields.invoice.customer.value = invoice.customerId || '';
-                        this.formFields.invoice.date.value = invoice.date || new Date().toISOString().split('T')[0];
-                        
-                        // Add invoice items
-                        invoice.items.forEach(item => {
-                            const row = this.addInvoiceItem();
-                            const productSelect = row.querySelector('.invoice-product');
-                            
-                            // Set product
-                            if (productSelect) {
-                                productSelect.value = item.productId;
-                                
-                                // Trigger change event to update price
-                                const event = new Event('change');
-                                productSelect.dispatchEvent(event);
-                            }
-                            
-                            // Set quantity and price
-                            const quantityInput = row.querySelector('.invoice-quantity');
-                            const priceInput = row.querySelector('.invoice-price');
-                            const discountInput = row.querySelector('.invoice-discount');
-                            
-                            if (quantityInput) quantityInput.value = item.quantity;
-                            if (priceInput) priceInput.value = item.price;
-                            if (discountInput) discountInput.value = item.discount || 0;
-                        });
-                        
-                        this.calculateInvoiceTotal();
+                    const customer = this.getCustomer(id);
+                    if (customer) {
+                        document.getElementById('customer-name').value = customer.name;
+                        document.getElementById('customer-phone').value = customer.phone;
+                        document.getElementById('customer-balance').value = customer.balance || 0;
+                        document.getElementById('customer-id').value = customer.id;
+                        document.getElementById('customer-modal-title').textContent = 'تعديل بيانات العميل';
                     }
+                } else {
+                    this.resetForm('customer');
+                    document.getElementById('customer-modal-title').textContent = 'إضافة عميل جديد';
+                }
+            }
+            
+            openSupplierModal(id = null) {
+                this.openModal('supplier', id);
+                
+                if (id) {
+                    const supplier = this.getSupplier(id);
+                    if (supplier) {
+                        document.getElementById('supplier-name').value = supplier.name;
+                        document.getElementById('supplier-phone').value = supplier.phone;
+                        document.getElementById('supplier-id').value = supplier.id;
+                        document.getElementById('supplier-modal-title').textContent = 'تعديل بيانات المورد';
+                    }
+                } else {
+                    this.resetForm('supplier');
+                    document.getElementById('supplier-modal-title').textContent = 'إضافة مورد جديد';
                 }
             }
             
@@ -2096,26 +2199,22 @@
                 const name = form.name.value.trim();
                 const phone = form.phone.value.trim();
                 const balance = parseFloat(form.balance.value) || 0;
+                const address = form.address ? form.address.value.trim() : '';
                 
-                // Validate inputs
                 if (!name || !phone) {
                     this.showAlert('الرجاء ملء جميع الحقول المطلوبة', 'danger');
                     return;
                 }
                 
-                const customerData = {
-                    id,
-                    name,
-                    phone,
-                    balance
-                };
+                const customerData = { id, name, phone, balance };
+                if (address) customerData.address = address;
                 
                 if (form.id.value) {
                     // Update existing customer
                     const index = this.customers.findIndex(c => c.id === id);
                     if (index !== -1) {
                         this.customers[index] = customerData;
-                        this.showAlert('تم تحديث العميل بنجاح', 'success');
+                        this.showAlert('تم تحديث بيانات العميل بنجاح', 'success');
                     }
                 } else {
                     // Add new customer
@@ -2126,6 +2225,41 @@
                 this.saveData();
                 this.closeModal('customer');
                 this.renderCustomersTable();
+            }
+            
+            saveSupplier() {
+                const form = this.formFields.supplier;
+                const id = form.id.value || `sup-${Date.now()}`;
+                const name = form.name.value.trim();
+                const phone = form.phone.value.trim();
+                
+                if (!name || !phone) {
+                    this.showAlert('الرجاء ملء جميع الحقول المطلوبة', 'danger');
+                    return;
+                }
+                
+                const supplierData = {
+                    id,
+                    name,
+                    phone
+                };
+                
+                if (form.id.value) {
+                    // Update existing supplier
+                    const index = this.suppliers.findIndex(s => s.id === id);
+                    if (index !== -1) {
+                        this.suppliers[index] = supplierData;
+                        this.showAlert('تم تحديث المورد بنجاح', 'success');
+                    }
+                } else {
+                    // Add new supplier
+                    this.suppliers.push(supplierData);
+                    this.showAlert('تم إضافة المورد بنجاح', 'success');
+                }
+                
+                this.saveData();
+                this.closeModal('supplier');
+                this.renderSuppliersTable();
             }
             
             printInvoice(invoiceId = null) {
@@ -2160,7 +2294,9 @@
                         customerName: customer.name,
                         date: invoice.date,
                         items: items,
-                        status: invoice.status || 'unpaid'  // Include payment status from the invoice
+                        subtotal: invoice.subtotal,
+                        tax: invoice.tax,
+                        total: invoice.total
                     };
                 } else {
                     // Print from invoice modal - get data from form
@@ -2185,16 +2321,15 @@
                         }
                     });
                     
-                    // Get payment status
-                    const paymentStatus = document.getElementById('invoice-status').value || 'unpaid';
-        
                     // Prepare invoice data
                     invoiceData = {
                         invoiceNumber: document.getElementById('invoice-id').value || 'جديد',
                         customerName: customerName,
                         date: document.getElementById('invoice-date').value || new Date().toISOString().split('T')[0],
                         items: items,
-                        status: paymentStatus
+                        subtotal: parseFloat(this.dashboardElements.invoiceSubtotal.textContent),
+                        tax: parseFloat(this.dashboardElements.invoiceTax.textContent),
+                        total: parseFloat(this.dashboardElements.invoiceTotal.textContent)
                     };
                 }
                 
@@ -2246,9 +2381,6 @@
                 const customer = this.getCustomer(customerId);
                 const customerName = customer ? customer.name : 'عميل نقدي';
                 
-                // Get payment status
-                const paymentStatus = document.getElementById('invoice-status').value;
-                
                 // Calculate totals
                 const subtotal = parseFloat(this.dashboardElements.invoiceSubtotal.textContent);
                 const tax = parseFloat(this.dashboardElements.invoiceTax.textContent);
@@ -2262,8 +2394,7 @@
                     items,
                     subtotal,
                     tax,
-                    total,
-                    status: paymentStatus
+                    total
                 };
                 
                 if (form.id.value) {
@@ -2297,23 +2428,20 @@
             }
             
             confirmDelete() {
-                if (!this.currentDeleteId || !this.currentDeleteType) return;
-                
-                switch(this.currentDeleteType) {
-                    case 'product':
+                if (this.currentDeleteId && this.currentDeleteType) {
+                    if (this.currentDeleteType === 'product') {
                         this.deleteProduct(this.currentDeleteId);
-                        break;
-                    case 'invoice':
+                    } else if (this.currentDeleteType === 'invoice') {
                         this.deleteInvoice(this.currentDeleteId);
-                        break;
-                    case 'customer':
+                    } else if (this.currentDeleteType === 'customer') {
                         this.deleteCustomer(this.currentDeleteId);
-                        break;
+                    } else if (this.currentDeleteType === 'supplier') {
+                        this.deleteSupplier(this.currentDeleteId);
+                    }
+                    this.closeModal('delete');
+                    this.currentDeleteId = null;
+                    this.currentDeleteType = null;
                 }
-                
-                this.closeModal('delete');
-                this.currentDeleteId = null;
-                this.currentDeleteType = null;
             }
             
             deleteProduct(id) {
@@ -2339,6 +2467,13 @@
                 this.renderCustomersTable();
             }
             
+            deleteSupplier(id) {
+                this.suppliers = this.suppliers.filter(s => s.id !== id);
+                this.saveData();
+                this.showAlert('تم حذف المورد بنجاح', 'success');
+                this.renderSuppliersTable();
+            }
+            
             showDeleteConfirmation(id, type, message) {
                 this.currentDeleteId = id;
                 this.currentDeleteType = type;
@@ -2355,7 +2490,11 @@
             }
             
             getCustomer(id) {
-                return this.customers.find(c => c.id === id);
+                return this.customers.find(customer => customer.id === id);
+            }
+            
+            getSupplier(id) {
+                return this.suppliers.find(supplier => supplier.id === id);
             }
             
             filterProducts() {
@@ -2388,24 +2527,36 @@
             
             filterInvoices() {
                 const searchTerm = this.searchInputs.invoices.value.toLowerCase();
-                const status = this.filterSelects.invoices.value;
+                const statusFilter = this.filterSelects.invoices.value;
                 
-                let filtered = [...this.invoices];
+                const filteredInvoices = this.invoices.filter(invoice => {
+                    const matchesSearch = 
+                        invoice.id.toLowerCase().includes(searchTerm) ||
+                        invoice.customer.toLowerCase().includes(searchTerm) ||
+                        invoice.date.includes(searchTerm);
+                        
+                    const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
+                    
+                    return matchesSearch && matchesStatus;
+                });
                 
-                // Apply search
-                if (searchTerm) {
-                    filtered = filtered.filter(i => 
-                        i.id.toLowerCase().includes(searchTerm) ||
-                        i.customer.toLowerCase().includes(searchTerm)
-                    );
+                this.renderInvoicesTable(filteredInvoices);
+            }
+            
+            filterSuppliers() {
+                const searchTerm = this.searchInputs.suppliers?.value?.toLowerCase() || '';
+                
+                if (!searchTerm) {
+                    this.renderSuppliersTable();
+                    return;
                 }
                 
-                // Apply status filter
-                if (status !== 'all') {
-                    filtered = filtered.filter(i => i.status === status);
-                }
+                const filteredSuppliers = this.suppliers.filter(supplier => 
+                    (supplier.name?.toLowerCase().includes(searchTerm) || false) ||
+                    (supplier.phone?.includes(searchTerm) || false)
+                );
                 
-                this.renderInvoicesTable(filtered);
+                this.renderSuppliersTable(filteredSuppliers);
             }
             
             renderProductsTable(productsList = this.products) {
@@ -2563,67 +2714,163 @@
             }
             
             renderCustomersTable() {
-                const startIndex = (this.currentPage.customers - 1) * this.itemsPerPage;
-                const endIndex = startIndex + this.itemsPerPage;
-                const paginatedCustomers = this.customers.slice(startIndex, endIndex);
+                const tbody = document.getElementById('customers-table-body');
+                if (!tbody) return;
                 
-                this.tables.customers.innerHTML = '';
+                tbody.innerHTML = '';
+                
+                const start = (this.currentPage.customers - 1) * this.itemsPerPage;
+                const end = start + this.itemsPerPage;
+                const paginatedCustomers = this.customers.slice(start, end);
                 
                 if (paginatedCustomers.length === 0) {
-                    this.tables.customers.innerHTML = `
+                    tbody.innerHTML = `
                         <tr>
-                            <td colspan="6" class="empty-state">
-                                <i class="fas fa-users"></i>
-                                <h3>لا يوجد عملاء مسجلين</h3>
-                                <p>استخدم زر "إضافة عميل جديد" لإضافة عملاء جدد</p>
+                            <td colspan="5" class="text-center py-4">
+                                <div class="empty-state">
+                                    <i class="fas fa-users"></i>
+                                    <h3>لا يوجد عملاء</h3>
+                                    <p>قم بإضافة عملاء جدد لعرضهم هنا</p>
+                                </div>
                             </td>
-                        </tr>
-                    `;
-                    this.pagination.customers.style.display = 'none';
+                        </tr>`;
                     return;
                 }
                 
                 paginatedCustomers.forEach((customer, index) => {
                     const row = document.createElement('tr');
-                    const actualIndex = startIndex + index + 1;
-                    
                     row.innerHTML = `
-                        <td>${actualIndex}</td>
+                        <td>${start + index + 1}</td>
                         <td>${customer.name}</td>
                         <td>${customer.phone}</td>
-                        <td class="${customer.balance > 0 ? 'text-success' : ''}">
-                            ${customer.balance ? customer.balance.toFixed(2) : '0.00'} ج.م
-                        </td>
-                        <td>
-                            <button class="btn-icon btn-edit" data-id="${customer.id}">
+                        <td>${customer.balance?.toFixed(2) || '0.00'} ج.م</td>
+                        <td class="actions">
+                            <button class="action-btn edit" data-id="${customer.id}">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn-icon btn-delete" data-id="${customer.id}">
+                            <button class="action-btn delete" data-id="${customer.id}">
                                 <i class="fas fa-trash"></i>
                             </button>
-                        </td>
-                    `;
-                    
-                    this.tables.customers.appendChild(row);
-                    
-                    // Add event listeners to buttons
-                    row.querySelector('.btn-edit').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.openCustomerModal(customer.id);
+                        </td>`;
+                    tbody.appendChild(row);
+                });
+                
+                // Add event listeners to action buttons
+                tbody.querySelectorAll('.edit').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        this.openCustomerModal(id);
                     });
-                    
-                    row.querySelector('.btn-delete').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.showDeleteConfirmation(
-                            customer.id, 
-                            'customer', 
-                            `هل أنت متأكد أنك تريد حذف العميل "${customer.name}"؟ لا يمكن التراجع عن هذا الإجراء.`
-                        );
+                });
+                
+                tbody.querySelectorAll('.delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        this.showDeleteConfirmation(id, 'customer', 'هل أنت متأكد أنك تريد حذف هذا العميل؟');
                     });
                 });
                 
                 // Render pagination
                 this.renderPagination('customers', this.customers.length);
+            }
+            
+            renderSuppliersTable(filteredSuppliers = null) {
+                console.log('renderSuppliersTable called with filteredSuppliers:', filteredSuppliers);
+                const tbody = document.getElementById('suppliers-table-body');
+                if (!tbody) {
+                    console.error('Suppliers table body not found!');
+                    return;
+                }
+                
+                tbody.innerHTML = '';
+                
+                const suppliersToDisplay = filteredSuppliers || this.suppliers;
+                console.log('Suppliers to display:', suppliersToDisplay);
+                
+                if (!suppliersToDisplay || !Array.isArray(suppliersToDisplay)) {
+                    console.error('Invalid suppliers data:', suppliersToDisplay);
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="text-center py-4">
+                                <div class="empty-state">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <h3>خطأ في تحميل بيانات الموردين</h3>
+                                    <p>الرجاء تحديث الصفحة وحاول مرة أخرى</p>
+                                </div>
+                            </td>
+                        </tr>`;
+                    return;
+                }
+                
+                const start = (this.currentPage.suppliers - 1) * this.itemsPerPage;
+                const end = start + this.itemsPerPage;
+                const paginatedSuppliers = suppliersToDisplay.slice(start, end);
+                
+                console.log('Paginated suppliers:', paginatedSuppliers);
+                
+                if (paginatedSuppliers.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="text-center py-4">
+                                <div class="empty-state">
+                                    <i class="fas fa-truck"></i>
+                                    <h3>${filteredSuppliers ? 'لا توجد نتائج' : 'لا يوجد موردين'}</h3>
+                                    <p>${filteredSuppliers ? 'لم يتم العثور على موردين بهذه المواصفات' : 'قم بإضافة موردين جدد لعرضهم هنا'}</p>
+                                </div>
+                            </td>
+                        </tr>`;
+                    return;
+                }
+                
+                paginatedSuppliers.forEach((supplier, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${start + index + 1}</td>
+                        <td>${supplier.name}</td>
+                        <td>${supplier.phone}</td>
+                        <td class="actions">
+                            <button class="action-btn edit" data-id="${supplier.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete" data-id="${supplier.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>`;
+                    tbody.appendChild(row);
+                });
+                
+                // Add event listeners to action buttons
+                tbody.querySelectorAll('.edit').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        this.openSupplierModal(id);
+                    });
+                });
+                
+                tbody.querySelectorAll('.delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        this.showDeleteConfirmation(id, 'supplier', 'هل أنت متأكد أنك تريد حذف هذا المورد؟');
+                    });
+                });
+                
+                // Add search functionality
+                const searchInput = document.getElementById('supplier-search');
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        const searchTerm = e.target.value.toLowerCase();
+                        const filtered = this.suppliers.filter(supplier => 
+                            supplier.name.toLowerCase().includes(searchTerm) ||
+                            supplier.phone.includes(searchTerm)
+                        );
+                        this.renderSuppliersTable(filtered);
+                    });
+                }
+                
+                // Render pagination if not filtered
+                if (!filteredSuppliers) {
+                    this.renderPagination('suppliers', this.suppliers.length);
+                }
             }
             
             renderPagination(type, totalItems) {
