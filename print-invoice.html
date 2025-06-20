@@ -182,14 +182,14 @@
             let total = 0;
             
             invoiceData.items.forEach(item => {
-                const itemTotal = item.price * item.quantity;
+                const itemTotal = item.balance * item.quantity;
                 total += itemTotal;
                 
                 itemsHtml += `
                     <tr>
                         <td>${item.productName}</td>
                         <td>${item.quantity}</td>
-                        <td>${item.price.toFixed(2)} ج.م</td>
+                        <td>${item.balance.toFixed(2)} ج.م</td>
                         <td>${itemTotal.toFixed(2)} ج.م</td>
                     </tr>
                 `;

@@ -1056,7 +1056,7 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>رقم الفاتورة</th>
+                                        <th>#</th>
                                         <th>العميل</th>
                                         <th>التاريخ</th>
                                         <th>المبلغ</th>
@@ -1161,7 +1161,6 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>رقم الفاتورة</th>
                                             <th>العميل</th>
                                             <th>التاريخ</th>
                                             <th>المبلغ</th>
@@ -1306,8 +1305,8 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="product-price">السعر (ج.م) *</label>
-                            <input type="number" id="product-price" class="form-control" min="0" step="0.01" required>
+                            <label for="product-balance">السعر (ج.م) *</label>
+                            <input type="number" id="product-balance" class="form-control" min="0" step="0.01" required>
                         </div>
                         
                         <div class="form-group">
@@ -1479,6 +1478,25 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>تأكيد الحذف</h3>
+                <button class="close-btn" id="close-delete-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="delete-message">هل أنت متأكد أنك تريد حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-delete-modal">إلغاء</button>
+                <button class="btn btn-danger" id="confirm-delete">حذف</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Print Styles -->
     <style id="print-styles" media="print">
         @page {
@@ -1610,16 +1628,18 @@
     <!-- Delete Confirmation Modal -->
     <div class="modal-overlay" id="delete-modal">
         <div class="modal">
-            <div class="confirmation-dialog">
-                <div class="modal-icon">
-                    <i class="fas fa-exclamation-circle" style="font-size: 48px; color: var(--danger);"></i>
-                </div>
+            <div class="modal-header">
                 <h3>تأكيد الحذف</h3>
+                <button class="close-btn" id="close-delete-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
                 <p id="delete-message">هل أنت متأكد أنك تريد حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.</p>
-                <div class="confirmation-buttons">
-                    <button class="btn btn-outline" id="cancel-delete">إلغاء</button>
-                    <button class="btn btn-danger" id="confirm-delete">نعم، احذف</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-delete">إلغاء</button>
+                <button class="btn btn-danger" id="confirm-delete">حذف</button>
             </div>
         </div>
     </div>
@@ -1730,6 +1750,7 @@
                     product: document.getElementById('close-product-modal'),
                     customer: document.getElementById('close-customer-modal'),
                     invoice: document.getElementById('close-invoice-modal'),
+                    delete: document.getElementById('close-delete-modal'),
                     cancelProduct: document.getElementById('cancel-product-modal'),
                     cancelCustomer: document.getElementById('cancel-customer-modal'),
                     cancelInvoice: document.getElementById('cancel-invoice-modal')
@@ -1747,7 +1768,7 @@
                     product: {
                         id: document.getElementById('product-id'),
                         name: document.getElementById('product-name'),
-                        price: document.getElementById('product-price'),
+                        balance: document.getElementById('product-balance'),
                         quantity: document.getElementById('product-quantity'),
                         description: document.getElementById('product-description')
                     },
@@ -1983,25 +2004,38 @@
             openModal(modalType, id = null) {
                 this.resetForm(modalType);
                 
-                if (id) {
-                    // Editing existing item
-                    const item = this[`get${modalType.charAt(0).toUpperCase() + modalType.slice(1)}`](id);
-                    if (item) {
-                        this.fillForm(modalType, item);
-                        document.getElementById(`${modalType}-modal-title`).textContent = `تعديل ${modalType === 'product' ? 'منتج' : modalType === 'customer' ? 'عميل' : modalType === 'supplier' ? 'مورد' : 'فاتورة'}`;
-                    }
-                } else {
-                    // Adding new item
-                    document.getElementById(`${modalType}-modal-title`).textContent = `إضافة ${modalType === 'product' ? 'منتج جديد' : modalType === 'customer' ? 'عميل جديد' : modalType === 'supplier' ? 'مورد جديد' : 'فاتورة جديدة'}`;
-                    
-                    // Set default values for new items
-                    if (modalType === 'invoice') {
-                        this.formFields.invoice.date.value = new Date().toISOString().split('T')[0];
-                        this.addInvoiceItem();
+                // Don't try to set title for delete modal as it's handled differently
+                if (modalType !== 'delete') {
+                    if (id) {
+                        // Editing existing item
+                        const item = this[`get${modalType.charAt(0).toUpperCase() + modalType.slice(1)}`](id);
+                        if (item) {
+                            this.fillForm(modalType, item);
+                            const titleElement = document.getElementById(`${modalType}-modal-title`);
+                            if (titleElement) {
+                                titleElement.textContent = `تعديل ${modalType === 'product' ? 'منتج' : modalType === 'customer' ? 'عميل' : modalType === 'supplier' ? 'مورد' : 'فاتورة'}`;
+                            }
+                        }
+                    } else {
+                        // Adding new item
+                        const titleElement = document.getElementById(`${modalType}-modal-title`);
+                        if (titleElement) {
+                            titleElement.textContent = `إضافة ${modalType === 'product' ? 'منتج جديد' : modalType === 'customer' ? 'عميل جديد' : modalType === 'supplier' ? 'مورد جديد' : 'فاتورة جديدة'}`;
+                        }
+                        
+                        // Set default values for new items
+                        if (modalType === 'invoice') {
+                            this.formFields.invoice.date.value = new Date().toISOString().split('T')[0];
+                            this.addInvoiceItem();
+                        }
                     }
                 }
                 
-                this.modals[modalType].classList.add('active');
+                if (this.modals[modalType]) {
+                    this.modals[modalType].classList.add('active');
+                } else {
+                    console.error(`Modal with type '${modalType}' not found`);
+                }
             }
             
             closeModal(modalType) {
@@ -2087,7 +2121,7 @@
                                 style="border: 1px solid #e0e0e0; border-radius: 4px; padding: 8px 12px; width: 100%;">
                             <option value="">اختر منتج</option>
                             ${this.products.map(p => 
-                                `<option value="${p.id}" data-price="${p.price}">${p.name} (${p.price.toFixed(2)} ج.م)</option>`
+                                `<option value="${p.id}" data-balance="${p.balance}">${p.name} (${p.balance.toFixed(2)} ج.م)</option>`
                             ).join('')}
                         </select>
                     </td>
@@ -2147,8 +2181,8 @@
                     
                     if (productSelect && productSelect.selectedIndex > 0) {
                         const selectedOption = productSelect.options[productSelect.selectedIndex];
-                        const price = selectedOption ? parseFloat(selectedOption.dataset.price) || 0 : 0;
-                        rowTotal = quantity * price;
+                        const balance = selectedOption ? parseFloat(selectedOption.dataset.balance) || 0 : 0;
+                        rowTotal = quantity * balance;
                     }
                     
                     // Update row total
@@ -2171,12 +2205,11 @@
                 const form = this.formFields.product;
                 const id = form.id.value || `prod-${Date.now()}`;
                 const name = form.name.value.trim();
-                const price = parseFloat(form.price.value);
+                const balance = parseFloat(form.balance.value);
                 const quantity = parseInt(form.quantity.value, 10);
-                const description = form.description.value.trim();
                 
                 // Validate inputs
-                if (!name || isNaN(price) || price < 0 || isNaN(quantity) || quantity < 0) {
+                if (!name || isNaN(balance) || balance < 0 || isNaN(quantity) || quantity < 0) {
                     this.showAlert('الرجاء ملء جميع الحقول المطلوبة بشكل صحيح', 'danger');
                     return;
                 }
@@ -2184,10 +2217,14 @@
                 const productData = {
                     id,
                     name,
-                    price,
-                    quantity,
-                    description
+                    balance,
+                    quantity
                 };
+                
+                // Add description if the field exists
+                if (form.description && form.description.value) {
+                    productData.description = form.description.value.trim();
+                }
                 
                 if (form.id.value) {
                     // Update existing product
@@ -2299,7 +2336,7 @@
                             items.push({
                                 productName: product.name,
                                 quantity: item.quantity,
-                                price: item.price
+                                balance: item.balance
                             });
                         }
                     });
@@ -2326,12 +2363,12 @@
                         if (productSelect && productSelect.selectedIndex > 0) {
                             const productName = productSelect.options[productSelect.selectedIndex].text.split('(')[0].trim();
                             const quantity = parseFloat(row.querySelector('.invoice-quantity').value) || 0;
-                            const price = parseFloat(productSelect.options[productSelect.selectedIndex].dataset.price) || 0;
+                            const balance = parseFloat(productSelect.options[productSelect.selectedIndex].dataset.balance) || 0;
                             
                             items.push({
                                 productName: productName,
                                 quantity: quantity,
-                                price: price
+                                balance: balance
                             });
                         }
                     });
@@ -2376,15 +2413,15 @@
                 document.querySelectorAll('.invoice-item-row').forEach(row => {
                     const productId = row.querySelector('.invoice-product').value;
                     const quantity = parseInt(row.querySelector('.invoice-quantity').value, 10);
-                    const price = parseFloat(row.querySelector('.invoice-price').value);
+                    const balance = parseFloat(row.querySelector('.invoice-balance').value);
                     const discount = parseFloat(row.querySelector('.invoice-discount').value) || 0;
                     
-                    if (!productId || isNaN(quantity) || quantity <= 0 || isNaN(price) || price < 0) {
+                    if (!productId || isNaN(quantity) || quantity <= 0 || isNaN(balance) || balance < 0) {
                         isValid = false;
                         return;
                     }
                     
-                    items.push({ productId, quantity, price, discount });
+                    items.push({ productId, quantity, balance, discount });
                 });
                 
                 if (!isValid || items.length === 0) {
@@ -2615,7 +2652,7 @@
                     row.innerHTML = `
                         <td>${actualIndex}</td>
                         <td>${product.name}</td>
-                        <td>${product.price.toFixed(2)}</td>
+                        <td>${product.balance.toFixed(2)}</td>
                         <td class="${product.quantity === 0 ? 'no-stock' : (product.quantity <= 10 ? 'low-stock' : '')}">
                             ${product.quantity}
                         </td>
@@ -2698,10 +2735,12 @@
                         statusText = 'غير مدفوعة';
                     }
                     
+                    // Get customer name, fallback to invoice.customer or 'عميل نقدي'
+                    const customer = this.getCustomer(invoice.customerId) || { name: invoice.customer || 'عميل نقدي' };
+                    
                     row.innerHTML = `
                         <td>${rowNumber}</td>
-                        <td>${invoice.id}</td>
-                        <td>${invoice.customer}</td>
+                        <td>${customer.name}</td>
                         <td>${invoice.date}</td>
                         <td>${invoice.total ? invoice.total.toFixed(2) : '0.00'} ج.م</td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
@@ -3032,7 +3071,7 @@
                 this.dashboardElements.lowStockCount.textContent = lowStockProducts.length;
                 
                 // Inventory value
-                const inventoryValue = this.products.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+                const inventoryValue = this.products.reduce((sum, p) => sum + (p.balance * p.quantity), 0);
                 this.dashboardElements.inventoryValue.textContent = inventoryValue.toLocaleString('ar-EG') + ' ج.م';
                 
                 // Latest products (5 most recently added)
@@ -3059,7 +3098,7 @@
                     
                     row.innerHTML = `
                         <td>${product.name}</td>
-                        <td>${product.price.toFixed(2)}</td>
+                        <td>${product.balance.toFixed(2)}</td>
                         <td class="${product.quantity === 0 ? 'no-stock' : (product.quantity <= 10 ? 'low-stock' : '')}">
                             ${product.quantity}
                         </td>
@@ -3086,8 +3125,9 @@
                     .slice(0, 5);
                 
                 this.tables.recentInvoices.innerHTML = '';
-                recentInvoices.forEach(invoice => {
+                recentInvoices.forEach((invoice, index) => {
                     const row = document.createElement('tr');
+                    const rowNumber = index + 1; // 1-based index
                     
                     // Determine invoice status
                     let statusClass, statusText;
@@ -3102,9 +3142,12 @@
                         statusText = 'غير مدفوعة';
                     }
                     
+                    // Get customer name, fallback to invoice.customer or 'عميل نقدي'
+                    const customer = this.getCustomer(invoice.customerId) || { name: invoice.customer || 'عميل نقدي' };
+                    
                     row.innerHTML = `
-                        <td>${invoice.id}</td>
-                        <td>${invoice.customer}</td>
+                        <td>${rowNumber}</td>
+                        <td>${customer.name}</td>
                         <td>${invoice.date}</td>
                         <td>${invoice.total.toFixed(2)} ج.م</td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>

@@ -3,46 +3,214 @@ window.InvoiceSystem = window.InvoiceSystem || {};
 
 // Sample products data
 window.allProducts = [
-    {id: "a1", name: "فيبر", price: 575, quantity: 33},
-    {id: "a2", name: "فيبر محمل", price: 590, quantity: 38},
-    {id: "a3", name: "كلادين", price: 750, quantity: 40},
-    {id: "a4", name: "U.V", price: 580, quantity: 24},
-    {id: "a5", name: "بروديوم", price: 755, quantity: 2},
-    {id: "a10", name: "استرتش ثقيل ١٠سم", price: 75, quantity: 13},
-    {id: "a11", name: "اكرة بلية صيني اسود", price: 45, quantity: 16},
-    {id: "a20", name: "انبوبة فوم", price: 98, quantity: 25},
-    {id: "a22", name: "بسكوتة خضراء", price: 12, quantity: 94},
-    {id: "a31", name: "بنطة ٥مم", price: 9, quantity: 27},
-    {id: "a35", name: "ترباس PS بلاستيك اسود", price: 14, quantity: 80},
-    {id: "a39", name: "ترولي ١٦سم GM", price: 575, quantity: 1},
-    {id: "a42", name: "ثلاثي ٢٫٥ ابيض SM", price: 2.50, quantity: 690},
-    {id: "a50", name: "ثلاثي ٢٫٥ بيج SM", price: 2.50, quantity: 1663},
-    {id: "a79", name: "دبل بجناح SM", price: 0.85, quantity: 9440},
-    {id: "a80", name: "كابلات كهرباء 2.5 مم", price: 15.75, quantity: 250},
-    {id: "a81", name: "مفتاح كهرباء 3 فتحات", price: 25.50, quantity: 180},
-    {id: "a82", name: "لمبة ليد 10 وات", price: 35.00, quantity: 320},
-    {id: "a83", name: "مفتاح ماء 1 بوصة", price: 18.25, quantity: 150},
-    {id: "a84", name: "مواسير مياه 3 بوصة", price: 120.00, quantity: 75},
-    {id: "a85", name: "صامولة ستانلس 10 مم", price: 2.75, quantity: 500},
-    {id: "a86", name: "براغي حديد 10 سم", price: 1.50, quantity: 800},
-    {id: "a87", name: "شريط لاصق عازل", price: 8.00, quantity: 420},
-    {id: "a88", name: "مفتاح ضغط هواء", price: 45.00, quantity: 90}
+    {id: "a1", name: "فيبر", balance: 575, quantity: 33},
+    {id: "a2", name: "فيبر محمل", balance: 590, quantity: 38},
+    {id: "a3", name: "كلادين", balance: 750, quantity: 40},
+    {id: "a4", name: "U.V", balance: 580, quantity: 24},
+    {id: "a5", name: "بروديوم", balance: 755, quantity: 2},
+    {id: "a10", name: "استرتش ثقيل ١٠سم", balance: 75, quantity: 13},
+    {id: "a11", name: "اكرة بلية صيني اسود", balance: 45, quantity: 16},
+    {id: "a20", name: "انبوبة فوم", balance: 98, quantity: 25},
+    {id: "a22", name: "بسكوتة خضراء", balance: 12, quantity: 94},
+    {id: "a31", name: "بنطة ٥مم", balance: 9, quantity: 27},
+    {id: "a35", name: "ترباس PS بلاستيك اسود", balance: 14, quantity: 80},
+    {id: "a39", name: "ترولي ١٦سم GM", balance: 575, quantity: 1},
+    {id: "a42", name: "ثلاثي ٢٫٥ ابيض SM", balance: 2.50, quantity: 690},
+    {id: "a50", name: "ثلاثي ٢٫٥ بيج SM", balance: 2.50, quantity: 1663},
+    {id: "a79", name: "دبل بجناح SM", balance: 0.85, quantity: 9440},
+    {id: "a80", name: "كابلات كهرباء 2.5 مم", balance: 15.75, quantity: 250},
+    {id: "a81", name: "مفتاح كهرباء 3 فتحات", balance: 25.50, quantity: 180},
+    {id: "a82", name: "لمبة ليد 10 وات", balance: 35.00, quantity: 320},
+    {id: "a83", name: "مفتاح ماء 1 بوصة", balance: 18.25, quantity: 150},
+    {id: "a84", name: "مواسير مياه 3 بوصة", balance: 120.00, quantity: 75},
+    {id: "a85", name: "صامولة ستانلس 10 مم", balance: 2.75, quantity: 500},
+    {id: "a86", name: "براغي حديد 10 سم", balance: 1.50, quantity: 800},
+    {id: "a87", name: "شريط لاصق عازل", balance: 8.00, quantity: 420},
+    {id: "a88", name: "مفتاح ضغط هواء", balance: 45.00, quantity: 90}
 ];
 
 
-// Sample customers data
+// Sample customers data with purchase history
 window.sampleCustomers = [
-    { id: 'cust-1', name: 'محمد أحمد', phone: '0123456789', balance: 1500.00 },
-    { id: 'cust-2', name: 'شركة النور للمقاولات', phone: '01001234567', balance: 3500.00 },
-    { id: 'cust-3', name: 'سارة محمود', phone: '01112233445', balance: 0.00 },
-    { id: 'cust-4', name: 'أحمد علي', phone: '01223344556', balance: 1250.00 },
-    { id: 'cust-5', name: 'مؤسسة المدينة المنورة', phone: '01004445566', balance: 5000.00 },
-    { id: 'cust-6', name: 'عمر خالد', phone: '01112223344', balance: 0.00 },
-    { id: 'cust-7', name: 'شركة الأهرام', phone: '0224445556', balance: 2500.00 },
-    { id: 'cust-8', name: 'وليد سعيد', phone: '01278889999', balance: 0.00 },
-    { id: 'cust-9', name: 'محمود حمدي', phone: '01006667788', balance: 1800.00 },
-    { id: 'cust-10', name: 'مطعم الكبابجي', phone: '0234567890', balance: 0.00 }
+    { 
+        id: 'cust-1', 
+        name: 'محمد أحمد', 
+        phone: '0123456789', 
+        balance: 1500.00,
+        purchases: [
+            { date: '2025-06-10',   items: [
+                { id: 'a20', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a22', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 5000.00, unpaid: 1128.00 },
+            { date: '2025-06-15', items: [
+                { id: 'a1', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a5', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 0.00, unpaid: 6128.00 },
+            { date: '2025-06-10', items: [
+                { id: 'a20', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a22', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 300.00, unpaid: 5828.00 },
+            { date: '2025-05-28', items: [
+                { id: 'a35', balance: 14, quantity: 10, subtotal: 140 },
+                { id: 'a39', balance: 575, quantity: 1, subtotal: 575 }
+            ], total: 715.00, paid: 715.00, unpaid: 0.00 }
+        ]
+    },
+    { 
+        id: 'cust-2', 
+        name: 'شركة النور للمقاولات', 
+        phone: '01001234567', 
+        balance: 3500.00,
+        purchases: [
+            { date: '2025-06-14', items: [
+                { id: 'a50', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a79', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 5000.00, unpaid: 1128.00 },
+            { date: '2025-06-01', items: [
+                { id: 'a82', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a83', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 1800.00, unpaid: 1800.00 }
+        ]
+    },
+    { 
+        id: 'cust-3', 
+        name: 'سارة محمود', 
+        phone: '01112233445', 
+        balance: 0.00,
+        purchases: [
+            { date: '2025-05-28', items: [
+                { id: 'a84', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a85', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            { date: '2025-05-15', items: [
+                { id: 'a86', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a87', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+        ]
+    },
+    { 
+        id: 'cust-4', 
+        name: 'أحمد علي', 
+        phone: '01223344556', 
+        balance: 1250.00,
+        purchases: [
+            { date: '2025-06-10', items: [
+                { id: 'a88', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a1', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            { date: '2025-05-25', items: [
+                { id: 'a3', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a4', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+        ]
+    },
+    { 
+        id: 'cust-5', 
+        name: 'مؤسسة المدينة المنورة', 
+        phone: '01004445566', 
+        balance: 5000.00,
+        purchases: [
+            { date: '2025-06-08', items: [
+                { id: 'a5', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a10', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            { date: '2025-05-20', items: [
+                { id: 'a22', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a31', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+        ]
+    },
+    { 
+        id: 'cust-6', 
+        name: 'عمر خالد', 
+        phone: '01112223344', 
+        balance: 0.00,
+        purchases: [
+            { date: '2025-05-20', items: [
+                { id: 'a35', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a39', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            { date: '2025-05-05', items: [
+                { id: 'a42', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a50', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+        ]
+    },
+    { 
+        id: 'cust-7', 
+        name: 'شركة الأهرام', 
+        phone: '0224445556', 
+        balance: 2500.00,
+        purchases: [
+            { date: '2025-06-05', items: [
+                { id: 'a79', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a80', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            { date: '2025-05-15', items: [
+                { id: 'a82', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a83', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+        ]
+    },
+    { 
+        id: 'cust-8', 
+        name: 'وليد سعيد', 
+        phone: '01278889999', 
+        balance: 0.00,
+        purchases: []
+    },
+    { 
+        id: 'cust-9', 
+        name: 'محمود حمدي', 
+        phone: '01006667788', 
+        balance: 1800.00,
+        purchases: [
+            { date: '2025-06-12', items: [
+                { id: 'a84', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a85', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            { date: '2025-05-25', items: [
+                { id: 'a86', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a87', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+        ]
+    },
+    { 
+        id: 'cust-10', 
+        name: 'مطعم الكبابجي', 
+        phone: '0234567890', 
+        balance: 0.00,
+        purchases: [
+            { date: '2025-05-15', items: [
+                { id: 'a1', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a2', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            { date: '2025-05-01', items: [
+                { id: 'a4', balance: 500, quantity: 10, subtotal: 5000 },
+                { id: 'a5', balance: 12, quantity: 94, subtotal: 1128 }
+            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+        ]
+    }
 ];
+
+// Function to get product details by ID
+function getProductDetails(productId) {
+    return window.allProducts.find(p => p.id === productId) || { name: 'منتج غير معروف', balance: 0 };
+}
+
+// Function to format purchase history for display
+function formatPurchaseHistory(customerId) {
+    const customer = window.sampleCustomers.find(c => c.id === customerId);
+    if (!customer) return [];
+    
+    return customer.purchases.map(purchase => ({
+        date: purchase.date,
+        items: purchase.items.map(id => getProductDetails(id).name).join('، '),
+        total: purchase.total.toFixed(2),
+        paid: purchase.paid.toFixed(2),
+        remaining: (purchase.total - purchase.paid).toFixed(2)
+    }));
+}
 
 // Helper function to generate random date within range
 function randomDate(start, end) {
@@ -60,22 +228,18 @@ if (typeof window.recentInvoices === 'undefined') {
     // Sample product IDs for invoices
     window.productIds = ['a1', 'a2', 'a3', 'a4', 'a5', 'a10', 'a11', 'a20', 'a22', 'a31', 'a35', 'a39', 
                         'a42', 'a50', 'a79', 'a80', 'a81', 'a82', 'a83', 'a84', 'a85', 'a86', 'a87', 'a88'];
-    window.customers = ['cust-1', 'cust-2', 'cust-3', 'cust-4', 'cust-5', 'cust-6', 'cust-7', 'cust-8'];
-    window.customerNames = {
-        'cust-1': 'محمد أحمد',
-        'cust-2': 'أحمد علي',
-        'cust-3': 'سارة محمد',
-        'cust-4': 'عبدالله خالد',
-        'cust-5': 'نورا سعد',
-        'cust-6': 'مؤسسة المدينة المنورة',
-        'cust-7': 'شركة التقنية المتطورة',
-        'cust-8': 'محل الأصيل للمواد'
-    };
+    
+    // For backward compatibility
+    window.customerNames = window.sampleCustomers.reduce((acc, customer) => {
+        acc[customer.id] = customer.name;
+        return acc;
+    }, {});
 
     // Generate 30 recent invoices
     for (let i = 0; i < 30; i++) {
-        const customerId = window.customers[Math.floor(Math.random() * window.customers.length)];
-        const customerName = window.customerNames[customerId];
+        const randomCustomer = window.sampleCustomers[Math.floor(Math.random() * window.sampleCustomers.length)];
+        const customerId = randomCustomer.id;
+        const customerName = randomCustomer.name;
         const date = randomDate(window.threeMonthsAgo, window.today);
         const itemCount = Math.floor(Math.random() * 3) + 1; // 1-3 items per invoice
         const items = [];
@@ -87,11 +251,11 @@ if (typeof window.recentInvoices === 'undefined') {
             const product = window.allProducts.find(p => p.id === productId);
             if (product) {
                 const quantity = Math.floor(Math.random() * 5) + 1; // 1-5 quantity
-                const itemTotal = product.price * quantity;
+                const itemTotal = product.balance * quantity;
                 items.push({
                     productId: product.id,
                     quantity: quantity,
-                    price: product.price
+                    balance: product.balance
                 });
                 total += itemTotal;
             }
