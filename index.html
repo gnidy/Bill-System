@@ -2442,15 +2442,44 @@
                         
                         console.log('Processing item:', item);
                         
-                        // Handle different item structures
-                        const productName = item.productName || item.name || item.product?.name || 'منتج غير معروف';
-                        const quantity = parseFloat(item.quantity) || 0;
-                        const balance = parseFloat(item.balance || item.price || item.product?.price || 0);
+                        // Try to find the product in the allProducts array first
+                        let productName = 'منتج غير معروف';
+                        let productPrice = 0;
                         
-                        console.log(`Item details - Name: ${productName}, Qty: ${quantity}, Price: ${balance}`);
+                        // First try to find by ID in allProducts
+                        const productId = item.id || item.productId;
+                        if (productId) {
+                            const product = window.allProducts.find(p => p.id === productId);
+                            if (product) {
+                                productName = product.name;
+                                productPrice = parseFloat(product.balance) || 0;
+                            }
+                        }
+                        
+                        // If still not found, try to find by name in allProducts
+                        if (productName === 'منتج غير معروف' && item.productName) {
+                            const product = window.allProducts.find(p => p.name === item.productName);
+                            if (product) {
+                                productName = product.name;
+                                productPrice = parseFloat(product.balance) || 0;
+                            }
+                        }
+                        
+                        // Fall back to item properties if product not found in allProducts
+                        if (productName === 'منتج غير معروف') {
+                            productName = item.productName || item.name || item.product?.name || 'منتج غير معروف';
+                            productPrice = parseFloat(item.balance || item.price || item.product?.price || 0);
+                        }
+                        
+                        const quantity = parseFloat(item.quantity) || 0;
+                        const balance = parseFloat(item.balance || item.price || productPrice || 0);
+                        
+                        console.log(`Item details - ID: ${item.id || 'N/A'}, Name: ${productName}, Qty: ${quantity}, Price: ${balance}`);
                         
                         if (productName || balance > 0) {
                             items.push({
+                                id: item.id,
+                                productId: item.productId,
                                 productName: productName,
                                 quantity: quantity,
                                 balance: balance,
