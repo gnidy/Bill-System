@@ -1218,8 +1218,11 @@
                     <div class="content-header">
                         <h2>إدارة المنتجات</h2>
                         <div>
-                            <button class="btn btn-primary" id="add-product-btn">
+                            <button class="btn btn-primary" id="add-product-btn" style="margin-left: 10px;">
                                 <i class="fas fa-plus"></i> إضافة منتج جديد
+                            </button>
+                            <button class="btn btn-outline" id="add-product-name-btn">
+                                <i class="fas fa-plus"></i> إضافة اسم منتج فقط
                             </button>
                         </div>
                     </div>
@@ -1438,9 +1441,28 @@
             <div class="modal-body">
                 <form id="product-form">
                     <input type="hidden" id="product-id">
+                    
+                    <!-- Product Name Section -->
                     <div class="form-group">
-                        <label for="product-name">اسم المنتج *</label>
-                        <input type="text" id="product-name" class="form-control" required>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label for="product-name">اسم المنتج *</label>
+                            <button type="button" id="toggle-product-input" class="btn btn-sm btn-link" style="padding: 0;">
+                                <i class="fas fa-plus"></i> <span id="toggle-text">إضافة منتج جديد</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Product Select (initially shown) -->
+                        <div id="product-select-container">
+                            <select id="product-name" class="form-control" required>
+                                <option value="">-- اختر المنتج --</option>
+                                <!-- Products will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <!-- Product Name Input (initially hidden) -->
+                        <div id="product-name-input-container" style="display: none; margin-top: 10px;">
+                            <input type="text" id="product-name-input" class="form-control" placeholder="اكتب اسم المنتج الجديد هنا">
+                        </div>
                     </div>
                     
                     <div class="form-row">
@@ -1451,7 +1473,7 @@
                         
                         <div class="form-group">
                             <label for="product-quantity">الكمية *</label>
-                            <input type="number" id="product-quantity" class="form-control" min="0" required>
+                            <input type="number" id="product-quantity" class="form-control" min="1" value="1" required>
                         </div>
                     </div>
                     
@@ -1462,13 +1484,13 @@
                             <!-- Suppliers will be populated by JavaScript -->
                         </select>
                     </div>
-                    
-                    <!-- Purchase History Section Removed -->
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline" id="cancel-product-modal">إلغاء</button>
-                <button type="button" class="btn btn-success" id="save-product">حفظ المنتج</button>
+                <button type="button" class="btn btn-outline" id="cancel-product-modal">إلغاء</button>
+                  <button type="button" class="btn btn-success" id="save-product">
+                    <i class="fas fa-save"></i> حفظ المنتج
+                </button>
             </div>
         </div>
     </div>
@@ -1487,10 +1509,13 @@
                     <input type="hidden" id="customer-id">
                     <div class="form-group">
                         <label for="customer-name">اسم العميل *</label>
-                        </div>
+                        <input type="text" id="customer-name" name="name" class="form-control" required>
                     </div>
                     
-
+                    <div class="form-group">
+                        <label for="customer-phone">رقم الهاتف *</label>
+                        <input type="tel" id="customer-phone" name="phone" class="form-control" dir="ltr" required>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -1925,6 +1950,62 @@
                 
                 // Add buttons
                 this.buttons.addProduct.addEventListener('click', () => this.openProductModal());
+                
+                // Add product name only button
+                const addProductNameBtn = document.getElementById('add-product-name-btn');
+                if (addProductNameBtn) {
+                    addProductNameBtn.addEventListener('click', () => {
+                        // Reset the form and open in add mode
+                        this.resetForm('product');
+                        this.openModal('product');
+                        
+                        // Get form elements
+                        const productSelect = document.getElementById('product-name');
+                        const productInput = document.getElementById('product-name-input');
+                        const productInputContainer = document.getElementById('product-name-input-container');
+                        const productSelectContainer = document.getElementById('product-select-container');
+                        
+                        if (productInput && productInputContainer && productSelect && productSelectContainer) {
+                            // Show input, hide select
+                            productSelectContainer.style.display = 'none';
+                            productInputContainer.style.display = 'block';
+                            
+                            // Update toggle button text
+                            const toggleText = document.getElementById('toggle-text');
+                            if (toggleText) {
+                                toggleText.textContent = 'اختيار من القائمة';
+                            }
+                            
+                            // Update required attributes
+                            productSelect.required = false;
+                            productInput.required = true;
+                            
+                            // Hide quantity and supplier fields, but show price
+                            const quantityField = document.getElementById('product-quantity')?.closest('.form-group');
+                            const supplierField = document.getElementById('product-supplier')?.closest('.form-group');
+                            const priceField = document.getElementById('product-balance')?.closest('.form-group');
+                            
+                            if (quantityField) quantityField.style.display = 'none';
+                            if (supplierField) supplierField.style.display = 'none';
+                            if (priceField) priceField.style.display = 'block';
+                            
+                            // Focus the input field
+                            productInput.focus();
+                        }
+                        
+                        // Set the modal title
+                        const titleElement = document.getElementById('product-modal-title');
+                        if (titleElement) {
+                            titleElement.textContent = 'إضافة اسم منتج جديد';
+                        }
+                        
+                        // Focus on the product name field
+                        if (productInput) {
+                            productInput.focus();
+                        }
+                    });
+                }
+                
                 this.buttons.addCustomer.addEventListener('click', () => this.openCustomerModal());
                 this.buttons.addSupplier.addEventListener('click', () => this.openSupplierModal());
                 this.buttons.addInvoiceItem.addEventListener('click', () => this.addInvoiceItem());
@@ -2159,40 +2240,172 @@
                         formFields[key].value = data[key] || '';
                     }
                 });
-                
-                // Set supplier for product if it exists
-                if (modalType === 'product' && data.supplierId) {
-                    const supplierSelect = document.getElementById('product-supplier');
-                    if (supplierSelect) {
-                        supplierSelect.value = data.supplierId;
-                    }
-                }
             }
             
             openProductModal(id = null) {
-                // Populate supplier dropdown
-                const supplierSelect = document.getElementById('product-supplier');
-                if (supplierSelect) {
-                    // Clear existing options except the first one
-                    supplierSelect.innerHTML = '<option value="">-- اختر المورد --</option>';
-                    
-                    // Add suppliers to the dropdown
-                    this.suppliers.forEach(supplier => {
-                        const option = document.createElement('option');
-                        option.value = supplier.id;
-                        option.textContent = supplier.name;
-                        supplierSelect.appendChild(option);
-                    });
-                }
-                
+                // Open the modal first
                 this.openModal('product', id);
                 
-                // If editing existing product, select the supplier
+                // Get references to form elements
+                const productSelect = document.getElementById('product-name');
+                const productInput = document.getElementById('product-name-input');
+                const productInputContainer = document.getElementById('product-name-input-container');
+                const productSelectContainer = document.getElementById('product-select-container');
+                const toggleButton = document.getElementById('toggle-product-input');
+                const toggleText = document.getElementById('toggle-text');
+                const priceInput = document.getElementById('product-balance');
+                const supplierSelect = document.getElementById('product-supplier');
+                
+                // Ensure we have all required elements
+                if (!productSelect || !productInput || !productInputContainer || !productSelectContainer || !toggleButton || !toggleText) {
+                    console.error('Required form elements not found');
+                    return;
+                }
+                
+                // Initialize form state
+                const initForm = () => {
+                    // Reset form state
+                    productInputContainer.style.display = 'none';
+                    productSelectContainer.style.display = 'block';
+                    toggleText.textContent = 'إضافة منتج جديد';
+                    productSelect.required = true;
+                    productInput.required = false;
+                    
+                    // Reset form values
+                    productSelect.selectedIndex = 0;
+                    productInput.value = '';
+                    if (priceInput) priceInput.value = '';
+                    
+                    const quantityInput = document.getElementById('product-quantity');
+                    if (quantityInput) quantityInput.value = '1';
+                    
+                    if (supplierSelect) supplierSelect.selectedIndex = 0;
+                    
+                    // Show/hide fields based on mode
+                    const quantityField = document.getElementById('product-quantity')?.closest('.form-group');
+                    const supplierField = document.getElementById('product-supplier')?.closest('.form-group');
+                    const priceField = document.getElementById('product-balance')?.closest('.form-group');
+                    
+                    if (quantityField) quantityField.style.display = 'block';
+                    if (supplierField) supplierField.style.display = 'block';
+                    if (priceField) priceField.style.display = 'block';
+                };
+                
+                // Initialize the form
+                initForm();
+                
+                // Toggle function
+                const toggleInputMode = (e) => {
+                    if (e) e.preventDefault();
+                    
+                    const isInputVisible = productInputContainer.style.display !== 'none';
+                    
+                    if (isInputVisible) {
+                        // Switch to select mode
+                        productInputContainer.style.display = 'none';
+                        productSelectContainer.style.display = 'block';
+                        productSelect.required = true;
+                        productInput.required = false;
+                        toggleText.textContent = 'إضافة منتج جديد';
+                        productSelect.focus();
+                        
+                        // Show quantity and supplier fields in select mode
+                        const quantityField = document.getElementById('product-quantity')?.closest('.form-group');
+                        const supplierField = document.getElementById('product-supplier')?.closest('.form-group');
+                        if (quantityField) quantityField.style.display = 'block';
+                        if (supplierField) supplierField.style.display = 'block';
+                    } else {
+                        // Switch to input mode
+                        productInputContainer.style.display = 'block';
+                        productSelectContainer.style.display = 'none';
+                        productSelect.required = false;
+                        productInput.required = true;
+                        toggleText.textContent = 'اختيار من القائمة';
+                        productInput.focus();
+                        
+                        // Hide quantity and supplier fields in input mode
+                        const quantityField = document.getElementById('product-quantity')?.closest('.form-group');
+                        const supplierField = document.getElementById('product-supplier')?.closest('.form-group');
+                        if (quantityField) quantityField.style.display = 'none';
+                        if (supplierField) supplierField.style.display = 'none';
+                    }
+                };
+                
+                // Set up toggle button
+                toggleButton.onclick = toggleInputMode;
+                
+                // Handle edit mode
                 if (id) {
                     const product = this.getProduct(id);
-                    if (product && product.supplierId && supplierSelect) {
-                        supplierSelect.value = product.supplierId;
+                    if (product) {
+                        document.getElementById('product-modal-title').textContent = 'تعديل المنتج';
+                        
+                        // Switch to input mode for editing
+                        productInputContainer.style.display = 'block';
+                        productSelectContainer.style.display = 'none';
+                        productInput.value = product.name || '';
+                        if (priceInput) priceInput.value = product.balance || '';
+                        
+                        const quantityInput = document.getElementById('product-quantity');
+                        if (quantityInput) quantityInput.value = product.quantity || 1;
+                        
+                        if (product.supplierId && supplierSelect) {
+                            supplierSelect.value = product.supplierId;
+                        }
+                        
+                        // Hide quantity and supplier fields in edit mode
+                        const quantityField = document.getElementById('product-quantity')?.closest('.form-group');
+                        const supplierField = document.getElementById('product-supplier')?.closest('.form-group');
+                        if (quantityField) quantityField.style.display = 'none';
+                        if (supplierField) supplierField.style.display = 'none';
+                        
+                        // Update toggle button state
+                        toggleText.textContent = 'اختيار من القائمة';
                     }
+                } else {
+                    // Add mode - populate product dropdown
+                    // Clear existing options except the first one
+                    while (productSelect.options.length > 1) {
+                        productSelect.remove(1);
+                    }
+                    
+                    // Add products to the dropdown, sorted by name
+                    const sortedProducts = [...this.products].sort((a, b) => a.name.localeCompare(b.name));
+                    sortedProducts.forEach(product => {
+                        const option = document.createElement('option');
+                        option.value = product.id;
+                        option.textContent = `${product.name} (${product.balance} ج.م)`;
+                        option.setAttribute('data-price', product.balance);
+                        productSelect.appendChild(option);
+                    });
+                    
+                    // Set up price update when product is selected
+                    productSelect.addEventListener('change', (e) => {
+                        const selectedOption = e.target.options[e.target.selectedIndex];
+                        if (selectedOption && selectedOption.value && priceInput) {
+                            priceInput.value = selectedOption.getAttribute('data-price') || '';
+                        }
+                    });
+                    
+                    // Focus on the select element
+                    productSelect.focus();
+                }
+                
+                // Populate supplier dropdown
+                if (supplierSelect) {
+                    // Clear existing options except the first one
+                    while (supplierSelect.options.length > 1) {
+                        supplierSelect.remove(1);
+                    }
+                    
+                    // Add suppliers to the dropdown, sorted by name
+                    const sortedSuppliers = [...this.suppliers].sort((a, b) => a.name.localeCompare(b.name));
+                    sortedSuppliers.forEach(supplier => {
+                        const option = document.createElement('option');
+                        option.value = supplier.id;
+                        option.textContent = `${supplier.name} (${supplier.phone})`;
+                        supplierSelect.appendChild(option);
+                    });
                 }
             }
             
@@ -2325,41 +2538,96 @@
             saveProduct() {
                 const form = this.formFields.product;
                 const id = form.id.value || `prod-${Date.now()}`;
-                const name = form.name.value.trim();
-                const balance = parseFloat(form.balance.value);
-                const quantity = parseInt(form.quantity.value, 10);
-                const supplierId = document.getElementById('product-supplier').value || null;
+                const isEditMode = !!form.id.value;
                 
-                // Validate inputs
-                if (!name || isNaN(balance) || balance < 0 || isNaN(quantity) || quantity < 0) {
-                    this.showAlert('الرجاء ملء جميع الحقول المطلوبة بشكل صحيح', 'danger');
+                // Get form elements
+                const productSelect = document.getElementById('product-name');
+                const productInput = document.getElementById('product-name-input');
+                const priceInput = document.getElementById('product-balance');
+                const quantityInput = document.getElementById('product-quantity');
+                const supplierSelect = document.getElementById('product-supplier');
+                
+                let name, balance, quantity, supplierId;
+                
+                // Check which input method is being used
+                const isUsingInput = productInput && productInput.value.trim() !== '';
+                
+                // Validate and get values based on input method
+                if (isUsingInput) {
+                    // Using the input field (new product)
+                    name = productInput.value.trim();
+                    balance = parseFloat(priceInput.value) || 0;
+                    quantity = 0; // Default quantity for new products
+                    supplierId = supplierSelect ? supplierSelect.value : null;
+                    
+                    // Validate inputs
+                    if (!name) {
+                        this.showAlert('الرجاء إدخال اسم المنتج', 'danger');
+                        productInput.focus();
+                        return;
+                    }
+                    
+                    if (isNaN(balance) || balance <= 0) {
+                        this.showAlert('الرجاء إدخال سعر صحيح', 'danger');
+                        priceInput.focus();
+                        return;
+                    }
+                } else if (productSelect && productSelect.selectedIndex > 0) {
+                    // Using the select dropdown (existing product)
+                    const selectedOption = productSelect.options[productSelect.selectedIndex];
+                    name = selectedOption.textContent.split(' (')[0];
+                    balance = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                    quantity = parseInt(quantityInput.value, 10) || 0;
+                    supplierId = supplierSelect ? supplierSelect.value : null;
+                    
+                    // Validate quantity
+                    if (isNaN(quantity) || quantity <= 0) {
+                        this.showAlert('الرجاء إدخال كمية صحيحة', 'danger');
+                        quantityInput.focus();
+                        return;
+                    }
+                } else {
+                    // No valid input method found
+                    this.showAlert('الرجاء إدخال بيانات المنتج بشكل صحيح', 'danger');
                     return;
                 }
                 
+                // Prepare product data
                 const productData = {
                     id,
                     name,
                     balance,
                     quantity,
-                    supplierId
+                    supplierId,
+                    updatedAt: new Date().toISOString()
                 };
                 
-                // Add description if the field exists
-                if (form.description && form.description.value) {
-                    productData.description = form.description.value.trim();
-                }
-                
-                if (form.id.value) {
+                if (isEditMode) {
                     // Update existing product
                     const index = this.products.findIndex(p => p.id === id);
                     if (index !== -1) {
-                        this.products[index] = productData;
+                        // Preserve existing data
+                        const existingProduct = this.products[index];
+                        productData.createdAt = existingProduct.createdAt || new Date().toISOString();
+                        productData.quantity = existingProduct.quantity; // Preserve existing quantity
+                        this.products[index] = { ...existingProduct, ...productData };
                         this.showAlert('تم تحديث المنتج بنجاح', 'success');
                     }
                 } else {
                     // Add new product
+                    productData.createdAt = new Date().toISOString();
                     this.products.push(productData);
                     this.showAlert('تم إضافة المنتج بنجاح', 'success');
+                    
+                    // If adding a new product, reset the form for next entry
+                    if (isUsingInput) {
+                        productInput.value = '';
+                        priceInput.value = '';
+                        quantityInput.value = '1';
+                        if (supplierSelect) supplierSelect.value = '';
+                        productInput.focus();
+                        return; // Keep the modal open for next entry
+                    }
                 }
                 
                 this.saveData();
@@ -2369,37 +2637,52 @@
             }
             
             saveCustomer() {
-                const form = this.formFields.customer;
-                const id = form.id.value || `cust-${Date.now()}`;
-                const name = form.name.value.trim();
-                const phone = form.phone.value.trim();
-                const balance = parseFloat(form.balance.value) || 0;
-                const address = form.address ? form.address.value.trim() : '';
-                
-                if (!name || !phone) {
-                    this.showAlert('الرجاء ملء جميع الحقول المطلوبة', 'danger');
-                    return;
-                }
-                
-                const customerData = { id, name, phone, balance };
-                if (address) customerData.address = address;
-                
-                if (form.id.value) {
-                    // Update existing customer
-                    const index = this.customers.findIndex(c => c.id === id);
-                    if (index !== -1) {
-                        this.customers[index] = customerData;
-                        this.showAlert('تم تحديث بيانات العميل بنجاح', 'success');
+                try {
+                    // Get form elements
+                    const id = document.getElementById('customer-id').value || `cust-${Date.now()}`;
+                    const name = document.getElementById('customer-name').value.trim();
+                    const phone = document.getElementById('customer-phone').value.trim();
+                    
+                    // Validate required fields
+                    if (!name || !phone) {
+                        this.showAlert('الرجاء ملء جميع الحقول المطلوبة', 'danger');
+                        return;
                     }
-                } else {
-                    // Add new customer
-                    this.customers.push(customerData);
-                    this.showAlert('تم إضافة العميل بنجاح', 'success');
+                    
+                    // Create customer data object
+                    const customerData = { 
+                        id, 
+                        name, 
+                        phone,
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    // Check if this is an update or new customer
+                    const existingIndex = this.customers.findIndex(c => c.id === id);
+                    
+                    if (existingIndex !== -1) {
+                        // Update existing customer - preserve creation date
+                        const existingCustomer = this.customers[existingIndex];
+                        customerData.createdAt = existingCustomer.createdAt || new Date().toISOString();
+                        this.customers[existingIndex] = customerData;
+                        this.showAlert('تم تحديث بيانات العميل بنجاح', 'success');
+                    } else {
+                        // Add new customer
+                        customerData.createdAt = new Date().toISOString();
+                        this.customers.push(customerData);
+                        this.showAlert('تم إضافة العميل بنجاح', 'success');
+                    }
+                    
+                    // Save changes and update UI
+                    this.saveData();
+                    this.closeModal('customer');
+                    this.renderCustomersTable();
+                    this.updateDashboard();
+                    
+                } catch (error) {
+                    console.error('Error saving customer:', error);
+                    this.showAlert('حدث خطأ أثناء حفظ بيانات العميل', 'danger');
                 }
-                
-                this.saveData();
-                this.closeModal('customer');
-                this.renderCustomersTable();
             }
             
             saveSupplier() {
@@ -2856,7 +3139,59 @@
             }
             
             getSupplier(id) {
-                return this.suppliers.find(supplier => supplier.id === id);
+                // Find the supplier
+                const supplier = this.suppliers.find(supplier => supplier.id === id);
+                if (!supplier) return null;
+                
+                // Get all products that have this supplier in their history
+                const supplierProducts = this.products.filter(p => 
+                    p.supplierId === id || 
+                    (Array.isArray(p.supplierHistory) && p.supplierHistory.some(sh => sh.supplierId === id))
+                );
+                
+                // Create items history array
+                const itemsHistory = [];
+                
+                supplierProducts.forEach(product => {
+                    // Add current product if it's from this supplier
+                    if (product.supplierId === id) {
+                        itemsHistory.push({
+                            productId: product.id,
+                            name: product.name,
+                            quantity: product.quantity || 0,
+                            price: product.balance || 0,
+                            date: product.dateAdded || new Date().toISOString(),
+                            supplierId: id,
+                            isCurrent: true
+                        });
+                    }
+                    
+                    // Add historical purchases
+                    if (Array.isArray(product.supplierHistory)) {
+                        product.supplierHistory.forEach(history => {
+                            if (history.supplierId === id) {
+                                itemsHistory.push({
+                                    productId: product.id,
+                                    name: product.name,
+                                    quantity: history.quantity || 0,
+                                    price: history.price || 0,
+                                    date: history.date || new Date().toISOString(),
+                                    supplierId: id,
+                                    isHistory: true
+                                });
+                            }
+                        });
+                    }
+                });
+                
+                // Sort by date (newest first)
+                itemsHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                // Return supplier with items history
+                return {
+                    ...supplier,
+                    itemsHistory
+                };
             }
             
             filterProducts() {
@@ -2883,42 +3218,11 @@
                         filtered = filtered.filter(p => p.quantity === 0);
                     }
                 }
-                
-                this.renderProductsTable(filtered);
-            }
-            
-            filterInvoices() {
-                const searchInput = document.getElementById('invoice-search');
-                const statusFilter = document.getElementById('status-invoice-filter');
-                
-                if (!searchInput || !statusFilter) {
-                    console.error('Search input or status filter not found');
-                    this.renderInvoicesTable();
-                    return;
-                }
-                
-                const searchTerm = searchInput.value.toLowerCase();
-                const statusValue = statusFilter.value;
-                
-                const filteredInvoices = this.invoices.filter(invoice => {
-                    const matchesSearch = 
-                        (invoice.id && invoice.id.toLowerCase().includes(searchTerm)) ||
-                        (invoice.customer && invoice.customer.toString().toLowerCase().includes(searchTerm)) ||
-                        (invoice.date && invoice.date.toString().includes(searchTerm));
-                        
-                    const matchesStatus = statusValue === 'all' || invoice.status === statusValue;
-                    
-                    return matchesSearch && matchesStatus;
-                });
-                
-                // Render the filtered invoices
-                const tbody = document.getElementById('invoices-table-body');
-                if (!tbody) return;
-                
                 // Clear existing rows
                 tbody.innerHTML = '';
                 
                 if (filteredInvoices.length === 0) {
+                    console.log('No invoices match the filter criteria');
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="6" class="text-center py-4">
@@ -2980,6 +3284,61 @@
                     
                     tbody.appendChild(row);
                 });
+            }
+            
+            filterInvoices() {
+                try {
+                    console.log('=== Starting filterInvoices ===');
+                    const searchInput = document.getElementById('invoice-search');
+                    const statusFilter = document.getElementById('status-invoice-filter');
+                    
+                    if (!searchInput || !statusFilter) {
+                        console.error('Search input or status filter not found');
+                        this.renderInvoicesTable();
+                        return;
+                    }
+                    
+                    const searchTerm = searchInput.value.trim().toLowerCase();
+                    const statusValue = statusFilter.value;
+                    
+                    console.log('Filter parameters:', { searchTerm, statusValue });
+                    console.log('Total invoices to filter:', this.invoices.length);
+                    
+                    const filteredInvoices = this.invoices.filter(invoice => {
+                        // Check if the invoice matches the search term
+                        const matchesSearch = 
+                            !searchTerm || // If search is empty, match all
+                            (invoice.id && invoice.id.toLowerCase().includes(searchTerm)) ||
+                            (invoice.customer && typeof invoice.customer === 'string' && invoice.customer.toLowerCase().includes(searchTerm)) ||
+                            (invoice.customer && typeof invoice.customer === 'object' && 
+                             invoice.customer.name && invoice.customer.name.toLowerCase().includes(searchTerm)) ||
+                            (invoice.date && invoice.date.toString().includes(searchTerm));
+                            
+                        // Check if the invoice matches the status filter
+                        let matchesStatus = true;
+                        if (statusValue === 'paid') {
+                            matchesStatus = invoice.status === 'paid' || invoice.paid === true;
+                        } else if (statusValue === 'unpaid') {
+                            matchesStatus = invoice.status === 'unpaid' || invoice.paid === false || invoice.paid === undefined;
+                        }
+                        // If status is 'all', matchesStatus remains true
+                        
+                        return matchesSearch && matchesStatus;
+                    });
+                    
+                    console.log('=== Filter Results ===');
+                    console.log('Total matching invoices:', filteredInvoices.length);
+                    
+                    // Reset to first page when filtering
+                    this.currentPage.invoices = 1;
+                    
+                    // Render the filtered invoices using the main render method
+                    this.renderInvoicesTable(filteredInvoices);
+                    
+                } catch (error) {
+                    console.error('Error in filterInvoices:', error);
+                    this.showAlert('حدث خطأ أثناء تصفية الفواتير', 'error');
+                }
             }
             
             filterSuppliers() {
@@ -3095,9 +3454,6 @@
                             <button class="action-btn edit" data-id="${product.id}" title="تعديل">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="action-btn delete" data-id="${product.id}" title="حذف">
-                                <i class="fas fa-trash"></i>
-                            </button>
                             <button class="action-btn history" data-id="${product.id}" title="سجل المعاملات">
                                 <i class="fas fa-history"></i>
                             </button>
@@ -3110,15 +3466,6 @@
                     row.querySelector('.action-btn.edit').addEventListener('click', (e) => {
                         e.stopPropagation();
                         this.openProductModal(product.id);
-                    });
-                    
-                    row.querySelector('.action-btn.delete').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.showDeleteConfirmation(
-                            product.id, 
-                            'product', 
-                            `هل أنت متأكد أنك تريد حذف المنتج "${product.name}"؟ لا يمكن التراجع عن هذا الإجراء.`
-                        );
                     });
                     
                     row.querySelector('.action-btn.history').addEventListener('click', (e) => {
@@ -3137,15 +3484,24 @@
                 });
             }
 
-            renderInvoicesTable() {
+            renderInvoicesTable(invoices = null) {
+                console.log('renderInvoicesTable called with:', { hasInvoices: !!invoices });
                 const tbody = document.getElementById('invoices-table-body');
-                if (!tbody) return;
+                if (!tbody) {
+                    console.error('Invoices table body not found');
+                    return;
+                }
                 
                 // Clear existing rows
                 tbody.innerHTML = '';
                 
-                // Get all invoices, sorted by date (newest first)
-                const sortedInvoices = [...this.invoices].sort((a, b) => new Date(b.date) - new Date(a.date));
+                // Use provided invoices or all invoices
+                const invoicesToRender = invoices || this.invoices;
+                
+                // Sort invoices by date (newest first)
+                const sortedInvoices = [...invoicesToRender].sort((a, b) => 
+                    new Date(b.date || 0) - new Date(a.date || 0)
+                );
                 
                 // Calculate pagination
                 const startIndex = (this.currentPage.invoices - 1) * this.itemsPerPage;
@@ -3153,16 +3509,17 @@
                 const paginatedInvoices = sortedInvoices.slice(startIndex, endIndex);
                 
                 if (paginatedInvoices.length === 0) {
-                    tbody.innerHTML = `
+                    const noResultsHtml = `
                         <tr>
                             <td colspan="6" class="text-center py-4">
                                 <div class="empty-state">
                                     <i class="fas fa-file-invoice"></i>
-                                    <h3>لا توجد فواتير</h3>
-                                    <p>قم بإضافة فواتير جديدة لعرضها هنا</p>
+                                    <h3>${invoices ? 'لا توجد فواتير متطابقة مع معايير البحث' : 'لا توجد فواتير'}</h3>
+                                    <p>${invoices ? 'حاول تغيير كلمات البحث أو فلتر الحالة' : 'قم بإضافة فواتير جديدة لعرضها هنا'}</p>
                                 </div>
                             </td>
                         </tr>`;
+                    tbody.innerHTML = noResultsHtml;
                     return;
                 }
                 

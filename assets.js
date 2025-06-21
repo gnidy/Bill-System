@@ -86,6 +86,191 @@ window.allProducts = [
 ];
 
 
+// Sample invoices data
+window.sampleInvoices = [
+    {
+        id: 'inv-1',
+        customerId: 'cust-1',
+        date: '2025-06-20',
+        items: [
+            { productId: 'a1', quantity: 2, price: 600, total: 1200 },
+            { productId: 'a3', quantity: 1, price: 750, total: 750 }
+        ],
+        subtotal: 1950,
+        discount: 0,
+        total: 1950,
+        paid: 1000,
+        remaining: 950,
+        status: 'unpaid'
+    },
+    {
+        id: 'inv-2',
+        customerId: 'cust-2',
+        date: '2025-06-21',
+        items: [
+            { productId: 'a2', quantity: 1, price: 590, total: 590 },
+            { productId: 'a4', quantity: 2, price: 580, total: 1160 }
+        ],
+        subtotal: 1750,
+        discount: 50,
+        total: 1700,
+        paid: 1700,
+        remaining: 0,
+        status: 'paid'
+    },
+    {
+        id: 'inv-3',
+        customerId: 'cust-3',
+        date: '2025-06-19',
+        items: [
+            { productId: 'a5', quantity: 3, price: 755, total: 2265 },
+            { productId: 'a7', quantity: 2, price: 1200, total: 2400 }
+        ],
+        subtotal: 4665,
+        discount: 200,
+        total: 4465,
+        paid: 0,
+        remaining: 4465,
+        status: 'unpaid'
+    },
+    {
+        id: 'inv-4',
+        customerId: 'cust-4',
+        date: '2025-06-18',
+        items: [
+            { productId: 'a10', quantity: 5, price: 850, total: 4250 },
+            { productId: 'a15', quantity: 2, price: 600, total: 1200 }
+        ],
+        subtotal: 5450,
+        discount: 0,
+        total: 5450,
+        paid: 5450,
+        remaining: 0,
+        status: 'paid'
+    },
+    {
+        id: 'inv-5',
+        customerId: 'cust-5',
+        date: '2025-06-17',
+        items: [
+            { productId: 'a20', quantity: 10, price: 350, total: 3500 },
+            { productId: 'a25', quantity: 5, price: 420, total: 2100 }
+        ],
+        subtotal: 5600,
+        discount: 100,
+        total: 5500,
+        paid: 0,
+        remaining: 5500,
+        status: 'unpaid'
+    },
+    {
+        id: 'inv-6',
+        customerId: 'cust-6',
+        date: '2025-06-16',
+        items: [
+            { productId: 'a30', quantity: 15, price: 200, total: 3000 },
+            { productId: 'a35', quantity: 10, price: 500, total: 5000 }
+        ],
+        subtotal: 8000,
+        discount: 500,
+        total: 7500,
+        paid: 7500,
+        remaining: 0,
+        status: 'paid'
+    },
+    {
+        id: 'inv-7',
+        customerId: 'cust-7',
+        date: '2025-06-15',
+        items: [
+            { productId: 'a40', quantity: 8, price: 650, total: 5200 },
+            { productId: 'a45', quantity: 4, price: 700, total: 2800 }
+        ],
+        subtotal: 8000,
+        discount: 0,
+        total: 8000,
+        paid: 0,
+        remaining: 8000,
+        status: 'unpaid'
+    },
+    {
+        id: 'inv-8',
+        customerId: 'cust-1',
+        date: '2025-06-14',
+        items: [
+            { productId: 'a50', quantity: 20, price: 150, total: 3000 },
+            { productId: 'a55', quantity: 10, price: 300, total: 3000 }
+        ],
+        subtotal: 6000,
+        discount: 300,
+        total: 5700,
+        paid: 5700,
+        remaining: 0,
+        status: 'paid'
+    },
+    {
+        id: 'inv-9',
+        customerId: 'cust-2',
+        date: '2025-06-13',
+        items: [
+            { productId: 'a60', quantity: 5, price: 800, total: 4000 },
+            { productId: 'a65', quantity: 3, price: 1000, total: 3000 }
+        ],
+        subtotal: 7000,
+        discount: 0,
+        total: 7000,
+        paid: 0,
+        remaining: 7000,
+        status: 'unpaid'
+    },
+    {
+        id: 'inv-10',
+        customerId: 'cust-3',
+        date: '2025-06-12',
+        items: [
+            { productId: 'a70', quantity: 2, price: 1500, total: 3000 },
+            { productId: 'a75', quantity: 4, price: 750, total: 3000 }
+        ],
+        subtotal: 6000,
+        discount: 200,
+        total: 5800,
+        paid: 5800,
+        remaining: 0,
+        status: 'paid'
+    },
+    {
+        id: 'inv-11',
+        customerId: 'cust-4',
+        date: '2025-06-11',
+        items: [
+            { productId: 'a80', quantity: 3, price: 900, total: 2700 },
+            { productId: 'a85', quantity: 2, price: 1200, total: 2400 }
+        ],
+        subtotal: 5100,
+        discount: 100,
+        total: 5000,
+        paid: 0,
+        remaining: 5000,
+        status: 'unpaid'
+    },
+    {
+        id: 'inv-12',
+        customerId: 'cust-5',
+        date: '2025-06-10',
+        items: [
+            { productId: 'a1', quantity: 5, price: 600, total: 3000 },
+            { productId: 'a2', quantity: 3, price: 590, total: 1770 },
+            { productId: 'a3', quantity: 2, price: 750, total: 1500 }
+        ],
+        subtotal: 6270,
+        discount: 270,
+        total: 6000,
+        paid: 6000,
+        remaining: 0,
+        status: 'paid'
+    }
+];
+
 // Sample customers data with purchase history
 window.sampleCustomers = [
     { 
