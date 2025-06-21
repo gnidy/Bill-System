@@ -1455,7 +1455,15 @@
                         </div>
                     </div>
                     
-
+                    <div class="form-group">
+                        <label for="product-supplier">المورد</label>
+                        <select id="product-supplier" class="form-control">
+                            <option value="">-- اختر المورد --</option>
+                            <!-- Suppliers will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <!-- Purchase History Section Removed -->
                 </form>
             </div>
             <div class="modal-footer">
@@ -1479,18 +1487,6 @@
                     <input type="hidden" id="customer-id">
                     <div class="form-group">
                         <label for="customer-name">اسم العميل *</label>
-                        <input type="text" id="customer-name" class="form-control" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="customer-phone">رقم الهاتف *</label>
-                            <input type="tel" id="customer-phone" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="customer-balance">الرصيد (ج.م)</label>
-                            <input type="number" id="customer-balance" class="form-control" min="0" step="0.01" value="0">
                         </div>
                     </div>
                     
@@ -1524,6 +1520,27 @@
                     <div class="form-group">
                         <label for="supplier-phone">رقم الهاتف *</label>
                         <input type="tel" id="supplier-phone" class="form-control" required>
+                    </div>
+                    
+                    <!-- Supplier Items History -->
+                    <div class="form-group" id="supplier-items-container" style="display: none; margin-top: 20px;">
+                        <label>سجل المشتريات من المورد</label>
+                        <div class="table-responsive">
+                            <table class="data-table" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>اسم المنتج</th>
+                                        <th>التاريخ</th>
+                                        <th>الكمية</th>
+                                        <th>السعر</th>
+                                        <th>الإجمالي</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="supplier-items-body">
+                                    <!-- Items will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -1680,6 +1697,7 @@
                 this.itemsPerPage = 10;
                 this.currentDeleteId = null;
                 this.currentDeleteType = null;
+                this.filteredProducts = []; // Store filtered products for pagination
                 
                 // Initialize search inputs and filter selects
                 this.searchInputs = {
@@ -1962,11 +1980,21 @@
                 });
                 
                 // Search and filter events
-                if (this.searchInputs.products) this.searchInputs.products.addEventListener('input', () => this.filterProducts());
-                if (this.searchInputs.invoices) this.searchInputs.invoices.addEventListener('input', () => this.filterInvoices());
-                if (this.searchInputs.suppliers) this.searchInputs.suppliers.addEventListener('input', () => this.filterSuppliers());
-                if (this.filterSelects.products) this.filterSelects.products.addEventListener('change', () => this.filterProducts());
-                if (this.filterSelects.invoices) this.filterSelects.invoices.addEventListener('change', () => this.filterInvoices());
+                if (this.searchInputs.products) {
+                    this.searchInputs.products.addEventListener('input', () => this.filterProducts());
+                }
+                if (this.searchInputs.invoices) {
+                    this.searchInputs.invoices.addEventListener('input', () => this.filterInvoices());
+                }
+                if (this.searchInputs.suppliers) {
+                    this.searchInputs.suppliers.addEventListener('input', () => this.filterSuppliers());
+                }
+                if (this.filterSelects.products) {
+                    this.filterSelects.products.addEventListener('change', () => this.filterProducts());
+                }
+                if (this.filterSelects.invoices) {
+                    this.filterSelects.invoices.addEventListener('change', () => this.filterInvoices());
+                }
                 
                 // Initialize print buttons
                 if (this.buttons.printInvoice) {
@@ -2019,7 +2047,9 @@
                 // Update content based on the page
                 switch(pageId) {
                     case 'products-page':
-                        this.renderProductsTable();
+                        // Reset to first page when navigating to products page
+                        this.currentPage.products = 1;
+                        this.filterProducts(); // This will render the table with current filters
                         break;
                     case 'invoices-page':
                         this.renderInvoicesTable();
@@ -2129,10 +2159,41 @@
                         formFields[key].value = data[key] || '';
                     }
                 });
+                
+                // Set supplier for product if it exists
+                if (modalType === 'product' && data.supplierId) {
+                    const supplierSelect = document.getElementById('product-supplier');
+                    if (supplierSelect) {
+                        supplierSelect.value = data.supplierId;
+                    }
+                }
             }
             
             openProductModal(id = null) {
+                // Populate supplier dropdown
+                const supplierSelect = document.getElementById('product-supplier');
+                if (supplierSelect) {
+                    // Clear existing options except the first one
+                    supplierSelect.innerHTML = '<option value="">-- اختر المورد --</option>';
+                    
+                    // Add suppliers to the dropdown
+                    this.suppliers.forEach(supplier => {
+                        const option = document.createElement('option');
+                        option.value = supplier.id;
+                        option.textContent = supplier.name;
+                        supplierSelect.appendChild(option);
+                    });
+                }
+                
                 this.openModal('product', id);
+                
+                // If editing existing product, select the supplier
+                if (id) {
+                    const product = this.getProduct(id);
+                    if (product && product.supplierId && supplierSelect) {
+                        supplierSelect.value = product.supplierId;
+                    }
+                }
             }
             
             openCustomerModal(id = null) {
@@ -2267,6 +2328,7 @@
                 const name = form.name.value.trim();
                 const balance = parseFloat(form.balance.value);
                 const quantity = parseInt(form.quantity.value, 10);
+                const supplierId = document.getElementById('product-supplier').value || null;
                 
                 // Validate inputs
                 if (!name || isNaN(balance) || balance < 0 || isNaN(quantity) || quantity < 0) {
@@ -2278,7 +2340,8 @@
                     id,
                     name,
                     balance,
-                    quantity
+                    quantity,
+                    supplierId
                 };
                 
                 // Add description if the field exists
@@ -2935,7 +2998,47 @@
                 this.renderSuppliersTable(filteredSuppliers);
             }
             
+            filterProducts() {
+                const searchTerm = (this.searchInputs.products?.value || '').toLowerCase();
+                const statusFilter = this.filterSelects.products?.value || 'all';
+                
+                // If no search term and no filter, show all products
+                if (!searchTerm && statusFilter === 'all') {
+                    this.renderProductsTable(this.products);
+                    return;
+                }
+                
+                let filteredProducts = this.products.filter(product => {
+                    // Filter by search term
+                    const matchesSearch = !searchTerm || 
+                        product.name.toLowerCase().includes(searchTerm) ||
+                        (product.description && product.description.toLowerCase().includes(searchTerm));
+                    
+                    // Filter by status
+                    let matchesStatus = true;
+                    if (statusFilter === 'available') {
+                        matchesStatus = product.quantity > 10;
+                    } else if (statusFilter === 'low') {
+                        matchesStatus = product.quantity > 0 && product.quantity <= 10;
+                    } else if (statusFilter === 'out') {
+                        matchesStatus = product.quantity === 0;
+                    }
+                    
+                    return matchesSearch && matchesStatus;
+                });
+                
+                // Reset to first page when filtering
+                this.currentPage.products = 1;
+                
+                // Store filtered products and render the table
+                this.filteredProducts = filteredProducts;
+                this.renderProductsTable(filteredProducts);
+            }
+            
             renderProductsTable(productsList = this.products) {
+                // Store the filtered products for pagination
+                this.filteredProducts = productsList;
+                
                 const startIndex = (this.currentPage.products - 1) * this.itemsPerPage;
                 const endIndex = startIndex + this.itemsPerPage;
                 const paginatedProducts = productsList.slice(startIndex, endIndex);
@@ -2954,6 +3057,13 @@
                     `;
                     this.pagination.products.style.display = 'none';
                     return;
+                }
+                
+                // Show pagination if there are multiple pages
+                if (productsList.length > this.itemsPerPage) {
+                    this.renderPagination('products', productsList.length);
+                } else {
+                    this.pagination.products.style.display = 'none';
                 }
                 
                 paginatedProducts.forEach((product, index) => {
@@ -2988,6 +3098,9 @@
                             <button class="action-btn delete" data-id="${product.id}" title="حذف">
                                 <i class="fas fa-trash"></i>
                             </button>
+                            <button class="action-btn history" data-id="${product.id}" title="سجل المعاملات">
+                                <i class="fas fa-history"></i>
+                            </button>
                         </td>
                     `;
                     
@@ -3006,6 +3119,11 @@
                             'product', 
                             `هل أنت متأكد أنك تريد حذف المنتج "${product.name}"؟ لا يمكن التراجع عن هذا الإجراء.`
                         );
+                    });
+                    
+                    row.querySelector('.action-btn.history').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.showProductHistory(product.id);
                     });
                 });
 
@@ -3096,6 +3214,496 @@
                 // Render pagination
                 this.renderPagination('invoices', sortedInvoices.length);
             }
+            
+            showSupplierHistory(supplierId) {
+                console.log('showSupplierHistory called with ID:', supplierId);
+                try {
+                    console.log('Creating loading modal...');
+                    // Show loading state
+                    const loadingHtml = `
+                        <div class="modal-overlay active" id="supplier-history-modal">
+                            <div class="modal" style="max-width: 800px;">
+                                <div class="modal-header">
+                                    <h3>جاري التحميل...</h3>
+                                    <button class="close-btn" id="close-supplier-history">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body" style="text-align: center; padding: 40px;">
+                                    <div class="spinner" style="font-size: 2em; margin-bottom: 20px;">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                    </div>
+                                    <p>جاري تحميل سجل المورد...</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Remove any existing supplier history modal
+                    const existingModal = document.getElementById('supplier-history-modal');
+                    if (existingModal) {
+                        existingModal.remove();
+                    }
+
+                    // Add loading modal to the page
+                    document.body.insertAdjacentHTML('beforeend', loadingHtml);
+
+                    // Get supplier data
+                    console.log('Fetching supplier with ID:', supplierId);
+                    const supplier = this.getSupplier(supplierId);
+                    console.log('Retrieved supplier:', supplier);
+                    if (!supplier) {
+                        console.error('Supplier not found with ID:', supplierId);
+                        this.showAlert('المورد غير موجود', 'error');
+                        closeModal();
+                        return;
+                    }
+
+                    // Calculate totals
+                    console.log('Processing supplier items history...');
+                    const items = Array.isArray(supplier.itemsHistory) ? supplier.itemsHistory : [];
+                    console.log(`Found ${items.length} items in history`);
+                    
+                    const totalPurchases = items.reduce((sum, item) => {
+                        const quantity = parseFloat(item.quantity) || 0;
+                        const price = parseFloat(item.price) || 0;
+                        const itemTotal = quantity * price;
+                        console.log(`Item: ${item.name || 'Unnamed'}, Qty: ${quantity}, Price: ${price}, Total: ${itemTotal}`);
+                        return sum + itemTotal;
+                    }, 0);
+                    console.log('Total purchases:', totalPurchases);
+
+                    const totalItems = items.reduce((sum, item) => {
+                        const qty = parseFloat(item.quantity) || 0;
+                        return sum + qty;
+                    }, 0);
+                    console.log('Total items:', totalItems);
+
+                    // Log supplier transaction history in a clear format
+                    console.log('%c=== سجل معاملات المورد ===', 'font-size: 16px; font-weight: bold; color: #2c3e50;');
+                    console.log(`اسم المورد: ${supplier.name || 'غير معروف'}`);
+                    console.log(`رقم الهاتف: ${supplier.phone || 'غير محدد'}`);
+                    console.log(`عدد المعاملات: ${items.length}`);
+                    console.log('----------------------------------------');
+                    
+                    // Format items with proper error handling
+                    console.log('Formatting items for display...');
+                    const formattedItems = items.map((item, index) => {
+                        // Log each transaction in a table format
+                        console.groupCollapsed(`🔹 معاملة #${index + 1}: ${item.name || 'منتج غير معروف'}`);
+                        console.table({
+                            'التاريخ': item.date ? new Date(item.date).toLocaleString('ar-EG') : 'غير محدد',
+                            'المنتج': item.name || 'غير معروف',
+                            'الكمية': item.quantity || 0,
+                            'الوحدة': item.unit || 'وحدة',
+                            'سعر الوحدة': `${(item.price || 0).toFixed(2)} ج.م`,
+                            'الإجمالي': `${((item.quantity || 0) * (item.price || 0)).toFixed(2)} ج.م`,
+                            'رقم الدفعة': item.batch || 'غير محدد',
+                            'ملاحظات': item.notes || 'لا توجد'
+                        });
+                        console.groupEnd();
+                        console.log(`Formatting item ${index + 1}:`, item);
+                        try {
+                            const itemDate = item.date ? new Date(item.date) : new Date();
+                            const formattedDate = itemDate.toLocaleDateString('ar-EG', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                            
+                            const quantity = parseFloat(item.quantity) || 0;
+                            const price = parseFloat(item.price) || 0;
+                            const total = quantity * price;
+                            
+                            return {
+                                ...item,
+                                formattedDate,
+                                quantity,
+                                price,
+                                total
+                            };
+                        } catch (error) {
+                            console.error('Error formatting item:', item, error);
+                            console.error('Error formatting item:', error);
+                            return null;
+                        }
+                    }).filter(Boolean);
+                    console.log(`Successfully formatted ${formattedItems.length} items`);
+
+                    // Sort items by date (newest first)
+                    console.log('Sorting items by date...');
+                    formattedItems.sort((a, b) => {
+                        const dateA = new Date(a.date);
+                        const dateB = new Date(b.date);
+                        console.log(`Comparing dates: ${a.date} (${dateA}) vs ${b.date} (${dateB})`);
+                        return dateB - dateA;
+                    });
+                    console.log('Items after sorting:', formattedItems);
+                    
+                    // Log summary at the end
+                    console.log('\n%c=== ملخص المعاملات ===', 'font-size: 14px; font-weight: bold; color: #27ae60;');
+                    console.log(`إجمالي المشتريات: ${totalPurchases.toFixed(2)} ج.م`);
+                    console.log(`إجمالي الكميات: ${totalItems} وحدة`);
+                    console.log(`متوسط سعر الوحدة: ${items.length > 0 ? (totalPurchases / totalItems).toFixed(2) : 0} ج.م`);
+                    console.log('==================================');
+
+                    // Create modal HTML
+                    const modalHtml = `
+                        <div class="modal-overlay active" id="supplier-history-modal">
+                            <div class="modal" style="max-width: 800px; max-height: 90vh; display: flex; flex-direction: column;">
+                                <div class="modal-header" style="flex-shrink: 0;">
+                                    <h3>سجل معاملات المورد: ${supplier.name || 'غير معروف'}</h3>
+                                    <button class="close-btn" id="close-supplier-history">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body" style="overflow-y: auto; padding: 0 20px 20px; flex-grow: 1;">
+                                    <div class="supplier-info" style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                        <div><strong>رقم الهاتف:</strong> ${supplier.phone || 'غير محدد'}</div>
+                                        <div><strong>إجمالي المشتريات:</strong> ${totalPurchases.toFixed(2)} ج.م</div>
+                                        <div><strong>عدد العناصر المشتراة:</strong> ${totalItems}</div>
+                                        <div><strong>عدد المعاملات:</strong> ${items.length}</div>
+                                    </div>
+                                    
+                                    <div class="items-list">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0 15px; padding-bottom: 8px; border-bottom: 2px solid var(--primary);">
+                                            <h4 style="margin: 0; color: var(--primary);">سجل المشتريات</h4>
+                                            <span class="badge" style="background: var(--primary); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.9em;">
+                                                ${items.length} معاملة
+                                            </span>
+                                        </div>
+                                        
+                                        ${items.length > 0 
+                                            ? formattedItems.map((item, index) => `
+                                                <div class="item-card" style="margin-bottom: 15px; border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: all 0.3s ease;">
+                                                    <div class="item-header" style="background: #f8f9fa; padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                                                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                                                            <div style="display: flex; gap: 10px; align-items: center;">
+                                                                <i class="fas fa-box" style="color: #666;"></i>
+                                                                <span class="item-name" style="font-weight: bold; font-size: 1.1em;">${item.name || 'منتج غير معروف'}</span>
+                                                            </div>
+                                                            <div style="display: flex; gap: 10px; font-size: 0.9em; color: #666;">
+                                                                <span class="item-date">
+                                                                    <i class="far fa-calendar-alt"></i> ${item.formattedDate}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div style="display: flex; align-items: center; gap: 15px;">
+                                                            <span class="item-total" style="font-weight: bold; color: var(--secondary); font-size: 1.2em;">
+                                                                ${item.total.toFixed(2)} ج.م
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item-details" style="padding: 15px; background: white;">
+                                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                                                <span style="color: #666;">الكمية:</span>
+                                                                <span style="font-weight: 500;">${item.quantity} ${item.unit || 'وحدة'}</span>
+                                                            </div>
+                                                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                                                <span style="color: #666;">سعر الوحدة:</span>
+                                                                <span style="font-weight: 500;">${item.price.toFixed(2)} ج.م</span>
+                                                            </div>
+                                                            ${item.batch ? `
+                                                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; grid-column: span 2;">
+                                                                    <span style="color: #666;">رقم الدفعة:</span>
+                                                                    <span style="font-weight: 500;">${item.batch}</span>
+                                                                </div>
+                                                            ` : ''}
+                                                            ${item.notes ? `
+                                                                <div style="grid-column: span 2; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee;">
+                                                                    <div style="color: #666; margin-bottom: 5px;">ملاحظات:</div>
+                                                                    <div style="background: #f9f9f9; padding: 8px; border-radius: 4px; font-size: 0.9em;">
+                                                                        ${item.notes}
+                                                                    </div>
+                                                                </div>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>
+                                                </div>`).join('')
+                                            : `<div class="no-items" style="text-align: center; padding: 40px 20px; color: #666; background: #f9f9f9; border-radius: 8px; margin: 20px 0;">
+                                                <i class="fas fa-box-open" style="font-size: 3em; margin-bottom: 15px; opacity: 0.3;"></i>
+                                                <h4 style="margin: 0 0 10px; color: #555;">لا توجد معاملات مسجلة</h4>
+                                                <p style="margin: 0; opacity: 0.8;">لم يتم تسجيل أي مشتريات لهذا المورد بعد</p>
+                                            </div>`}
+                                    </div>
+                                </div>
+                                <div class="modal-footer" style="padding: 15px; border-top: 1px solid #eee; text-align: left; flex-shrink: 0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                        <div style="font-weight: 500; color: #555;">
+                                            إجمالي المشتريات: <span style="color: var(--primary); font-weight: bold;">${totalPurchases.toFixed(2)} ج.م</span>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-outline" id="close-supplier-history-btn" style="padding: 8px 20px; margin-left: 10px;">
+                                                <i class="fas fa-times"></i> إغلاق
+                                            </button>
+                                            ${items.length > 0 ? `
+                                                <button class="btn btn-primary" id="print-supplier-history" style="padding: 8px 20px;">
+                                                    <i class="fas fa-print"></i> طباعة السجل
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Update the modal with actual content
+                    console.log('Updating modal with formatted content...');
+                    const modalContainer = document.getElementById('supplier-history-modal');
+                    if (modalContainer) {
+                        console.log('Found existing modal container, replacing content...');
+                        modalContainer.outerHTML = modalHtml;
+                        console.log('Setting up event listeners...');
+                        this.setupSupplierHistoryEventListeners();
+                        console.log('Modal update complete');
+                    } else {
+                        console.error('Modal container not found!');
+                    }
+
+                } catch (error) {
+                    console.error('Error showing supplier history:', error);
+                    this.showAlert('حدث خطأ غير متوقع أثناء تحميل سجل المورد', 'error');
+                    closeModal();
+                }
+            }
+
+            setupSupplierHistoryEventListeners() {
+                console.log('Setting up supplier history event listeners...');
+                // Close modal function
+                const closeModal = () => {
+                    console.log('Closing supplier history modal...');
+                    const modal = document.getElementById('supplier-history-modal');
+                    if (modal) modal.remove();
+                };
+
+                // Close modal when clicking close button or overlay
+                const closeBtn1 = document.getElementById('close-supplier-history');
+                const closeBtn2 = document.getElementById('close-supplier-history-btn');
+                
+                console.log('Close button 1:', closeBtn1 ? 'Found' : 'Not found');
+                console.log('Close button 2:', closeBtn2 ? 'Found' : 'Not found');
+                
+                closeBtn1?.addEventListener('click', () => {
+                    console.log('Close button 1 clicked');
+                    closeModal();
+                });
+                
+                closeBtn2?.addEventListener('click', () => {
+                    console.log('Close button 2 clicked');
+                    closeModal();
+                });
+                
+                // Close when clicking overlay (outside modal content)
+                const overlay = document.querySelector('#supplier-history-modal .modal-overlay');
+                console.log('Overlay element:', overlay ? 'Found' : 'Not found');
+                if (overlay) {
+                    overlay.addEventListener('click', (e) => {
+                        console.log('Overlay clicked, checking if click is outside modal...');
+                        if (e.target === e.currentTarget) {
+                            console.log('Click is outside modal, closing...');
+                            closeModal();
+                        }
+                    });
+                }
+
+                // Print functionality
+                const printBtn = document.getElementById('print-supplier-history');
+                console.log('Print button:', printBtn ? 'Found' : 'Not found');
+                if (printBtn) {
+                    printBtn.addEventListener('click', () => {
+                        console.log('Print button clicked');
+                        try {
+                            window.print();
+                            console.log('Print dialog opened successfully');
+                        } catch (error) {
+                            console.error('Error opening print dialog:', error);
+                        }
+                    });
+                }
+
+                // Close modal when pressing Escape key
+                const handleEscKey = (e) => {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                        document.removeEventListener('keydown', handleEscKey);
+                    }
+                };
+                document.addEventListener('keydown', handleEscKey);
+            }
+            
+            showProductHistory(productId) {
+                try {
+                    console.log('Showing product history for product ID:', productId);
+                    const product = this.getProduct(productId);
+                    if (!product) {
+                        console.error('Product not found with ID:', productId);
+                        this.showAlert('المنتج غير موجود', 'error');
+                        return;
+                    }
+                    console.log('Product found:', product.name, product);
+
+                    // Get supplier history for this product
+                    console.log('Getting supplier history for product:', product.name);
+                    const supplierHistory = product.supplierHistory || [];
+                    console.log('Raw supplier history:', supplierHistory);
+                    
+                    const supplierIds = [...new Set(supplierHistory.map(item => item.supplierId))];
+                    console.log('Unique supplier IDs:', supplierIds);
+                    
+                    const suppliers = supplierIds.map(id => {
+                        const supplier = this.getSupplier(id);
+                        console.log(`Supplier ${id}:`, supplier);
+                        return supplier;
+                    }).filter(Boolean);
+                    
+                    console.log('Filtered suppliers:', suppliers);
+
+                    // Create modal HTML
+                    const modalHtml = `
+                        <div class="modal-overlay active" id="product-history-modal">
+                            <div class="modal" style="max-width: 900px;">
+                                <div class="modal-header">
+                                    <h3>سجل موردي المنتج: ${product.name}</h3>
+                                    <button class="close-btn" id="close-product-history">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="product-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+                                            <div><strong>الكمية المتوفرة:</strong> ${product.quantity}</div>
+                                            <div><strong>السعر الحالي:</strong> ${(product.balance || 0).toFixed(2)} ج.م</div>
+                                            <div><strong>عدد الموردين:</strong> ${suppliers.length}</div>
+                                            <div><strong>إجمالي الكمية المشتراة:</strong> ${supplierHistory.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="suppliers-list">
+                                        <h4 style="margin: 20px 0 15px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
+                                            سجل المشتريات من الموردين
+                                        </h4>
+                                        ${supplierHistory.length > 0 
+                                            ? supplierHistory.map((item, index) => {
+                                                console.log(`Processing history item ${index}:`, item);
+                                                const supplier = this.getSupplier(item.supplierId);
+                                                const supplierName = supplier ? supplier.name : 'مورد غير معروف';
+                                                const date = item.date ? new Date(item.date) : new Date();
+                                                const formattedDate = date.toLocaleDateString('ar-EG', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                });
+                                                
+                                                const quantity = parseInt(item.quantity) || 0;
+                                                const price = parseFloat(item.price) || 0;
+                                                const total = parseFloat(item.total) || 0;
+                                                
+                                                return `
+                                                <div class="supplier-card" style="margin-bottom: 15px; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+                                                    <div class="supplier-header" style="background: #f8f9fa; padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                                                        <div style="display: flex; gap: 15px; align-items: center;">
+                                                            <i class="fas fa-truck" style="color: #666;"></i>
+                                                            <span style="font-weight: 500; color: #333;">${supplierName}</span>
+                                                        </div>
+                                                        <div style="color: #666; font-size: 0.9em;">
+                                                            <i class="far fa-calendar-alt" style="margin-left: 5px;"></i>
+                                                            ${formattedDate}
+                                                        </div>
+                                                    </div>
+                                                    <div style="padding: 15px;">
+                                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 10px;">
+                                                            <div>
+                                                                <div style="color: #666; margin-bottom: 5px;">الكمية</div>
+                                                                <div style="font-weight: 500;">${quantity}</div>
+                                                            </div>
+                                                            <div>
+                                                                <div style="color: #666; margin-bottom: 5px;">سعر الوحدة</div>
+                                                                <div style="font-weight: 500;">${price.toFixed(2)} ج.م</div>
+                                                            </div>
+                                                            <div>
+                                                                <div style="color: #666; margin-bottom: 5px;">الإجمالي</div>
+                                                                <div style="font-weight: bold; color: var(--secondary);">${total.toFixed(2)} ج.م</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>`;
+                                            }).join('')
+                                            : `<div class="no-suppliers" style="text-align: center; padding: 30px; color: #666; background: #f9f9f9; border-radius: 8px; margin-top: 20px;">
+                                                <i class="fas fa-truck-loading" style="font-size: 2em; margin-bottom: 15px; opacity: 0.5;"></i>
+                                                <p style="margin: 0;">لا توجد سجلات مشتريات لهذا المنتج</p>
+                                              </div>`}
+                                    </div>
+                                </div>
+                                <div class="modal-footer" style="padding: 15px; border-top: 1px solid #eee; text-align: left;">
+                                    <button class="btn btn-outline" id="close-product-history-btn" style="padding: 8px 20px;">
+                                        <i class="fas fa-times"></i> إغلاق
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Remove any existing product history modal
+                    const existingModal = document.getElementById('product-history-modal');
+                    if (existingModal) {
+                        existingModal.remove();
+                    }
+
+                    // Add modal to the page
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+                    // Add event listeners for closing the modal
+                    const closeModal = () => {
+                        const modal = document.getElementById('product-history-modal');
+                        if (modal) modal.remove();
+                    };
+
+                    // Close modal when clicking close button or overlay
+                    document.getElementById('close-product-history')?.addEventListener('click', closeModal);
+                    document.getElementById('close-product-history-btn')?.addEventListener('click', closeModal);
+                    document.querySelector('#product-history-modal .modal-overlay')?.addEventListener('click', (e) => {
+                        if (e.target === e.currentTarget) closeModal();
+                    });
+
+                    // Handle print button clicks
+                    document.querySelectorAll('#product-history-modal .print-invoice-history-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            try {
+                                const invoice = JSON.parse(btn.getAttribute('data-invoice').replace(/&#39;/g, "'"));
+                                if (invoice) {
+                                    console.log('Printing invoice from product history:', invoice);
+                                    this.printInvoice(invoice);
+                                } else {
+                                    this.showAlert('تعذر العثور على بيانات الفاتورة', 'error');
+                                }
+                            } catch (error) {
+                                console.error('Error parsing invoice data:', error);
+                                this.showAlert('حدث خطأ أثناء معالجة بيانات الفاتورة', 'error');
+                            }
+                        });
+                    });
+
+                    // Close modal when pressing Escape key
+                    document.addEventListener('keydown', function handleEscKey(e) {
+                        if (e.key === 'Escape') {
+                            closeModal();
+                            document.removeEventListener('keydown', handleEscKey);
+                        }
+                    });
+
+                } catch (error) {
+                    console.error('Error showing product history:', error);
+                    this.showAlert('حدث خطأ أثناء عرض سجل المنتج', 'error');
+                }
+            }
+
             
             showCustomerHistory(customerId) {
                 try {
@@ -3402,16 +4010,21 @@
                 
                 paginatedSuppliers.forEach((supplier, index) => {
                     const row = document.createElement('tr');
+                    row.style.cursor = 'pointer';
+                    row.title = 'انقر لعرض سجل المعاملات';
                     row.innerHTML = `
                         <td>${start + index + 1}</td>
                         <td>${supplier.name}</td>
                         <td>${supplier.phone}</td>
                         <td class="actions">
-                            <button class="action-btn edit" data-id="${supplier.id}">
+                            <button class="action-btn edit" data-id="${supplier.id}" title="تعديل">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="action-btn delete" data-id="${supplier.id}">
+                            <button class="action-btn delete" data-id="${supplier.id}" title="حذف">
                                 <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="action-btn history" data-id="${supplier.id}" title="سجل المعاملات">
+                                <i class="fas fa-history"></i>
                             </button>
                         </td>`;
                     tbody.appendChild(row);
@@ -3427,8 +4040,17 @@
                 
                 tbody.querySelectorAll('.delete').forEach(btn => {
                     btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
                         const id = e.currentTarget.getAttribute('data-id');
                         this.showDeleteConfirmation(id, 'supplier', 'هل أنت متأكد أنك تريد حذف هذا المورد؟');
+                    });
+                });
+                
+                tbody.querySelectorAll('.history').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = e.currentTarget.getAttribute('data-id');
+                        this.showSupplierHistory(id);
                     });
                 });
                 
@@ -3453,6 +4075,8 @@
             
             renderPagination(type, totalItems) {
                 const pagination = this.pagination[type];
+                if (!pagination) return;
+                
                 const totalPages = Math.ceil(totalItems / this.itemsPerPage);
                 
                 pagination.innerHTML = '';
@@ -3463,6 +4087,11 @@
                 }
                 
                 pagination.style.display = 'flex';
+                
+                // Ensure current page is within bounds
+                if (this.currentPage[type] > totalPages) {
+                    this.currentPage[type] = totalPages;
+                }
                 
                 // Previous button
                 const prevBtn = document.createElement('button');
