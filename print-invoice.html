@@ -17,16 +17,22 @@
             margin-left: 0;
         }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             color: #333;
+            background: #fff;
+            font-size: 14px;
         }
         .print-page {
-            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
             min-height: 100vh;
-            page-break-after: always;
             position: relative;
+            box-sizing: border-box;
         }
         .print-page:last-child {
             page-break-after: auto;
@@ -35,12 +41,13 @@
             text-align: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #000;
+            border-bottom: 1px solid #eee;
         }
         .print-header h1 {
-            margin: 0 0 10px 0;
-            font-size: 28px;
-            color: #2c3e50;
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            color: #000;
+            font-weight: bold;
         }
         .invoice-number {
             font-size: 18px;
@@ -48,75 +55,124 @@
             font-weight: bold;
         }
         .print-details {
-            margin: 0 0 25px 0;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 5px;
-            border: 1px solid #eee;
+            margin-bottom: 20px;
+            padding: 0;
         }
         .detail-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
-            font-size: 16px;
+            font-size: 14px;
+            line-height: 1.4;
         }
         .detail-label {
-            font-weight: bold;
-            color: #555;
-            min-width: 120px;
+            font-weight: 600;
+            color: #495057;
+            min-width: 140px;
+            text-align: left;
         }
         .detail-value {
-            color: #333;
-            text-align: left;
+            color: #212529;
+            text-align: right;
             flex-grow: 1;
             padding-right: 10px;
+            font-weight: 500;
         }
         .print-items {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
+            margin: 15px 0 20px;
+            font-size: 13px;
         }
         .print-items th {
             background-color: #f5f5f5;
-            padding: 12px;
+            color: #333;
+            padding: 8px 10px;
             text-align: right;
+            font-weight: bold;
             border: 1px solid #ddd;
-            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .print-items th:first-child {
+            border-top-right-radius: 8px;
+        }
+        
+        .print-items th:last-child {
+            border-top-left-radius: 8px;
         }
         .print-items td {
-            padding: 10px 12px;
+            padding: 8px 10px;
             border: 1px solid #eee;
             text-align: right;
+            vertical-align: middle;
+        }
+        
+        .print-items tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .print-items tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .print-items tr:hover {
+            background-color: #f1f3f5;
         }
         .print-totals {
-            margin-top: 20px;
-            text-align: left;
-            border-top: 2px solid #000;
+            margin: 20px auto 0;
+            text-align: center;
             padding-top: 10px;
-            width: 300px;
-            margin-left: auto;
+            width: 100%;
+            max-width: 100%;
+            border-top: 1px solid #eee;
         }
         .total-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 8px 0;
+            display: inline-block;
+            margin: 10px 0;
             font-size: 18px;
             font-weight: bold;
+            text-align: center;
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            border-radius: 4px;
         }
         .print-footer {
             position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
+            bottom: 30px;
+            left: 30px;
+            right: 30px;
             text-align: center;
             padding-top: 20px;
-            border-top: 1px solid #eee;
-            color: #666;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
             font-size: 14px;
+            line-height: 1.6;
         }
         .footer-content {
-            margin-top: 10px;
+            margin-top: 15px;
+        }
+        
+        .footer-content div {
+            margin-bottom: 5px;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+            .print-page {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                min-height: 100vh;
+            }
+            .no-print {
+                display: none !important;
+            }
         }
         .watermark {
             position: absolute;
@@ -158,42 +214,210 @@
     </div>
 
     <script>
-        // Get invoice data from URL parameters
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            const results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-
         // Format date
         function formatDate(dateString) {
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('ar-EG', options);
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    return dateString; // Return original if invalid date
+                }
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('ar-EG', options);
+            } catch (e) {
+                console.error('Error formatting date:', e);
+                return dateString || 'غير محدد';
+            }
         }
 
         // Generate the invoice
+        let invoiceData = null;
+
+        // Add debug info at the top
+        console.log('Print invoice page loaded');
+        console.log('URL hash:', window.location.hash);
+        console.log('Referrer:', document.referrer);
+
+        // Handle invoice data from URL hash
+        function getInvoiceDataFromHash() {
+            try {
+                if (window.location.hash && window.location.hash.length > 1) {
+                    console.log('Found hash data, length:', window.location.hash.length);
+                    const hashData = window.location.hash.substring(1);
+                    console.log('Decoding hash data...');
+                    const decodedData = JSON.parse(decodeURIComponent(hashData));
+                    console.log('Successfully parsed invoice data from URL');
+                    return decodedData;
+                } else {
+                    console.log('No hash data found in URL');
+                }
+            } catch (e) {
+                console.error('Error parsing invoice data from URL:', e);
+                console.error('Hash content:', window.location.hash);
+            }
+            return null;
+        }
+
+        // Handle messages from parent window
+        window.addEventListener('message', function(event) {
+            console.log('Received message in print window:', event.data);
+            if (event.data && event.data.type === 'PRINT_INVOICE' && event.data.data) {
+                invoiceData = event.data.data;
+                console.log('Received invoice data from parent:', invoiceData);
+                generateInvoice();
+            }
+        });
+
+        // Try to get data from URL hash if not received via message
+        window.addEventListener('load', function() {
+            // First try to get from hash
+            invoiceData = getInvoiceDataFromHash();
+            
+            // If no data in hash, try to request from parent
+            if (!invoiceData) {
+                console.log('No data in hash, requesting from parent...');
+                window.opener?.postMessage({ type: 'REQUEST_INVOICE_DATA' }, '*');
+                
+                // Set a timeout to show error if no response
+                setTimeout(() => {
+                    if (!invoiceData) {
+                        document.getElementById('print-content').innerHTML = `
+                            <div style="text-align: center; padding: 50px;">
+                                <h3 style="color: #dc3545;">خطأ في تحميل بيانات الفاتورة</h3>
+                                <p>تعذر تحميل بيانات الفاتورة. يرجى التأكد من إغلاق نافذة الطباعة السابقة والمحاولة مرة أخرى.</p>
+                                <div style="margin-top: 20px; color: #666; font-family: monospace; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                                    <div>Debug Info:</div>
+                                    <div>Location hash: ${window.location.hash}</div>
+                                    <div>Has opener: ${!!window.opener}</div>
+                                </div>
+                                <button onclick="window.close()" style="margin-top: 20px; padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    إغلاق النافذة
+                                </button>
+                            </div>`;
+                    }
+                }, 2000);
+            } else {
+                generateInvoice();
+            }
+        });
+
         function generateInvoice() {
-            const invoiceData = JSON.parse(decodeURIComponent(getUrlParameter('data')));
+            // Try to get data from URL hash first
+            if (!invoiceData) {
+                invoiceData = getInvoiceDataFromHash();
+            }
+
+            // If still no data, show error
+            if (!invoiceData || !invoiceData.items || !Array.isArray(invoiceData.items)) {
+                document.getElementById('print-content').innerHTML = `
+                    <div style="text-align: center; padding: 50px;">
+                        <h3 style="color: #dc3545;">تعذر تحميل بيانات الفاتورة</h3>
+                        <p>يرجى إغلاق هذه النافذة والمحاولة مرة أخرى</p>
+                        <button onclick="window.close()" style="margin-top: 20px; padding: 8px 20px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            إغلاق النافذة
+                        </button>
+                    </div>`;
+                return;
+            }
+            
             const printContent = document.getElementById('print-content');
             
             // Generate items HTML
             let itemsHtml = '';
             let total = 0;
             
-            invoiceData.items.forEach(item => {
-                const itemTotal = item.balance * item.quantity;
+            // Ensure we have valid items
+            const validItems = [];
+            
+            // Process items - handle both array and object formats
+            const itemsArray = Array.isArray(invoiceData.items) ? invoiceData.items : [];
+            
+            console.log('Processing items array:', itemsArray);
+            
+            // First, try to process items directly
+            itemsArray.forEach(item => {
+                if (!item) return;
+                
+                console.log('Processing item:', item);
+                
+                // Handle different item structures
+                const productName = item.productName || item.name || 'منتج غير معروف';
+                const quantity = parseFloat(item.quantity) || 0;
+                const balance = parseFloat(item.balance || item.price || 0);
+                
+                console.log(`Item details - Name: ${productName}, Qty: ${quantity}, Price: ${balance}`);
+                
+                if (productName || balance > 0) {
+                    validItems.push({
+                        productName: productName,
+                        quantity: quantity,
+                        balance: balance,
+                        total: quantity * balance
+                    });
+                }
+            });
+            
+            // If no valid items found, try to extract from the invoice data directly
+            if (validItems.length === 0 && invoiceData) {
+                console.log('No valid items found, trying to extract from invoice data');
+                
+                // Try to find items in the top level of invoice data
+                for (const key in invoiceData) {
+                    if (Array.isArray(invoiceData[key]) && key.toLowerCase() !== 'items') {
+                        console.log(`Found potential items array in ${key}:`, invoiceData[key]);
+                        invoiceData[key].forEach(item => {
+                            if (item && (item.quantity || item.balance || item.price)) {
+                                const productName = item.productName || item.name || 'منتج غير معروف';
+                                const quantity = parseFloat(item.quantity) || 0;
+                                const balance = parseFloat(item.balance || item.price || 0);
+                                
+                                validItems.push({
+                                    productName: productName,
+                                    quantity: quantity,
+                                    balance: balance,
+                                    total: quantity * balance
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+
+            if (validItems.length === 0) {
+                document.getElementById('print-content').innerHTML = `
+                    <div style="text-align: center; padding: 50px;">
+                        <h3 style="color: #dc3545;">لا توجد عناصر صالحة في الفاتورة</h3>
+                        <p>يرجى التحقق من بيانات الفاتورة والمحاولة مرة أخرى</p>
+                        <div style="margin-top: 20px; color: #666; font-family: monospace; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 5px; max-height: 300px; overflow: auto;">
+                            <div><strong>Debug Info:</strong></div>
+                            <div><strong>Invoice Data:</strong> ${JSON.stringify(invoiceData, null, 2)}</div>
+                            <div style="margin-top: 10px;"><strong>Items Array:</strong> ${JSON.stringify(itemsArray, null, 2)}</div>
+                            <div style="margin-top: 10px;"><strong>Valid Items Found:</strong> ${validItems.length}</div>
+                            <div style="margin-top: 10px;"><strong>Location Hash:</strong> ${window.location.hash}</div>
+                        </div>
+                    </div>`;
+                return;
+            }
+            
+            validItems.forEach(item => {
+                const quantity = parseFloat(item.quantity) || 0;
+                const balance = parseFloat(item.balance) || 0;
+                const itemTotal = quantity * balance;
                 total += itemTotal;
                 
                 itemsHtml += `
                     <tr>
                         <td>${item.productName}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.balance.toFixed(2)} ج.م</td>
-                        <td>${itemTotal.toFixed(2)} ج.م</td>
+                        <td>${quantity.toLocaleString('ar-EG')}</td>
+                        <td>${balance.toFixed(2).replace(/\.?0+$/, '')} ج.م</td>
+                        <td>${itemTotal.toFixed(2).replace(/\.?0+$/, '')} ج.م</td>
                     </tr>
                 `;
             });
+            
+            // Calculate totals if not provided
+            const subtotal = invoiceData.subtotal || total;
+            const tax = invoiceData.tax || 0;
+            const finalTotal = invoiceData.total || (subtotal + tax);
 
             // Generate the invoice HTML
             const invoiceHtml = `
@@ -213,7 +437,11 @@
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">حالة الدفع:</div>
-                            <div class="detail-value">${invoiceData.status === 'paid' ? 'مدفوع' : 'غير مدفوع'}</div>
+                            <div class="detail-value">
+                                <strong style="border-bottom: 2px solid ${invoiceData.status === 'paid' ? '#000' : '#999'}; padding-bottom: 1px;">
+                                    ${invoiceData.status === 'paid' ? '✅ مدفوعة' : '❌ غير مدفوعة'}
+                                </strong>
+                            </div>
                         </div>
                     </div>
                     
@@ -223,7 +451,7 @@
                                 <th>المنتج</th>
                                 <th>الكمية</th>
                                 <th>السعر</th>
-                                <th>الإجمالي</th>
+                                <th>المجموع</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -234,26 +462,43 @@
                     <div class="print-totals">
                         <div class="total-row">
                             <span class="total-label">الإجمالي:</span>
-                            <span class="total-value">${total.toFixed(2)} ج.م</span>
+                            <span class="total-value" style="font-size: 22px; color: #2c3e50;">
+                                ${finalTotal.toFixed(2).replace(/\.?0+$/, '')} <small>ج.م</small>
+                            </span>
                         </div>
                     </div>
                     
                     <div class="print-footer">
                         <div class="footer-content">
-                            <div>شكراً لتعاملكم معنا</div>
-                            <div>للإستفسار: 0123456789</div>
+                            <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee; font-size: 13px; color: #777;">
+                                شكراً لتعاملكم معنا - 0123456789
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Removed second page -->
-            `;
+                </div>`;
             
             printContent.innerHTML = invoiceHtml;
         }
 
-        // Generate the invoice when the page loads
-        window.onload = generateInvoice;
+        // Initialize when the page loads
+        window.onload = function() {
+            console.log('Window loaded event fired');
+            // If we don't have data yet, show a loading message
+            if (!invoiceData) {
+                console.log('No invoice data available on window load');
+                document.getElementById('print-content').innerHTML = `
+                    <div style="text-align: center; padding: 50px;">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">جاري التحميل...</span>
+                        </div>
+                        <p class="mt-3">جاري تحميل بيانات الفاتورة...</p>
+                        <p><small>إذا استمرت المشكلة، يرجى التحقق من تفعيل النوافذ المنبثقة لهذا الموقع</small></p>
+                        <button onclick="window.close()" class="btn btn-danger mt-3">
+                            <i class="fas fa-times"></i> إغلاق النافذة
+                        </button>
+                    </div>`;
+            }
+        };
     </script>
 </body>
 </html>

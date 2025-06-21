@@ -41,19 +41,19 @@ window.sampleCustomers = [
             { date: '2025-06-10',   items: [
                 { id: 'a20', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a22', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 5000.00, unpaid: 1128.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-06-15', items: [
                 { id: 'a1', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a5', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 0.00, unpaid: 6128.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-06-10', items: [
                 { id: 'a20', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a22', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 300.00, unpaid: 5828.00 },
+            ], total: 6128.00, status: 'paid' },
             { date: '2025-05-28', items: [
                 { id: 'a35', balance: 14, quantity: 10, subtotal: 140 },
                 { id: 'a39', balance: 575, quantity: 1, subtotal: 575 }
-            ], total: 715.00, paid: 715.00, unpaid: 0.00 }
+            ], total: 715.00, status: 'unpaid' }
         ]
     },
     { 
@@ -65,11 +65,11 @@ window.sampleCustomers = [
             { date: '2025-06-14', items: [
                 { id: 'a50', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a79', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 5000.00, unpaid: 1128.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-06-01', items: [
                 { id: 'a82', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a83', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 1800.00, unpaid: 1800.00 }
+            ], total: 6128.00, status: 'unpaid' }
         ]
     },
     { 
@@ -81,11 +81,11 @@ window.sampleCustomers = [
             { date: '2025-05-28', items: [
                 { id: 'a84', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a85', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-05-15', items: [
                 { id: 'a86', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a87', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+            ], total: 6128.00, status: 'unpaid' }
         ]
     },
     { 
@@ -97,11 +97,11 @@ window.sampleCustomers = [
             { date: '2025-06-10', items: [
                 { id: 'a88', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a1', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-05-25', items: [
                 { id: 'a3', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a4', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+            ], total: 6128.00, status: 'unpaid' }
         ]
     },
     { 
@@ -113,11 +113,11 @@ window.sampleCustomers = [
             { date: '2025-06-08', items: [
                 { id: 'a5', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a10', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-05-20', items: [
                 { id: 'a22', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a31', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+            ], total: 6128.00, status: 'unpaid' }
         ]
     },
     { 
@@ -129,11 +129,11 @@ window.sampleCustomers = [
             { date: '2025-05-20', items: [
                 { id: 'a35', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a39', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-05-05', items: [
                 { id: 'a42', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a50', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+            ], total: 6128.00, status: 'unpaid' }
         ]
     },
     { 
@@ -145,16 +145,37 @@ window.sampleCustomers = [
             { date: '2025-06-05', items: [
                 { id: 'a79', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a80', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-05-15', items: [
                 { id: 'a82', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a83', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+            ], total: 6128.00, status: 'unpaid' }
         ]
     },
     { 
         id: 'cust-8', 
         name: 'وليد سعيد', 
+        phone: '01278889999', 
+        balance: 0.00,
+        purchases: []
+    },
+    { 
+        id: 'cust-8', 
+        name: 'وليد سعي1', 
+        phone: '01278889999', 
+        balance: 0.00,
+        purchases: []
+    },
+    { 
+        id: 'cust-8', 
+        name: 'وليد سعيد2', 
+        phone: '01278889999', 
+        balance: 0.00,
+        purchases: []
+    },
+    { 
+        id: 'cust-8', 
+        name: '3وليد سعيد', 
         phone: '01278889999', 
         balance: 0.00,
         purchases: []
@@ -168,11 +189,11 @@ window.sampleCustomers = [
             { date: '2025-06-12', items: [
                 { id: 'a84', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a85', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-05-25', items: [
                 { id: 'a86', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a87', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+            ], total: 6128.00, status: 'unpaid' }
         ]
     },
     { 
@@ -184,11 +205,11 @@ window.sampleCustomers = [
             { date: '2025-05-15', items: [
                 { id: 'a1', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a2', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 1200.00, unpaid: 1200.00 },
+            ], total: 6128.00, status: 'unpaid' },
             { date: '2025-05-01', items: [
                 { id: 'a4', balance: 500, quantity: 10, subtotal: 5000 },
                 { id: 'a5', balance: 12, quantity: 94, subtotal: 1128 }
-            ], total: 6128.00, paid: 800.00, unpaid: 800.00 }
+            ], total: 6128.00, status: 'paid'}
         ]
     }
 ];
@@ -207,8 +228,8 @@ function formatPurchaseHistory(customerId) {
         date: purchase.date,
         items: purchase.items.map(id => getProductDetails(id).name).join('، '),
         total: purchase.total.toFixed(2),
-        paid: purchase.paid.toFixed(2),
-        remaining: (purchase.total - purchase.paid).toFixed(2)
+        status: purchase.status === 'paid' ? 'مدفوع' : 'غير مدفوع',
+        remaining: purchase.status === 'paid' ? '0.00' : purchase.total.toFixed(2)
     }));
 }
 
@@ -301,7 +322,8 @@ window.sampleSuppliers = [
     { id: 'sup-7', name: 'مؤسسة النهضة للمواد الإنشائية', phone: '01004445556' },
     { id: 'sup-8', name: 'شركة التقوى للأدوات المنزلية', phone: '01116667778' },
     { id: 'sup-9', name: 'مؤسسة الرشاد للأدوات الصحية', phone: '01228889990' },
-    { id: 'sup-10', name: 'شركة النيل للمواد العازلة', phone: '01001112223' }
+    { id: 'sup-10', name: 'شركة النيل للمواد العازلة', phone: '01001112223' },
+    { id: 'sup-11', name: 'شركة النيل للمواد العازلة', phone: '01001112223' },
 ];
 
 // Make sample data globally available
