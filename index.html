@@ -1219,7 +1219,7 @@
                         <h2>إدارة المنتجات</h2>
                         <div>
                             <button class="btn btn-primary" id="add-product-btn" style="margin-left: 10px;">
-                                <i class="fas fa-plus"></i> إضافة كمية وسعر جديد
+                                <i class="fas fa-plus"></i> إضافة كمية وسعر
                             </button>
                             <button class="btn btn-outline" id="add-product-name-btn">
                                 <i class="fas fa-plus"></i> إضافة اسم منتج فقط
@@ -1433,7 +1433,7 @@
     <div class="modal-overlay" id="product-modal">
         <div class="modal">
             <div class="modal-header">
-                <h3 id="product-modal-title">إضافة كمية وسعر جديد</h3>
+                <h3 id="product-modal-title">إضافة كمية وسعر</h3>
                 <button class="close-btn" id="close-product-modal">
                     <i class="fas fa-times"></i>
                 </button>
@@ -1447,7 +1447,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <label for="product-name">اسم المنتج *</label>
                             <button type="button" id="toggle-product-input" class="btn btn-sm btn-link" style="padding: 0;">
-                                <i class="fas fa-plus"></i> <span id="toggle-text">إضافة كمية وسعر جديد</span>
+                                <i class="fas fa-plus"></i> <span id="toggle-text">إضافة كمية وسعر</span>
                             </button>
                         </div>
                         
@@ -2191,7 +2191,7 @@
                         // Adding new item
                         const titleElement = document.getElementById(`${modalType}-modal-title`);
                         if (titleElement) {
-                            titleElement.textContent = `إضافة ${modalType === 'product' ? 'كمية وسعر جديد' : modalType === 'customer' ? 'عميل جديد' : modalType === 'supplier' ? 'مورد جديد' : 'فاتورة جديدة'}`;
+                            titleElement.textContent = `إضافة ${modalType === 'product' ? 'كمية وسعر' : modalType === 'customer' ? 'عميل جديد' : modalType === 'supplier' ? 'مورد جديد' : 'فاتورة جديدة'}`;
                         }
                         
                         // Set default values for new items
@@ -2306,7 +2306,7 @@
                         productSelectContainer.style.display = 'block';
                         productSelect.required = true;
                         productInput.required = false;
-                        toggleText.textContent = 'إضافة كمية وسعر جديد';
+                        toggleText.textContent = 'إضافة كمية وسعر';
                         productSelect.focus();
                         
                         // Show quantity and supplier fields in select mode
@@ -2535,105 +2535,160 @@
                 }
             }
             
-            saveProduct() {
+            /**
+             * Validates product form data
+             * @returns {Object} Object containing validation status and data/errors
+             */
+            /**
+             * Validates product form data
+             * @returns {Object} Object containing validation status and data/errors
+             */
+            /**
+             * Validates the product form data
+             * @returns {Object} Object containing validation status, form data, and errors
+             */
+            validateProductForm() {
                 const form = this.formFields.product;
-                const id = form.id.value || `prod-${Date.now()}`;
-                const isEditMode = !!form.id.value;
-                
-                // Get form elements
                 const productSelect = document.getElementById('product-name');
                 const productInput = document.getElementById('product-name-input');
                 const priceInput = document.getElementById('product-balance');
                 const quantityInput = document.getElementById('product-quantity');
                 const supplierSelect = document.getElementById('product-supplier');
-                
-                let name, balance, quantity, supplierId;
-                
+                const errors = [];
+                const formData = {
+                    id: form.id?.value || `prod-${Date.now()}`,
+                    name: '',
+                    balance: 0,
+                    quantity: 0,
+                    supplierId: null
+                };
+
                 // Check which input method is being used
-                const isUsingInput = productInput && productInput.value.trim() !== '';
-                
-                // Validate and get values based on input method
-                if (isUsingInput) {
-                    // Using the input field (new product)
-                    name = productInput.value.trim();
-                    balance = parseFloat(priceInput.value) || 0;
-                    quantity = 0; // Default quantity for new products
-                    supplierId = supplierSelect ? supplierSelect.value : null;
-                    
-                    // Validate inputs
-                    if (!name) {
-                        this.showAlert('الرجاء إدخال اسم المنتج', 'danger');
-                        productInput.focus();
-                        return;
+                const isNewProduct = productInput && productInput.value.trim() !== '';
+                const isUsingInput = isNewProduct; // This indicates we're using the text input method
+
+                // Validate product name
+                if (isNewProduct) {
+                    formData.name = productInput.value.trim();
+                    if (!formData.name) {
+                        errors.push('اسم المنتج مطلوب');
                     }
                     
-                    if (isNaN(balance) || balance <= 0) {
-                        this.showAlert('الرجاء إدخال سعر صحيح', 'danger');
-                        priceInput.focus();
-                        return;
+                    // Get and validate price
+                    formData.balance = parseFloat(priceInput.value) || 0;
+                    if (isNaN(formData.balance) || formData.balance <= 0) {
+                        errors.push('الرجاء إدخال سعر صحيح');
                     }
+                    
+                    // Set default quantity for new products
+                    formData.quantity = 0;
+                    
+                    // Get supplier (optional for new products)
+                    formData.supplierId = supplierSelect?.value || null;
                 } else if (productSelect && productSelect.selectedIndex > 0) {
                     // Using the select dropdown (existing product)
                     const selectedOption = productSelect.options[productSelect.selectedIndex];
-                    name = selectedOption.textContent.split(' (')[0];
-                    balance = parseFloat(selectedOption.getAttribute('data-price')) || 0;
-                    quantity = parseInt(quantityInput.value, 10) || 0;
-                    supplierId = supplierSelect ? supplierSelect.value : null;
+                    formData.id = productSelect.value;
+                    formData.name = selectedOption.text.split(' (')[0];
+                    formData.balance = parseFloat(priceInput?.value) || 0;
+                    formData.quantity = parseInt(quantityInput?.value, 10) || 0;
+                    formData.supplierId = supplierSelect?.value || null;
                     
-                    // Validate quantity
-                    if (isNaN(quantity) || quantity <= 0) {
-                        this.showAlert('الرجاء إدخال كمية صحيحة', 'danger');
-                        quantityInput.focus();
-                        return;
+                    // Validate quantity for existing products
+                    if (isNaN(formData.quantity) || formData.quantity <= 0) {
+                        errors.push('الرجاء إدخال كمية صحيحة');
                     }
                 } else {
                     // No valid input method found
-                    this.showAlert('الرجاء إدخال بيانات المنتج بشكل صحيح', 'danger');
-                    return;
+                    errors.push('الرجاء إدخال بيانات المنتج بشكل صحيح');
                 }
                 
-                // Prepare product data
-                const productData = {
-                    id,
-                    name,
-                    balance,
-                    quantity,
-                    supplierId,
-                    updatedAt: new Date().toISOString()
+                return {
+                    isValid: errors.length === 0,
+                    data: {
+                        id: formData.id,
+                        name: formData.name,
+                        balance: formData.balance,
+                        quantity: formData.quantity,
+                        supplierId: formData.supplierId,
+                        isNewProduct: isNewProduct,
+                        isUsingInput: isUsingInput
+                    },
+                    errors: errors
                 };
-                
-                if (isEditMode) {
-                    // Update existing product
-                    const index = this.products.findIndex(p => p.id === id);
-                    if (index !== -1) {
-                        // Preserve existing data
-                        const existingProduct = this.products[index];
-                        productData.createdAt = existingProduct.createdAt || new Date().toISOString();
-                        productData.quantity = existingProduct.quantity; // Preserve existing quantity
-                        this.products[index] = { ...existingProduct, ...productData };
-                        this.showAlert('تم تحديث المنتج بنجاح', 'success');
-                    }
-                } else {
-                    // Add new product
-                    productData.createdAt = new Date().toISOString();
-                    this.products.push(productData);
-                    this.showAlert('تم إضافة المنتج بنجاح', 'success');
+            }
+            
+            /**
+             * Saves a product to the system
+             * @returns {Promise<void>}
+             */
+            async saveProduct() {
+                try {
+                    // Validate form data
+                    const { isValid, data: formData, errors } = this.validateProductForm();
                     
-                    // If adding a new product, reset the form for next entry
-                    if (isUsingInput) {
-                        productInput.value = '';
-                        priceInput.value = '';
-                        quantityInput.value = '1';
-                        if (supplierSelect) supplierSelect.value = '';
-                        productInput.focus();
-                        return; // Keep the modal open for next entry
+                    if (!isValid) {
+                        this.showAlert(errors.join('<br>'), 'danger');
+                        return;
                     }
+
+                    const isEditMode = !!this.formFields.product.id?.value;
+                    
+                    // Prepare product data
+                    const productData = {
+                        ...formData,
+                        updatedAt: new Date().toISOString(),
+                        createdAt: isEditMode 
+                            ? (this.getProduct(formData.id)?.createdAt || new Date().toISOString())
+                            : new Date().toISOString()
+                    };
+
+                    // Update or add product
+                    if (isEditMode) {
+                        const index = this.products.findIndex(p => p.id === formData.id);
+                        if (index !== -1) {
+                            // Preserve existing data and only update quantity
+                            const existingProduct = this.products[index];
+                            this.products[index] = { 
+                                ...existingProduct, 
+                                quantity: existingProduct.quantity + productData.quantity, // Add to existing quantity
+                                updatedAt: productData.updatedAt, // Keep the update time
+                                // Preserve the original balance (price) from the existing product
+                                balance: existingProduct.balance
+                            };
+                            this.showAlert('تم تحديث كمية المنتج بنجاح', 'success');
+                        }
+                    } else {
+                        // Add new product
+                        this.products.push(productData);
+                        this.showAlert('تم إضافة المنتج بنجاح', 'success');
+                        
+                        // If adding a new product, reset the form for next entry
+                        if (formData.isUsingInput) {
+                            const productInput = document.getElementById('product-name-input');
+                            const priceInput = document.getElementById('product-balance');
+                            const quantityInput = document.getElementById('product-quantity');
+                            const supplierSelect = document.getElementById('product-supplier');
+                            
+                            productInput.value = '';
+                            priceInput.value = '';
+                            quantityInput.value = '1';
+                            if (supplierSelect) supplierSelect.value = '';
+                            productInput.focus();
+                            return; // Keep the modal open for next entry
+                        }
+                    }
+
+                    // Save to storage and update UI
+                    await this.saveData();
+                    this.closeModal('product');
+                    this.renderProductsTable();
+                    this.updateDashboard();
+                    
+                } catch (error) {
+                    console.error('Error saving product:', error);
+                    this.showAlert('حدث خطأ أثناء حفظ المنتج. يرجى المحاولة مرة أخرى.', 'danger');
                 }
-                
-                this.saveData();
-                this.closeModal('product');
-                this.renderProductsTable();
-                this.updateDashboard();
             }
             
             saveCustomer() {
@@ -3643,50 +3698,59 @@
                     console.log(`عدد المعاملات: ${items.length}`);
                     console.log('----------------------------------------');
                     
-                    // Format items with proper error handling
+                    // Format items with proper error handling and sort by date (newest first)
                     console.log('Formatting items for display...');
-                    const formattedItems = items.map((item, index) => {
-                        // Log each transaction in a table format
-                        console.groupCollapsed(`🔹 معاملة #${index + 1}: ${item.name || 'منتج غير معروف'}`);
-                        console.table({
-                            'التاريخ': item.date ? new Date(item.date).toLocaleString('ar-EG') : 'غير محدد',
-                            'المنتج': item.name || 'غير معروف',
-                            'الكمية': item.quantity || 0,
-                            'الوحدة': item.unit || 'وحدة',
-                            'سعر الوحدة': `${(item.price || 0).toFixed(2)} ج.م`,
-                            'الإجمالي': `${((item.quantity || 0) * (item.price || 0)).toFixed(2)} ج.م`,
-                            'رقم الدفعة': item.batch || 'غير محدد',
-                            'ملاحظات': item.notes || 'لا توجد'
-                        });
-                        console.groupEnd();
-                        console.log(`Formatting item ${index + 1}:`, item);
-                        try {
-                            const itemDate = item.date ? new Date(item.date) : new Date();
-                            const formattedDate = itemDate.toLocaleDateString('ar-EG', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                            
-                            const quantity = parseFloat(item.quantity) || 0;
-                            const price = parseFloat(item.price) || 0;
-                            const total = quantity * price;
-                            
-                            return {
-                                ...item,
-                                formattedDate,
-                                quantity,
-                                price,
-                                total
-                            };
-                        } catch (error) {
-                            console.error('Error formatting item:', item, error);
-                            console.error('Error formatting item:', error);
-                            return null;
-                        }
-                    }).filter(Boolean);
+                    const formattedItems = items
+                        .map((item, index) => {
+                            try {
+                                // Log each transaction in a table format
+                                console.groupCollapsed(`🔹 معاملة #${index + 1}: ${item.name || 'منتج غير معروف'}`);
+                                
+                                // Format date for display
+                                const itemDate = item.date ? new Date(item.date) : new Date();
+                                const formattedDate = itemDate.toLocaleDateString('ar-EG', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                                
+                                // Calculate values
+                                const quantity = parseFloat(item.quantity) || 0;
+                                const price = parseFloat(item.price) || 0;
+                                const total = quantity * price;
+                                
+                                // Log transaction details
+                                console.table({
+                                    'التاريخ': formattedDate,
+                                    'المنتج': item.name || 'غير معروف',
+                                    'الكمية': quantity,
+                                    'الوحدة': item.unit || 'وحدة',
+                                    'سعر الوحدة': `${price.toFixed(2)} ج.م`,
+                                    'الإجمالي': `${total.toFixed(2)} ج.م`,
+                                    'رقم الدفعة': item.batch || 'غير محدد',
+                                    'ملاحظات': item.notes || 'لا توجد'
+                                });
+                                
+                                console.groupEnd();
+                                
+                                return {
+                                    ...item,
+                                    dateObject: itemDate,  // Keep the date object for sorting
+                                    formattedDate,
+                                    quantity,
+                                    price,
+                                    total
+                                };
+                            } catch (error) {
+                                console.error('Error formatting item:', item, error);
+                                return null;
+                            }
+                        })
+                        .filter(Boolean)
+                        .sort((a, b) => b.dateObject - a.dateObject); // Sort by date (newest first)
+                    
                     console.log(`Successfully formatted ${formattedItems.length} items`);
 
                     // Sort items by date (newest first)
@@ -3903,9 +3967,13 @@
                     }
                     console.log('Product found:', product.name, product);
 
-                    // Get supplier history for this product
+                    // Get supplier history for this product and sort by date (newest first)
                     console.log('Getting supplier history for product:', product.name);
-                    const supplierHistory = product.supplierHistory || [];
+                    const supplierHistory = (product.supplierHistory || []).sort((a, b) => {
+                        const dateA = a.date ? new Date(a.date) : new Date(0);
+                        const dateB = b.date ? new Date(b.date) : new Date(0);
+                        return dateB - dateA; // Sort in descending order (newest first)
+                    });
                     console.log('Raw supplier history:', supplierHistory);
                     
                     const supplierIds = [...new Set(supplierHistory.map(item => item.supplierId))];
@@ -3919,12 +3987,12 @@
                     
                     console.log('Filtered suppliers:', suppliers);
 
-                    // Create modal HTML
+                    // Create modal HTML with matching style to supplier/customer history
                     const modalHtml = `
                         <div class="modal-overlay active" id="product-history-modal">
-                            <div class="modal" style="max-width: 900px;">
+                            <div class="modal" style="max-width: 1000px;">
                                 <div class="modal-header">
-                                    <h3>سجل موردي المنتج: ${product.name}</h3>
+                                    <h3>سجل مشتريات المنتج: ${product.name}</h3>
                                     <button class="close-btn" id="close-product-history">
                                         <i class="fas fa-times"></i>
                                     </button>
@@ -3932,24 +4000,21 @@
                                 <div class="modal-body">
                                     <div class="product-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                                         <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
-                                            <div><strong>الكمية المتوفرة:</strong> ${product.quantity}</div>
-                                            <div><strong>السعر الحالي:</strong> ${(product.balance || 0).toFixed(2)} ج.م</div>
-                                            <div><strong>عدد الموردين:</strong> ${suppliers.length}</div>
-                                            <div><strong>إجمالي الكمية المشتراة:</strong> ${supplierHistory.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)}</div>
+                                            <div><strong>الكمية المتوفرة:</strong> ${product.quantity || 0} ${product.unit || 'قطعة'}</div>
+                                            <div><strong>سعر البيع:</strong> ${(product.sellingPrice || 0).toFixed(2)} ج.م</div>
+                                            <div><strong>سعر الشراء:</strong> ${(product.purchasePrice || 0).toFixed(2)} ج.م</div>
+                                            <div><strong>الحد الأدنى:</strong> ${product.minimumQuantity || 0}</div>
                                         </div>
                                     </div>
                                     
-                                    <div class="suppliers-list">
+                                    <div class="purchases-list">
                                         <h4 style="margin: 20px 0 15px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
                                             سجل المشتريات من الموردين
                                         </h4>
                                         ${supplierHistory.length > 0 
-                                            ? supplierHistory.map((item, index) => {
-                                                console.log(`Processing history item ${index}:`, item);
-                                                const supplier = this.getSupplier(item.supplierId);
-                                                const supplierName = supplier ? supplier.name : 'مورد غير معروف';
-                                                const date = item.date ? new Date(item.date) : new Date();
-                                                const formattedDate = date.toLocaleDateString('ar-EG', {
+                                            ? supplierHistory.map((purchase, index) => {
+                                                const purchaseDate = purchase.date ? new Date(purchase.date) : new Date();
+                                                const formattedDate = purchaseDate.toLocaleDateString('ar-EG', {
                                                     year: 'numeric',
                                                     month: 'long',
                                                     day: 'numeric',
@@ -3957,50 +4022,52 @@
                                                     minute: '2-digit'
                                                 });
                                                 
-                                                const quantity = parseInt(item.quantity) || 0;
-                                                const price = parseFloat(item.price) || 0;
-                                                const total = parseFloat(item.total) || 0;
+                                                const supplier = this.getSupplier(purchase.supplierId);
+                                                const quantity = parseFloat(purchase.quantity) || 0;
+                                                const price = parseFloat(purchase.price) || 0;
+                                                const total = quantity * price;
                                                 
                                                 return `
-                                                <div class="supplier-card" style="margin-bottom: 15px; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
-                                                    <div class="supplier-header" style="background: #f8f9fa; padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                                                        <div style="display: flex; gap: 15px; align-items: center;">
-                                                            <i class="fas fa-truck" style="color: #666;"></i>
-                                                            <span style="font-weight: 500; color: #333;">${supplierName}</span>
+                                                    <div class="purchase-card" style="margin-bottom: 15px; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+                                                        <div class="purchase-header" style="background: #f8f9fa; padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                                                            <div style="display: flex; gap: 15px; align-items: center;">
+                                                                <span class="purchase-supplier" style="font-weight: 500;">
+                                                                    ${supplier ? supplier.name : 'مورد غير معروف'}
+                                                                </span>
+                                                                <span class="purchase-date" style="color: #666; font-size: 0.9em;">
+                                                                    ${formattedDate}
+                                                                </span>
+                                                            </div>
+                                                            <div style="display: flex; align-items: center; gap: 15px;">
+                                                                <span class="purchase-total" style="font-weight: bold; color: var(--secondary);">
+                                                                    ${total.toFixed(2)} ج.م
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                        <div style="color: #666; font-size: 0.9em;">
-                                                            <i class="far fa-calendar-alt" style="margin-left: 5px;"></i>
-                                                            ${formattedDate}
+                                                        <div class="purchase-details" style="padding: 15px;">
+                                                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;">
+                                                                <div><strong>الكمية:</strong> ${quantity} ${purchase.unit || 'قطعة'}</div>
+                                                                <div><strong>سعر الوحدة:</strong> ${price.toFixed(2)} ج.م</div>
+                                                                ${supplier?.phone ? `<div><strong>هاتف المورد:</strong> ${supplier.phone}</div>` : ''}
+                                                                ${purchase.batchNumber ? `<div><strong>رقم الدفعة:</strong> ${purchase.batchNumber}</div>` : ''}
+                                                            </div>
+                                                            ${purchase.notes ? `
+                                                                <div style="margin-top: 10px; padding: 8px; background: #f0f4f8; border-radius: 4px; font-size: 0.9em;">
+                                                                    <strong>ملاحظات:</strong> ${purchase.notes}
+                                                                </div>
+                                                            ` : ''}
                                                         </div>
                                                     </div>
-                                                    <div style="padding: 15px;">
-                                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 10px;">
-                                                            <div>
-                                                                <div style="color: #666; margin-bottom: 5px;">الكمية</div>
-                                                                <div style="font-weight: 500;">${quantity}</div>
-                                                            </div>
-                                                            <div>
-                                                                <div style="color: #666; margin-bottom: 5px;">سعر الوحدة</div>
-                                                                <div style="font-weight: 500;">${price.toFixed(2)} ج.م</div>
-                                                            </div>
-                                                            <div>
-                                                                <div style="color: #666; margin-bottom: 5px;">الإجمالي</div>
-                                                                <div style="font-weight: bold; color: var(--secondary);">${total.toFixed(2)} ج.م</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>`;
+                                                `;
                                             }).join('')
-                                            : `<div class="no-suppliers" style="text-align: center; padding: 30px; color: #666; background: #f9f9f9; border-radius: 8px; margin-top: 20px;">
-                                                <i class="fas fa-truck-loading" style="font-size: 2em; margin-bottom: 15px; opacity: 0.5;"></i>
-                                                <p style="margin: 0;">لا توجد سجلات مشتريات لهذا المنتج</p>
-                                              </div>`}
+                                            : `
+                                                <div class="empty-state" style="text-align: center; padding: 30px; color: #666;">
+                                                    <i class="fas fa-inbox" style="font-size: 2.5em; margin-bottom: 10px; opacity: 0.5;"></i>
+                                                    <p>لا توجد مشتريات مسجلة لهذا المنتج</p>
+                                                </div>
+                                            `
+                                        }
                                     </div>
-                                </div>
-                                <div class="modal-footer" style="padding: 15px; border-top: 1px solid #eee; text-align: left;">
-                                    <button class="btn btn-outline" id="close-product-history-btn" style="padding: 8px 20px;">
-                                        <i class="fas fa-times"></i> إغلاق
-                                    </button>
                                 </div>
                             </div>
                         </div>
