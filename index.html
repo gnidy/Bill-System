@@ -1219,7 +1219,7 @@
                         <h2>إدارة المنتجات</h2>
                         <div>
                             <button class="btn btn-primary" id="add-product-btn" style="margin-left: 10px;">
-                                <i class="fas fa-plus"></i> إضافة منتج جديد
+                                <i class="fas fa-plus"></i> إضافة كمية وسعر جديد
                             </button>
                             <button class="btn btn-outline" id="add-product-name-btn">
                                 <i class="fas fa-plus"></i> إضافة اسم منتج فقط
@@ -1433,7 +1433,7 @@
     <div class="modal-overlay" id="product-modal">
         <div class="modal">
             <div class="modal-header">
-                <h3 id="product-modal-title">إضافة منتج جديد</h3>
+                <h3 id="product-modal-title">إضافة كمية وسعر جديد</h3>
                 <button class="close-btn" id="close-product-modal">
                     <i class="fas fa-times"></i>
                 </button>
@@ -1447,7 +1447,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <label for="product-name">اسم المنتج *</label>
                             <button type="button" id="toggle-product-input" class="btn btn-sm btn-link" style="padding: 0;">
-                                <i class="fas fa-plus"></i> <span id="toggle-text">إضافة منتج جديد</span>
+                                <i class="fas fa-plus"></i> <span id="toggle-text">إضافة كمية وسعر جديد</span>
                             </button>
                         </div>
                         
@@ -2191,7 +2191,7 @@
                         // Adding new item
                         const titleElement = document.getElementById(`${modalType}-modal-title`);
                         if (titleElement) {
-                            titleElement.textContent = `إضافة ${modalType === 'product' ? 'منتج جديد' : modalType === 'customer' ? 'عميل جديد' : modalType === 'supplier' ? 'مورد جديد' : 'فاتورة جديدة'}`;
+                            titleElement.textContent = `إضافة ${modalType === 'product' ? 'كمية وسعر جديد' : modalType === 'customer' ? 'عميل جديد' : modalType === 'supplier' ? 'مورد جديد' : 'فاتورة جديدة'}`;
                         }
                         
                         // Set default values for new items
@@ -2306,7 +2306,7 @@
                         productSelectContainer.style.display = 'block';
                         productSelect.required = true;
                         productInput.required = false;
-                        toggleText.textContent = 'إضافة منتج جديد';
+                        toggleText.textContent = 'إضافة كمية وسعر جديد';
                         productSelect.focus();
                         
                         // Show quantity and supplier fields in select mode
