@@ -1363,7 +1363,7 @@
                                             <th>#</th>
                                             <th>الاسم</th>
                                             <th>رقم الهاتف</th>
-                                            <th>الرصيد</th>
+                                            <th>المديونية</th>
                                             <th>الإجراءات</th>
                                         </tr>
                                     </thead>
@@ -1600,10 +1600,8 @@
                         <div class="form-group">
                             <label for="invoice-status">حالة الدفع</label>
                             <select id="invoice-status" class="form-control" required>
-                                <option value="sales">فاتورة مبيعات</option>
                                 <option value="paid">مدفوعة</option>
                                 <option value="unpaid" selected>غير مدفوعة</option>
-                                <option value="partial">مدفوعة جزئياً</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -1620,22 +1618,69 @@
                                 <span>إضافة بند</span>
                             </button>
                         </div>
-                        <div style="width: 100%;">
-                            <div style="overflow: hidden; border-radius: 8px 8px 0 0; background-color: #f8f9fa;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <thead>
-                                        <tr>
-                                            <th style="padding: 12px 15px; text-align: right; font-weight: 600; color: #2c3e50; border-bottom: 2px solid #dee2e6;">المنتج</th>
-                                            <th style="padding: 12px 15px; text-align: center; font-weight: 600; color: #2c3e50; border-bottom: 2px solid #dee2e6; width: 200px;">الكمية</th>
-                                            <th style="padding: 12px 15px; text-align: left; font-weight: 600; color: #2c3e50; border-bottom: 2px solid #dee2e6; width: 150px;">الإجمالي</th>
-                                            <th style="padding: 12px 15px; text-align: center; font-weight: 600; color: #2c3e50; border-bottom: 2px solid #dee2e6; width: 70px;">حذف</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                            <div style="max-height: 400px; overflow-y: auto; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 8px 8px;">
-                                <table class="table" id="invoice-items-table" style="width: 100%; border-collapse: collapse;">
-                                    <tbody id="invoice-items-body" style="width: 100%;">
+                        <style>
+                            .invoice-items-container {
+                                width: 100%;
+                                overflow: hidden;
+                                border: 1px solid #dee2e6;
+                                border-radius: 8px;
+                            }
+                            .invoice-items-header {
+                                width: 100%;
+                                table-layout: fixed;
+                                border-collapse: collapse;
+                                background-color: #f8f9fa;
+                            }
+                            .invoice-items-header th {
+                                padding: 12px 15px;
+                                font-weight: 600;
+                                color: #2c3e50;
+                                border-bottom: 2px solid #dee2e6;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                            }
+                            .invoice-table-wrapper {
+                                max-height: 300px;
+                                overflow-y: auto;
+                                width: 100%;
+                            }
+                            .invoice-items-table {
+                                width: 100%;
+                                table-layout: fixed;
+                                border-collapse: collapse;
+                            }
+                            .col-product { width: calc(100% - 300px); }
+                            .col-quantity { width: 100px; }
+                            .col-total { width: 100px; }
+                            .col-delete { width: 100px; }
+                        </style>
+                        <div class="invoice-items-container">
+                            <table class="invoice-items-header">
+                                <colgroup>
+                                    <col class="col-product">
+                                    <col class="col-quantity">
+                                    <col class="col-total">
+                                    <col class="col-delete">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: right;">المنتج</th>
+                                        <th style="text-align: center;">الكمية</th>
+                                        <th style="text-align: left;">الإجمالي</th>
+                                        <th style="text-align: center;">حذف</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div class="invoice-table-wrapper">
+                                <table class="invoice-items-table" id="invoice-items-table">
+                                    <colgroup>
+                                        <col class="col-product">
+                                        <col class="col-quantity">
+                                        <col class="col-total">
+                                        <col class="col-delete">
+                                    </colgroup>
+                                    <tbody id="invoice-items-body">
                                         <!-- Invoice items will be added here -->
                                     </tbody>
                                 </table>
@@ -1644,7 +1689,7 @@
                     </div>
 
                     <!-- Invoice Summary -->
-                    <div class="invoice-summary">
+                    <div class="invoice-summary mt-3">
                         <div class="summary-row summary-total">
                             <span>الإجمالي:</span>
                             <span id="invoice-total">0.00 ج.م</span>
@@ -1652,12 +1697,18 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" id="cancel-invoice-modal">إلغاء</button>
-                <button type="button" class="btn btn-primary" id="print-invoice" style="margin-left: 10px;">
-                    <i class="fas fa-print"></i> طباعة الفاتورة
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-outline-secondary" id="cancel-invoice-modal">
+                    <i class="fas fa-times ml-1"></i> إلغاء
                 </button>
-                <button type="button" class="btn btn-success" id="save-invoice">حفظ الفاتورة</button>
+                <div class="d-flex">
+                    <button type="button" class="btn btn-primary mr-2" id="print-invoice">
+                        <i class="fas fa-print ml-1"></i> طباعة الفاتورة
+                    </button>
+                    <button type="button" class="btn btn-success" id="save-invoice">
+                        <i class="fas fa-save ml-1"></i> حفظ الفاتورة
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -3059,17 +3110,23 @@
                 let isValid = true;
                 
                 document.querySelectorAll('.invoice-item-row').forEach(row => {
-                    const productId = row.querySelector('.invoice-product').value;
-                    const quantity = parseInt(row.querySelector('.invoice-quantity').value, 10);
-                    const balance = parseFloat(row.querySelector('.invoice-balance').value);
-                    const discount = parseFloat(row.querySelector('.invoice-discount').value) || 0;
+                    const productSelect = row.querySelector('.invoice-product');
+                    const productId = productSelect?.value;
+                    const quantity = parseInt(row.querySelector('.invoice-quantity')?.value, 10);
+                    
+                    // Get balance from the selected product option's data attribute
+                    let balance = 0;
+                    if (productSelect && productSelect.selectedIndex > 0) {
+                        const selectedOption = productSelect.options[productSelect.selectedIndex];
+                        balance = parseFloat(selectedOption?.dataset.balance) || 0;
+                    }
                     
                     if (!productId || isNaN(quantity) || quantity <= 0 || isNaN(balance) || balance < 0) {
                         isValid = false;
                         return;
                     }
                     
-                    items.push({ productId, quantity, balance, discount });
+                    items.push({ productId, quantity, balance });
                 });
                 
                 if (!isValid || items.length === 0) {
@@ -3081,20 +3138,45 @@
                 const customer = this.getCustomer(customerId);
                 const customerName = customer ? customer.name : 'عميل نقدي';
                 
-                // Calculate totals
-                const subtotal = parseFloat(this.dashboardElements.invoiceSubtotal.textContent);
-                const tax = parseFloat(this.dashboardElements.invoiceTax.textContent);
-                const total = parseFloat(this.dashboardElements.invoiceTotal.textContent);
+                // Get status from the form
+                const status = document.getElementById('invoice-status')?.value || 'unpaid';
+                
+                // Calculate totals and prepare items with full product details
+                let subtotal = 0;
+                const processedItems = [];
+                
+                items.forEach(item => {
+                    const product = this.getProduct(item.productId);
+                    const itemTotal = item.quantity * item.balance;
+                    subtotal += itemTotal;
+                    
+                    processedItems.push({
+                        productId: item.productId,
+                        name: product?.name || 'منتج غير معروف',
+                        quantity: item.quantity,
+                        price: item.balance,
+                        total: itemTotal
+                    });
+                });
+                
+                // Calculate discount and final total
+                const discount = 0; // You can add a discount field to the form if needed
+                const total = subtotal - discount;
+                const paid = status === 'paid' ? total : 0;
+                const remaining = total - paid;
                 
                 const invoiceData = {
                     id,
                     customerId,
                     customer: customerName,
                     date,
-                    items,
-                    subtotal,
-                    tax,
-                    total
+                    items: processedItems,
+                    subtotal: parseFloat(subtotal.toFixed(2)),
+                    discount: parseFloat(discount.toFixed(2)),
+                    total: parseFloat(total.toFixed(2)),
+                    paid: parseFloat(paid.toFixed(2)),
+                    remaining: parseFloat(remaining.toFixed(2)),
+                    status: status
                 };
                 
                 if (form.id.value) {
@@ -3509,23 +3591,15 @@
                             <button class="action-btn edit" data-id="${product.id}" title="تعديل">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="action-btn history" data-id="${product.id}" title="سجل المعاملات">
-                                <i class="fas fa-history"></i>
-                            </button>
                         </td>
                     `;
                     
                     this.tables.products.appendChild(row);
                     
-                    // Add event listeners to buttons
+                    // Add event listener to edit button
                     row.querySelector('.action-btn.edit').addEventListener('click', (e) => {
                         e.stopPropagation();
                         this.openProductModal(product.id);
-                    });
-                    
-                    row.querySelector('.action-btn.history').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.showProductHistory(product.id);
                     });
                 });
 
@@ -3987,92 +4061,6 @@
                     
                     console.log('Filtered suppliers:', suppliers);
 
-                    // Create modal HTML with matching style to supplier/customer history
-                    const modalHtml = `
-                        <div class="modal-overlay active" id="product-history-modal">
-                            <div class="modal" style="max-width: 1000px;">
-                                <div class="modal-header">
-                                    <h3>سجل مشتريات المنتج: ${product.name}</h3>
-                                    <button class="close-btn" id="close-product-history">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="product-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
-                                            <div><strong>الكمية المتوفرة:</strong> ${product.quantity || 0} ${product.unit || 'قطعة'}</div>
-                                            <div><strong>سعر البيع:</strong> ${(product.sellingPrice || 0).toFixed(2)} ج.م</div>
-                                            <div><strong>سعر الشراء:</strong> ${(product.purchasePrice || 0).toFixed(2)} ج.م</div>
-                                            <div><strong>الحد الأدنى:</strong> ${product.minimumQuantity || 0}</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="purchases-list">
-                                        <h4 style="margin: 20px 0 15px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
-                                            سجل المشتريات من الموردين
-                                        </h4>
-                                        ${supplierHistory.length > 0 
-                                            ? supplierHistory.map((purchase, index) => {
-                                                const purchaseDate = purchase.date ? new Date(purchase.date) : new Date();
-                                                const formattedDate = purchaseDate.toLocaleDateString('ar-EG', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                });
-                                                
-                                                const supplier = this.getSupplier(purchase.supplierId);
-                                                const quantity = parseFloat(purchase.quantity) || 0;
-                                                const price = parseFloat(purchase.price) || 0;
-                                                const total = quantity * price;
-                                                
-                                                return `
-                                                    <div class="purchase-card" style="margin-bottom: 15px; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
-                                                        <div class="purchase-header" style="background: #f8f9fa; padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                                                            <div style="display: flex; gap: 15px; align-items: center;">
-                                                                <span class="purchase-supplier" style="font-weight: 500;">
-                                                                    ${supplier ? supplier.name : 'مورد غير معروف'}
-                                                                </span>
-                                                                <span class="purchase-date" style="color: #666; font-size: 0.9em;">
-                                                                    ${formattedDate}
-                                                                </span>
-                                                            </div>
-                                                            <div style="display: flex; align-items: center; gap: 15px;">
-                                                                <span class="purchase-total" style="font-weight: bold; color: var(--secondary);">
-                                                                    ${total.toFixed(2)} ج.م
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="purchase-details" style="padding: 15px;">
-                                                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;">
-                                                                <div><strong>الكمية:</strong> ${quantity} ${purchase.unit || 'قطعة'}</div>
-                                                                <div><strong>سعر الوحدة:</strong> ${price.toFixed(2)} ج.م</div>
-                                                                ${supplier?.phone ? `<div><strong>هاتف المورد:</strong> ${supplier.phone}</div>` : ''}
-                                                                ${purchase.batchNumber ? `<div><strong>رقم الدفعة:</strong> ${purchase.batchNumber}</div>` : ''}
-                                                            </div>
-                                                            ${purchase.notes ? `
-                                                                <div style="margin-top: 10px; padding: 8px; background: #f0f4f8; border-radius: 4px; font-size: 0.9em;">
-                                                                    <strong>ملاحظات:</strong> ${purchase.notes}
-                                                                </div>
-                                                            ` : ''}
-                                                        </div>
-                                                    </div>
-                                                `;
-                                            }).join('')
-                                            : `
-                                                <div class="empty-state" style="text-align: center; padding: 30px; color: #666;">
-                                                    <i class="fas fa-inbox" style="font-size: 2.5em; margin-bottom: 10px; opacity: 0.5;"></i>
-                                                    <p>لا توجد مشتريات مسجلة لهذا المنتج</p>
-                                                </div>
-                                            `
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
                     // Remove any existing product history modal
                     const existingModal = document.getElementById('product-history-modal');
                     if (existingModal) {
@@ -4332,7 +4320,7 @@
                         <td>${start + index + 1}</td>
                         <td>${customer.name}</td>
                         <td>${customer.phone}</td>
-                        <td>${customer.balance?.toFixed(2) || '0.00'} ج.م</td>
+                        <td>${parseFloat(customer.balance || 0).toFixed(2)} ج.م</td>
                         <td class="actions">
                             <button class="action-btn edit" data-id="${customer.id}" title="تعديل">
                                 <i class="fas fa-edit"></i>
@@ -4798,6 +4786,24 @@
                     }
                 }, 5000);
             }
+            
+            populateCustomerDropdown() {
+                const customerSelect = document.getElementById('invoice-customer');
+                if (customerSelect) {
+                    // Clear existing options except the first one
+                    while (customerSelect.options.length > 1) {
+                        customerSelect.remove(1);
+                    }
+                    
+                    // Add customers to the dropdown
+                    this.customers.forEach(customer => {
+                        const option = document.createElement('option');
+                        option.value = customer.id;
+                        option.textContent = customer.name;
+                        customerSelect.appendChild(option);
+                    });
+                }
+            }
         }
 
         // Initialize the application when DOM is loaded
@@ -4809,6 +4815,17 @@
             if (reportsPage && window.getComputedStyle(reportsPage).display !== 'none') {
                 console.log('Reports page is active, initializing...');
                 window.updateReportsPage();
+            }
+            
+            // Populate customer dropdown
+            window.inventorySystem.populateCustomerDropdown();
+            
+            // Add event listener for the invoice modal to populate customer dropdown when opened
+            const invoiceModal = document.getElementById('invoice-modal');
+            if (invoiceModal) {
+                invoiceModal.addEventListener('show.bs.modal', function () {
+                    window.inventorySystem.populateCustomerDropdown();
+                });
             }
         });
     </script>

@@ -632,7 +632,7 @@ window.sampleCustomers = [
         id: 'cust-12', 
         name: 'مطعم الكبابجي', 
         phone: '0234567890', 
-        balance: 0.00,
+        balance: -1000.00,
         purchases: [
             { 
                 invoiceId: 'inv-15',
