@@ -3,207 +3,209 @@ window.InvoiceSystem = window.InvoiceSystem || {};
 
 // Sample products data
 window.allProducts = [
-    {id: "a1", name: "فيبر", balance: 575, quantity: 33, supplierHistory: [
-        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 33, price: 575, total: 18975, date: "2025-06-20"},
-        {supplierId: "sup-5", supplierName: 'شركة النصر للألوان والدهانات', quantity: 34, price: 75, total: 2550, date: "2025-06-21"},
+    {id: "a1", name: "فيبر", balance: 575, quantity: 43, productHistory: [
+        {customersId: "cust-1", customersName: 'محمد أحمد', quantity: 33, price: 575, total: 18975, date: "2025-06-20"},
+        {customersId: "cust-5", customersName: 'مؤسسة المدينة المنورة', quantity: 34, price: 75, total: 2550, date: "2025-06-21"},
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 575},
             {date: "2025-06-20", balance: 72},
             {date: "2025-06-19", balance: 65},
         ]},
-    {id: "a2", name: "فيبر محمل", balance: 590, quantity: 38, supplierHistory: [
-        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 38, price: 590, total: 22420, date: "2025-06-20"},
+    {id: "a2", name: "فيبر محمل", balance: 590, quantity: 31, productHistory: [
+        {customersId: "cust-1", customersName: 'محمد أحمد', quantity: 38, price: 590, total: 22420, date: "2025-06-20"},
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 590},
             {date: "2025-06-02", balance: 487},
         ]},
-    {id: "a3", name: "كلادين", balance: 750, quantity: 40, supplierHistory: [
-        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 40, price: 750, total: 30000, date: "2025-06-20"}
+    {id: "a3", name: "كلادين", balance: 750, quantity: 0, productHistory: [
+        {customersId: "cust-1", customersName: 'محمد أحمد', quantity: 40, price: 750, total: 30000, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 750},
             {date: "2025-06-01", balance: 680},
         ]},
-    {id: "a4", name: "U.V", balance: 580, quantity: 24, supplierHistory: [
-        {supplierId: "sup-2", supplierName: 'مؤسسة النور للمواد الكهربائية', quantity: 24, price: 580, total: 13920, date: "2025-06-20"}
+    {id: "a4", name: "U.V", balance: 580, quantity: 4, productHistory: [
+        {customersId: "cust-2", customersName: 'شركة النور للمقاولات', quantity: 24, price: 580, total: 13920, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 580},
             {date: "2025-06-01", balance: 490},
         ]},
-    {id: "a5", name: "بروديوم", balance: 755, quantity: 2, supplierHistory: [
-        {supplierId: "sup-2", supplierName: 'مؤسسة النور للمواد الكهربائية', quantity: 2, price: 755, total: 1510, date: "2025-06-20"}
+    {id: "a5", name: "بروديوم", balance: 755, quantity: 21, productHistory: [
+        {customersId: "cust-2", customersName: 'شركة النور للمقاولات', quantity: 2, price: 755, total: 1510, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 755},
             {date: "2025-06-01", balance: 720},
         ]},
-    {id: "a10", name: "استرتش ثقيل ١٠سم", balance: 75, quantity: 13, supplierHistory: [
-        {supplierId: "sup-3", supplierName: 'شركة المصنع العربي للحديد', quantity: 13, price: 75, total: 975, date: "2025-06-20"}
+    {id: "a10", name: "استرتش ثقيل ١٠سم", balance: 75, quantity: 3, productHistory: [
+        {customersId: "cust-3", customersName: 'سارة محمود', quantity: 13, price: 75, total: 975, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 75},
             {date: "2025-06-01", balance: 65},
         ]},
-    {id: "a11", name: "اكرة بلية صيني اسود", balance: 45, quantity: 16, supplierHistory: [
-        {supplierId: "sup-3", supplierName: 'شركة المصنع العربي للحديد', quantity: 16, price: 45, total: 720, date: "2025-06-20"}
+    {id: "a11", name: "اكرة بلية صيني اسود", balance: 4, quantity: 16, productHistory: [
+        {customersId: "cust-3", customersName: 'سارة محمود', quantity: 16, price: 45, total: 720, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 45},
             {date: "2025-06-01", balance: 42},
             {date: "2025-05-20", balance: 40},
         ]},
-    {id: "a20", name: "انبوبة فوم", balance: 98, quantity: 25, supplierHistory: [
-        {supplierId: "sup-4", supplierName: 'مؤسسة الأصيل للأدوات الصحية', quantity: 25, price: 98, total: 2450, date: "2025-06-20"}
+    {id: "a20", name: "انبوبة فوم", balance: 98, quantity: 5, productHistory: [
+        {customersId: "cust-4", customersName: 'أحمد علي', quantity: 25, price: 98, total: 2450, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 98},
             {date: "2025-06-01", balance: 90},
         ]},
-    {id: "a22", name: "بسكوتة خضراء", balance: 12, quantity: 94, supplierHistory: [
-        {supplierId: "sup-4", supplierName: 'مؤسسة الأصيل للأدوات الصحية', quantity: 94, price: 12, total: 1128, date: "2025-06-20"}
+    {id: "a22", name: "بسكوتة خضراء", balance: 12, quantity: 9, productHistory: [
+        {customersId: "cust-4", customersName: 'أحمد علي', quantity: 94, price: 12, total: 1128, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 12},
             {date: "2025-06-01", balance: 10},
         ]},
-    {id: "a31", name: "بنطة ٥مم", balance: 9, quantity: 27, supplierHistory: [
-        {supplierId: "sup-5", supplierName: 'شركة النصر للألوان والدهانات', quantity: 27, price: 9, total: 243, date: "2025-06-20"}
+    {id: "a31", name: "بنطة ٥مم", balance: 9, quantity: 47, productHistory: [
+        {customersId: "cust-5", customersName: 'مؤسسة المدينة المنورة', quantity: 27, price: 9, total: 243, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 9},
             {date: "2025-06-01", balance: 8},
         ]},
-    {id: "a35", name: "ترباس PS بلاستيك اسود", balance: 14, quantity: 80, supplierHistory: [
-        {supplierId: "sup-5", supplierName: 'شركة النصر للألوان والدهانات', quantity: 80, price: 14, total: 1120, date: "2025-06-20"}
+    {id: "a35", name: "ترباس PS بلاستيك اسود", balance: 14, quantity: 0, productHistory: [
+        {customersId: "cust-5", customersName: 'مؤسسة المدينة المنورة', quantity: 80, price: 14, total: 1120, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 14},
             {date: "2025-06-01", balance: 12},
         ]},
-    {id: "a39", name: "ترولي ١٦سم GM", balance: 575, quantity: 1, supplierHistory: [
-        {supplierId: "sup-6", supplierName: 'شركة الأمانة للمواد الكهربائية', quantity: 1, price: 575, total: 575, date: "2025-06-20"}
+    {id: "a39", name: "ترولي ١٦سم GM", balance: 575, quantity: 5, productHistory: [
+        {customersId: "cust-6", customersName: 'عمر خالد', quantity: 1, price: 575, total: 575, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 575},
             {date: "2025-06-01", balance: 500},
         ]},
-    {id: "a42", name: "ثلاثي ٢٫٥ ابيض SM", balance: 2.50, quantity: 690, supplierHistory: [
-        {supplierId: "sup-6", supplierName: 'شركة الأمانة للمواد الكهربائية', quantity: 690, price: 2.50, total: 1725, date: "2025-06-20"}
+    {id: "a42", name: "ثلاثي ٢٫٥ ابيض SM", balance: 2.50, quantity: 80, productHistory: [
+        {customersId: "cust-6", customersName: 'عمر خالد', quantity: 690, price: 2.50, total: 1725, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 2.50},
             {date: "2025-06-01", balance: 500},
             {date: "2025-05-20", balance: 2.50},
         ]},
-    {id: "a50", name: "ثلاثي ٢٫٥ بيج SM", balance: 2.50, quantity: 1663, supplierHistory: [
-        {supplierId: "sup-7", supplierName:'مؤسسة النهضة للمواد الإنشائية' , quantity: 1663, price: 2.50, total: 4157.5, date: "2025-06-20"}
+    {id: "a50", name: "ثلاثي ٢٫٥ بيج SM", balance: 2.50, quantity: 13, productHistory: [
+        {customersId: "cust-7", customersName: 'شركة الأهرام', quantity: 1663, price: 2.50, total: 4157.5, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 2.50},
             {date: "2025-06-01", balance: 500},
         ]},
-    {id: "a79", name: "دبل بجناح SM", balance: 0.85, quantity: 9440, supplierHistory: [
-        {supplierId: "sup-7", supplierName:'مؤسسة النهضة للمواد الإنشائية' , quantity: 9440, price: 0.85, total: 8024, date: "2025-06-20"}
+    {id: "a79", name: "دبل بجناح SM", balance: 0.85, quantity: 100, productHistory: [
+        {customersId: "cust-7", customersName: 'شركة الأهرام', quantity: 9440, price: 0.85, total: 8024, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 0.85},
             {date: "2025-06-01", balance: 0.75},
         ]},
-    {id: "a80", name: "كابلات كهرباء 2.5 مم", balance: 15.75, quantity: 250, supplierHistory: [
-        {supplierId: "sup-8", supplierName: 'شركة التقوى للأدوات المنزلية', quantity: 250, price: 15.75, total: 3937.5, date: "2025-06-20"}
+    {id: "a80", name: "كابلات كهرباء 2.5 مم", balance: 15.75, quantity: 250, productHistory: [
+        {customersId: "cust-8", customersName: 'وليد سعيد', quantity: 25, price: 15.75, total: 3937.5, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 15.75},
             {date: "2025-06-01", balance: 14.50},
         ]},
-    {id: "a81", name: "مفتاح كهرباء 3 فتحات", balance: 25.50, quantity: 180, supplierHistory: [
-        {supplierId: "sup-8", supplierName: 'شركة التقوى للأدوات المنزلية', quantity: 180, price: 25.50, total: 4590, date: "2025-06-20"}
+    {id: "a81", name: "مفتاح كهرباء 3 فتحات", balance: 25.50, quantity: 180, productHistory: [
+        {customersId: "cust-8", customersName: 'وليد سعيد', quantity: 10, price: 25.50, total: 4590, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 25.50},
             {date: "2025-06-01", balance: 23.75},
         ]},
-    {id: "a82", name: "لمبة ليد 10 وات", balance: 35.00, quantity: 320, supplierHistory: [
-        {supplierId: "sup-9", supplierName: 'مؤسسة الرشاد للأدوات الصحية', quantity: 200, price: 34.5, total: 6900, date: "2025-06-15"},
-        {supplierId: "sup-9", supplierName: 'مؤسسة الرشاد للأدوات الصحية', quantity: 120, price: 35.00, total: 4200, date: "2025-06-20"}
+    {id: "a82", name: "لمبة ليد 10 وات", balance: 35.00, quantity: 320, productHistory: [
+        {customersId: "cust-9", customersName: 'محمود حمدي', quantity: 200, price: 34.5, total: 6900, date: "2025-06-15"},
+        {customersId: "cust-9", customersName: 'محمود حمدي', quantity: 120, price: 35.00, total: 4200, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 35.00},
             {date: "2025-06-01", balance: 32.50},
         ]},
-    {id: "a83", name: "مفتاح ماء 1 بوصة", balance: 18.25, quantity: 150, supplierHistory: [
-        {supplierId: "sup-9", supplierName: 'مؤسسة الرشاد للأدوات الصحية', quantity: 100, price: 18, total: 1800, date: "2025-06-15"},
-        {supplierId: "sup-9", supplierName: 'مؤسسة الرشاد للأدوات الصحية', quantity: 50, price: 18.25, total: 912.5, date: "2025-06-20"}
+    {id: "a83", name: "مفتاح ماء 1 بوصة", balance: 18.25, quantity: 150, productHistory: [
+        {customersId: "cust-9", customersName: 'محمود حمدي', quantity: 100, price: 18, total: 1800, date: "2025-06-15"},
+        {customersId: "cust-9", customersName: 'محمود حمدي', quantity: 50, price: 18.25, total: 912.5, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 18.25},
             {date: "2025-06-01", balance: 16.75},
         ]},
-    {id: "a84", name: "مواسير مياه 3 بوصة", balance: 120.00, quantity: 75, supplierHistory: [
-        {supplierId: "sup-10", supplierName: 'شركة النيل للمواد العازلة', quantity: 50, price: 118, total: 5900, date: "2025-06-15"},
-        {supplierId: "sup-10", supplierName: 'شركة النيل للمواد العازلة', quantity: 25, price: 120.00, total: 3000, date: "2025-06-20"}
+    {id: "a84", name: "مواسير مياه 3 بوصة", balance: 120.00, quantity: 75, productHistory: [
+        {customersId: "cust-10", customersName: 'مطعم الكبابجي', quantity: 50, price: 118, total: 5900, date: "2025-06-15"},
+        {customersId: "cust-10", customersName: 'مطعم الكبابجي', quantity: 25, price: 120.00, total: 3000, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 120.00},
             {date: "2025-06-01", balance: 110.00},
         ]},
-    {id: "a85", name: "صامولة ستانلس 10 مم", balance: 2.75, quantity: 500, supplierHistory: [
-        {supplierId: "sup-10", supplierName: 'شركة النيل للمواد العازلة', quantity: 300, price: 2.7, total: 810, date: "2025-06-15"},
-        {supplierId: "sup-10", supplierName: 'شركة النيل للمواد العازلة', quantity: 200, price: 2.75, total: 550, date: "2025-06-20"}
+    {id: "a85", name: "صامولة ستانلس 10 مم", balance: 2.75, quantity: 500, productHistory: [
+        {customersId: "cust-10", customersName: 'مطعم الكبابجي', quantity: 300, price: 2.7, total: 810, date: "2025-06-15"},
+        {customersId: "cust-10", customersName: 'مطعم الكبابجي', quantity: 200, price: 2.75, total: 550, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 2.75},
             {date: "2025-06-01", balance: 2.50},
         ]},
-    {id: "a86", name: "براغي حديد 10 سم", balance: 1.50, quantity: 800, supplierHistory: [
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 500, price: 1.45, total: 725, date: "2025-06-15"},
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 300, price: 1.50, total: 450, date: "2025-06-20"}
+    {id: "a86", name: "براغي حديد 10 سم", balance: 1.50, quantity: 800, productHistory: [
+        {customersId: "cust-11", customersName: ' محمود حمدي ', quantity: 500, price: 1.45, total: 725, date: "2025-06-15"},
+        {customersId: "cust-11", customersName: ' محمود حمدي ', quantity: 300, price: 1.50, total: 450, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 1.50},
             {date: "2025-06-01", balance: 1.35},
         ]},
-    {id: "a87", name: "شريط لاصق عازل", balance: 8.00, quantity: 420, supplierHistory: [
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 250, price: 7.8, total: 1950, date: "2025-06-15"},
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 170, price: 8.00, total: 1360, date: "2025-06-20"}
+    {id: "a87", name: "شريط لاصق عازل", balance: 8.00, quantity: 420, productHistory: [
+        {customersId: "cust-11", customersName: ' محمود حمدي ', quantity: 250, price: 7.8, total: 1950, date: "2025-06-15"},
+        {customersId: "cust-11", customersName: ' محمود حمدي ', quantity: 170, price: 8.00, total: 1360, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 8.00},
             {date: "2025-06-01", balance: 7.25},
             {date: "2025-05-20", balance: 6.50},
         ]},
-    {id: "a88", name: "مفتاح ضغط هواء", balance: 45.00, quantity: 90, supplierHistory: [
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 60, price: 44.5, total: 2670, date: "2025-06-15"},
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 30, price: 45.00, total: 1350, date: "2025-06-20"}
+    {id: "a88", name: "مفتاح ضغط هواء", balance: 45.00, quantity: 900, productHistory: [
+        {customersId: "cust-11", customersName: ' محمود حمدي ', quantity: 60, price: 44.5, total: 2670, date: "2025-06-15"},
+        {customersId: "cust-11", customersName: ' محمود حمدي ', quantity: 30, price: 45.00, total: 1350, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 45.00},
             {date: "2025-06-01", balance: 42.00},
             {date: "2025-05-20", balance: 38.00},
         ]},
-    {id: "a89", name: "مفتاح ضغط هواء", balance: 45.00, quantity: 90, supplierHistory: [
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 60, price: 44.5, total: 2670, date: "2025-06-15"},
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 30, price: 45.00, total: 1350, date: "2025-06-20"}
+    {id: "a89", name: "مفتاح ضغط هواء", balance: 45.00, quantity: 100, productHistory: [
+        {customersId: "cust-11", customersName: ' محمود حمدي ', quantity: 60, price: 44.5, total: 2670, date: "2025-06-15"},
+        {customersId: "cust-11", customersName: ' محمود حمدي ', quantity: 30, price: 45.00, total: 1350, date: "2025-06-20"}
     ],
         balanceEditHistory: [
             {date: "2025-06-21", balance: 45.00},
             {date: "2025-06-01", balance: 42.00},
             {date: "2025-05-20", balance: 38.00},
         ]},
-    {id: "a90", name: "مفتاح ضغط هواء", balance: 45.00, quantity: 90, supplierHistory: [
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 60, price: 44.5, total: 2670, date: "2025-06-15"},
-        {supplierId: "sup-11", supplierName: 'شركة النيل للمواد العازلة', quantity: 30, price: 45.00, total: 1350, date: "2025-06-20"}
+    {id: "a90", name: "مفتاح ضوء حساس", balance: 28.50, quantity: 200, productHistory: [
+        {customersId: "cust-12", customersName: ' مطعم الشام ', quantity: 150, price: 28.25, total: 4237.5, date: "2025-06-15"},
+        {customersId: "cust-12", customersName: ' مطعم الشام ', quantity: 50, price: 28.50, total: 1425, date: "2025-06-20"}
     ],
         balanceEditHistory: [
-            {date: "2025-06-21", balance: 45.00},
-            {date: "2025-06-01", balance: 40.00},
-            {date: "2025-05-20", balance: 35.00},
+            {date: "2025-06-21", balance: 28.50},
+            {date: "2025-06-01", balance: 27.00},
+            {date: "2025-05-20", balance: 25.50},
         ]},
 ];
 
+// Create an array of all product IDs for easy reference
+window.productIds = window.allProducts.map(product => product.id);
 
 // Sample invoices data
 window.sampleInvoices = [
@@ -630,23 +632,31 @@ window.sampleCustomers = [
     },
     { 
         id: 'cust-12', 
-        name: 'مطعم الكبابجي', 
-        phone: '0234567890', 
-        balance: -1000.00,
+        name: 'مطعم الشام', 
+        phone: '0234567893', 
+        balance: 0.00,
         purchases: [
             { 
-                invoiceId: 'inv-15',
-                date: '2025-05-15', 
+                invoiceId: 'inv-17',
+                date: '2025-06-10', 
                 items: [
-                    { id: 'a1', name: 'فيبر', price: 500, quantity: 10, subtotal: 5000 },
-                    { id: 'a2', name: 'فيبر محمل', price: 12, quantity: 94, subtotal: 1128 }
+                    { id: 'a10', name: 'استرتش ثقيل ١٠سم', price: 500, quantity: 10, subtotal: 5000 },
+                    { id: 'a22', name: 'بسكوتة خضراء', price: 12, quantity: 94, subtotal: 1128 }
                 ], 
                 total: 6128.00, 
                 status: 'unpaid' 
-            },
+            }
+        ]
+    },
+    { 
+        id: 'cust-13', 
+        name: 'سارة محمد', 
+        phone: '01007778899', 
+        balance: 0.00,
+        purchases: [
             { 
-                invoiceId: 'inv-16',
-                date: '2025-05-01', 
+                invoiceId: 'inv-18',
+                date: '2025-06-05', 
                 items: [
                     { id: 'a4', name: 'U.V', price: 500, quantity: 10, subtotal: 5000 },
                     { id: 'a5', name: 'بروديوم', price: 12, quantity: 94, subtotal: 1128 }
@@ -657,113 +667,7 @@ window.sampleCustomers = [
         ]
     }
 ];
-
-// Function to get product details by ID
-function getProductDetails(productId) {
-    return window.allProducts.find(p => p.id === productId) || { name: 'منتج غير معروف', balance: 0 };
-}
-
-// Function to format purchase history for display
-function formatPurchaseHistory(customerId) {
-    const customer = window.sampleCustomers.find(c => c.id === customerId);
-    if (!customer) return [];
-    
-    return customer.purchases.map(purchase => {
-        // Find the corresponding invoice if it exists
-        const invoice = window.sampleInvoices.find(inv => inv.id === purchase.invoiceId);
-        const items = invoice ? 
-            invoice.items.map(item => item.name).join('، ') :
-            purchase.items.map(item => item.name).join('، ');
-            
-        const total = invoice ? invoice.total : purchase.total;
-        const status = invoice ? invoice.status : purchase.status;
-        const remaining = invoice ? invoice.remaining : (status === 'paid' ? 0 : total);
-        
-        return {
-            date: purchase.date,
-            invoiceId: purchase.invoiceId || '',
-            items: items,
-            total: total.toFixed(2),
-            status: status === 'paid' ? 'مدفوع' : 'غير مدفوع',
-            remaining: remaining.toFixed(2)
-        };
-    });
-}
-
-// Helper function to generate random date within range
-function randomDate(start, end) {
-    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-    return date.toISOString().split('T')[0];
-}
-
-// Initialize sample data and recent invoices
-if (typeof window.recentInvoices === 'undefined') {
-    window.recentInvoices = [];
-    window.today = new Date();
-    window.threeMonthsAgo = new Date();
-    window.threeMonthsAgo.setMonth(window.today.getMonth() - 3);
-    
-    // Sample product IDs for invoices
-    window.productIds = ['a1', 'a2', 'a3', 'a4', 'a5', 'a10', 'a11', 'a20', 'a22', 'a31', 'a35', 'a39', 
-                        'a42', 'a50', 'a79', 'a80', 'a81', 'a82', 'a83', 'a84', 'a85', 'a86', 'a87', 'a88'];
-    
-    // For backward compatibility
-    window.customerNames = window.sampleCustomers.reduce((acc, customer) => {
-        acc[customer.id] = customer.name;
-        return acc;
-    }, {});
-
-    // Generate 30 recent invoices
-    for (let i = 0; i < 30; i++) {
-        const randomCustomer = window.sampleCustomers[Math.floor(Math.random() * window.sampleCustomers.length)];
-        const customerId = randomCustomer.id;
-        const customerName = randomCustomer.name;
-        const date = randomDate(window.threeMonthsAgo, window.today);
-        const itemCount = Math.floor(Math.random() * 3) + 1; // 1-3 items per invoice
-        const items = [];
-        let total = 0;
-        
-        // Add random items
-        for (let j = 0; j < itemCount; j++) {
-            const productId = window.productIds[Math.floor(Math.random() * window.productIds.length)];
-            const product = window.allProducts.find(p => p.id === productId);
-            if (product) {
-                const quantity = Math.floor(Math.random() * 5) + 1; // 1-5 quantity
-                const itemTotal = product.balance * quantity;
-                items.push({
-                    productId: product.id,
-                    quantity: quantity,
-                    balance: product.balance
-                });
-                total += itemTotal;
-            }
-        }
-        
-        // Round total to 2 decimal places
-        total = Math.round(total * 100) / 100;
-        
-        // Random status (80% paid, 20% unpaid)
-        const status = Math.random() < 0.8 ? 'paid' : 'unpaid';
-        
-        window.recentInvoices.push({
-            id: `INV-${date.replace(/-/g, '')}-${String(i).padStart(3, '0')}`,
-            customer: customerName,
-            customerId: customerId,
-            date: date,
-            items: items,
-            status: status,
-            total: total
-        });
-    }
-}
-
-// Sort invoices by date (newest first)
-recentInvoices.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-// Add invoice numbers based on sorted order
-recentInvoices.forEach((invoice, index) => {
-    invoice.id = `INV-${String(today.getFullYear())}${String(today.getMonth() + 1).padStart(2, '0')}-${String(1000 - index).padStart(4, '0')}`;
-});
+// Invoice numbers will be assigned when displaying the invoices
 
 // Sample suppliers data
 window.sampleSuppliers = [
@@ -862,9 +766,9 @@ window.sampleSuppliers = [
         name: 'شركة النيل للمواد العازلة', 
         phone: '01001112223',
         transactions: [
-            { date: '2025-06-05', id: 'a10', price: 70, quantity: 20, total: 1400 },
-            { date: '2025-06-12', id: 'a11', price: 40, quantity: 25, total: 1000 },
-            { date: '2025-06-19', id: 'a20', price: 92, quantity: 35, total: 3220 }
+            { date: '2025-06-05', id: 'a10', name: 'استرتش ثقيل ١٠سم', price: 70, quantity: 20, total: 1400 },
+            { date: '2025-06-12', id: 'a11', name: 'استرتش خفيف ٥سم', price: 40, quantity: 25, total: 1000 },
+            { date: '2025-06-19', id: 'a20', name: 'بنطة ٥مم', price: 92, quantity: 35, total: 3220 }
         ]
     },
     { 
@@ -872,14 +776,12 @@ window.sampleSuppliers = [
         name: 'شركة النيل للمواد العازلة', 
         phone: '01001112223',
         transactions: [
-            { date: '2025-06-05', id: 'a10', price: 70, quantity: 20, total: 1400 },
-            { date: '2025-06-12', id: 'a11', price: 40, quantity: 25, total: 1000 },
-            { date: '2025-06-19', id: 'a20', price: 92, quantity: 35, total: 3220 }
+            { date: '2025-06-05', id: 'a10', name: 'استرتش ثقيل ١٠سم', price: 70, quantity: 20, total: 1400 },
+            { date: '2025-06-12', id: 'a11', name: 'استرتش خفيف ٥سم', price: 40, quantity: 25, total: 1000 },
+            { date: '2025-06-19', id: 'a20', name: 'بنطة ٥مم', price: 92, quantity: 35, total: 3220 }
         ]
     },
 ];
-
-// Make sample data globally available
 
 // Initialize data when the script loads
 (function() {
@@ -926,7 +828,45 @@ window.sampleSuppliers = [
     }
 })();
 
+// Function to get product details by ID
+function getProductDetails(productId) {
+    return window.allProducts.find(p => p.id === productId) || { name: 'منتج غير معروف', balance: 0 };
+}
+
+// Function to format purchase history for display
+function formatPurchaseHistory(customerId) {
+    const customer = window.sampleCustomers.find(c => c.id === customerId);
+    if (!customer) return [];
+    
+    return customer.purchases.map(purchase => {
+        const invoice = window.sampleInvoices.find(inv => inv.id === purchase.invoiceId);
+        const items = invoice ? 
+            invoice.items.map(item => item.name).join('، ') :
+            purchase.items.map(item => item.name).join('، ');
+            
+        const total = invoice ? invoice.total : purchase.total;
+        const status = invoice ? invoice.status : purchase.status;
+        const remaining = invoice ? invoice.remaining : (status === 'paid' ? 0 : total);
+        
+        return {
+            date: purchase.date,
+            invoiceId: purchase.invoiceId || '',
+            items: items,
+            total: total.toFixed(2),
+            status: status === 'paid' ? 'مدفوع' : 'غير مدفوع',
+            remaining: remaining.toFixed(2)
+        };
+    });
+}
+
 // Initialize window.invoices if not already set
 if (typeof window.invoices === 'undefined') {
     window.invoices = window.InvoiceSystem.invoices || [];
+}
+
+// Initialize recentInvoices if not already set
+if (typeof window.recentInvoices === 'undefined') {
+    window.recentInvoices = [...window.invoices]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10); // Only keep the 10 most recent invoices
 }
