@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>طباعة الفاتورة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         @page {
             size: A4;
@@ -17,12 +18,13 @@
             margin-left: 0;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 15px;
             color: #333;
             background: #fff;
             font-size: 14px;
+            line-height: 1.6;
         }
         .print-page {
             max-width: 800px;
@@ -44,10 +46,37 @@
             border-bottom: 1px solid #eee;
         }
         .print-header h1 {
-            margin: 0 0 5px 0;
-            font-size: 24px;
-            color: #000;
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            color: #2c3e50;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .print-header .invoice-number {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .print-header .invoice-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
             font-weight: bold;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        
+        .status-paid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-unpaid {
+            background-color: #f8d7da;
+            color: #721c24;
         }
         .invoice-number {
             font-size: 18px;
@@ -55,15 +84,35 @@
             font-weight: bold;
         }
         .print-details {
-            margin-bottom: 20px;
-            padding: 0;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        
+        .detail-section {
+            margin-bottom: 15px;
+        }
+        
+        .detail-section h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #2c3e50;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
         }
         .detail-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
             font-size: 14px;
-            line-height: 1.4;
+            line-height: 1.6;
+            padding: 3px 0;
+        }
+        
+        .detail-row:last-child {
+            margin-bottom: 0;
         }
         .detail-label {
             font-weight: 600;
@@ -81,17 +130,20 @@
         .print-items {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0 20px;
+            margin: 20px 0 25px;
             font-size: 13px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
         }
         .print-items th {
-            background-color: #f5f5f5;
-            color: #333;
-            padding: 8px 10px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 10px 12px;
             text-align: right;
-            font-weight: bold;
-            border: 1px solid #ddd;
-            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            font-size: 14px;
         }
         
         .print-items th:first-child {
@@ -102,10 +154,15 @@
             border-top-left-radius: 8px;
         }
         .print-items td {
-            padding: 8px 10px;
+            padding: 10px 12px;
             border: 1px solid #eee;
             text-align: right;
             vertical-align: middle;
+            transition: background-color 0.2s;
+        }
+        
+        .print-items tr:hover td {
+            background-color: #f8f9fa;
         }
         
         .print-items tr:last-child td {
@@ -120,12 +177,36 @@
             background-color: #f1f3f5;
         }
         .print-totals {
-            margin: 20px auto 0;
-            text-align: center;
-            padding-top: 10px;
+            margin: 25px auto 0;
+            text-align: left;
+            padding: 15px;
             width: 100%;
-            max-width: 100%;
-            border-top: 1px solid #eee;
+            max-width: 400px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .totals-table td {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .totals-table tr:last-child td {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        
+        .totals-table .amount {
+            text-align: left;
+            padding-left: 15px;
         }
         .total-row {
             display: inline-block;
@@ -139,16 +220,33 @@
             border-radius: 4px;
         }
         .print-footer {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            right: 30px;
+            margin-top: 40px;
             text-align: center;
-            padding-top: 20px;
+            padding: 20px 0;
             border-top: 1px solid #e9ecef;
             color: #6c757d;
             font-size: 14px;
             line-height: 1.6;
+        }
+        
+        .notes {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-right: 4px solid #2c3e50;
+            text-align: right;
+        }
+        
+        .notes h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+        
+        .notes p {
+            margin: 0;
+            white-space: pre-line;
         }
         .footer-content {
             margin-top: 15px;
@@ -286,22 +384,43 @@
         });
 
         function generateInvoice() {
+            console.log('Generating invoice...');
+            
             // Try to get data from URL hash first
             if (!invoiceData) {
+                console.log('No invoice data, checking URL hash...');
                 invoiceData = getInvoiceDataFromHash();
             }
+            
+            console.log('Invoice data:', invoiceData);
 
             // If still no data, show error
-            if (!invoiceData || !invoiceData.items || !Array.isArray(invoiceData.items)) {
-                document.getElementById('print-content').innerHTML = `
-                    <div style="text-align: center; padding: 50px;">
-                        <h3 style="color: #dc3545;">تعذر تحميل بيانات الفاتورة</h3>
-                        <p>يرجى إغلاق هذه النافذة والمحاولة مرة أخرى</p>
-                        <button onclick="window.close()" style="margin-top: 20px; padding: 8px 20px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                            إغلاق النافذة
-                        </button>
-                    </div>`;
+            if (!invoiceData) {
+                console.error('No invoice data available');
+                showError('تعذر تحميل بيانات الفاتورة', 'لا توجد بيانات متاحة للعرض');
                 return;
+            }
+            
+            // Ensure we have items
+            if (!invoiceData.items || !Array.isArray(invoiceData.items) || invoiceData.items.length === 0) {
+                console.error('No items in invoice');
+                
+                // Try to find items in other properties
+                let foundItems = [];
+                for (const key in invoiceData) {
+                    if (Array.isArray(invoiceData[key]) && key.toLowerCase() !== 'items') {
+                        console.log(`Found potential items in property: ${key}`, invoiceData[key]);
+                        foundItems = [...foundItems, ...invoiceData[key]];
+                    }
+                }
+                
+                if (foundItems.length > 0) {
+                    console.log(`Found ${foundItems.length} items in other properties`);
+                    invoiceData.items = foundItems;
+                } else {
+                    showError('بيانات غير مكتملة', 'لا توجد عناصر في الفاتورة للعرض');
+                    return;
+                }
             }
             
             const printContent = document.getElementById('print-content');
@@ -404,59 +523,122 @@
             const tax = invoiceData.tax || 0;
             const finalTotal = invoiceData.total || (subtotal + tax);
 
+            // Format date
+            const invoiceDate = invoiceData.date ? new Date(invoiceData.date) : new Date();
+            const formattedDate = invoiceDate.toLocaleDateString('ar-EG', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                calendar: 'gregory'
+            });
+            
+            // Format time
+            const formattedTime = invoiceDate.toLocaleTimeString('ar-EG', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            // Determine status
+            const isPaid = invoiceData.status === 'paid' || invoiceData.paymentStatus === 'paid';
+            const statusText = isPaid ? 'مدفوعة' : 'غير مدفوعة';
+            const statusClass = isPaid ? 'status-paid' : 'status-unpaid';
+            
             // Generate the invoice HTML
             const invoiceHtml = `
                 <div class="print-page">
                     <div class="print-header">
                         <h1>فاتورة مبيعات</h1>
+                        <div class="invoice-number">
+                            رقم الفاتورة: ${invoiceData.invoiceNumber || invoiceData.id || 'N/A'}
+                        </div>
+                        <div class="invoice-status ${statusClass}">
+                            ${statusText}
+                        </div>
                     </div>
                     
                     <div class="print-details">
-                        <div class="detail-row">
-                            <div class="detail-label">العميل:</div>
-                            <div class="detail-value">${invoiceData.customerName || 'عميل نقدي'}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">تاريخ الفاتورة:</div>
-                            <div class="detail-value">${formatDate(invoiceData.date)}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">حالة الدفع:</div>
-                            <div class="detail-value">
-                                <strong style="border-bottom: 2px solid ${invoiceData.status === 'paid' ? '#000' : '#999'}; padding-bottom: 1px;">
-                                    ${invoiceData.status === 'paid' ? '✅ مدفوعة' : '❌ غير مدفوعة'}
-                                </strong>
+                        <div class="detail-section">
+                            <h3>معلومات العميل</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">الاسم:</div>
+                                <div class="detail-value">${invoiceData.customerName || invoiceData.customer?.name || 'عميل نقدي'}</div>
                             </div>
+                            ${invoiceData.customerPhone || invoiceData.customer?.phone ? `
+                            <div class="detail-row">
+                                <div class="detail-label">الهاتف:</div>
+                                <div class="detail-value">${invoiceData.customerPhone || invoiceData.customer?.phone || 'غير متوفر'}</div>
+                            </div>` : ''}
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h3>معلومات الفاتورة</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">التاريخ:</div>
+                                <div class="detail-value">${formattedDate} - ${formattedTime}</div>
+                            </div>
+                            ${invoiceData.invoiceNumber ? `
+                            <div class="detail-row">
+                                <div class="detail-label">رقم الفاتورة:</div>
+                                <div class="detail-value">${invoiceData.invoiceNumber}</div>
+                            </div>` : ''}
                         </div>
                     </div>
                     
                     <table class="print-items">
                         <thead>
                             <tr>
-                                <th>المنتج</th>
-                                <th>الكمية</th>
-                                <th>السعر</th>
-                                <th>المجموع</th>
+                                <th style="width: 40%;">المنتج</th>
+                                <th style="width: 15%;">الكمية</th>
+                                <th style="width: 20%;">سعر الوحدة</th>
+                                <th style="width: 25%;">المجموع</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${itemsHtml}
+                            ${itemsHtml === '' ? `
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 20px; color: #6c757d;">
+                                    لا توجد عناصر في الفاتورة
+                                </td>
+                            </tr>` : ''}
                         </tbody>
                     </table>
                     
                     <div class="print-totals">
-                        <div class="total-row">
-                            <span class="total-label">الإجمالي:</span>
-                            <span class="total-value" style="font-size: 22px; color: #2c3e50;">
-                                ${finalTotal.toFixed(2).replace(/\.?0+$/, '')} <small>ج.م</small>
-                            </span>
-                        </div>
+                        <table class="totals-table">
+                            <tr>
+                                <td></td>
+                                <td class="amount">${subtotal.toFixed(2)} ج.م</td>
+                            </tr>
+                            ${tax > 0 ? `
+                            <tr>
+                                <td>الضريبة:</td>
+                                <td class="amount">${tax.toFixed(2)} ج.م</td>
+                            </tr>` : ''}
+                            <tr>
+                                <td><strong>الإجمالي النهائي:</strong></td>
+                                <td class="amount"><strong>${finalTotal.toFixed(2)} ج.م</strong></td>
+                            </tr>
+                        </table>
                     </div>
+                    
+                    ${invoiceData.notes ? `
+                    <div class="notes">
+                        <h4>ملاحظات:</h4>
+                        <p>${invoiceData.notes}</p>
+                    </div>` : ''}
                     
                     <div class="print-footer">
                         <div class="footer-content">
-                            <div style="text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee; font-size: 13px; color: #777;">
-                                شكراً لتعاملكم معنا - 0123456789
+                            <div style="margin-bottom: 10px;">
+                                <strong>شكراً لتعاملكم معنا</strong>
+                            </div>
+                            <div style="font-size: 13px; color: #6c757d;">
+                                للاستفسار: 0123456789
+                            </div>
+                            <div style="margin-top: 15px; font-size: 12px; color: #999;">
+                                تم الطباعة في: ${new Date().toLocaleString('ar-EG')}
                             </div>
                         </div>
                     </div>
@@ -465,23 +647,92 @@
             printContent.innerHTML = invoiceHtml;
         }
 
+        // Show error message
+        function showError(title, message) {
+            document.getElementById('print-content').innerHTML = `
+                <div style="text-align: center; padding: 50px 20px;">
+                    <div style="font-size: 48px; color: #dc3545; margin-bottom: 20px;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 style="color: #dc3545; margin-bottom: 15px;">${title}</h3>
+                    <p style="color: #6c757d; margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+                        ${message}
+                    </p>
+                    <div style="margin-top: 30px;">
+                        <button onclick="window.close()" style="
+                            padding: 8px 25px;
+                            background: #dc3545;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            transition: background-color 0.2s;
+                        ">
+                            <i class="fas fa-times ml-1"></i> إغلاق النافذة
+                        </button>
+                    </div>
+                </div>`;
+        }
+
         // Initialize when the page loads
         window.onload = function() {
             console.log('Window loaded event fired');
+            
+            // Auto-print if specified in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const autoPrint = urlParams.get('print');
+            
             // If we don't have data yet, show a loading message
             if (!invoiceData) {
                 console.log('No invoice data available on window load');
                 document.getElementById('print-content').innerHTML = `
-                    <div style="text-align: center; padding: 50px;">
-                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                            <span class="visually-hidden">جاري التحميل...</span>
+                    <div style="text-align: center; padding: 50px 20px;">
+                        <div style="margin-bottom: 25px;">
+                            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem; margin: 0 auto;">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
                         </div>
-                        <p class="mt-3">جاري تحميل بيانات الفاتورة...</p>
-                        <p><small>إذا استمرت المشكلة، يرجى التحقق من تفعيل النوافذ المنبثقة لهذا الموقع</small></p>
-                        <button onclick="window.close()" class="btn btn-danger mt-3">
-                            <i class="fas fa-times"></i> إغلاق النافذة
-                        </button>
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">جاري تحميل بيانات الفاتورة</h3>
+                        <p style="color: #6c757d; max-width: 500px; margin: 0 auto 25px; line-height: 1.6;">
+                            يرجى الانتظار بينما نقوم بتحميل بيانات الفاتورة...
+                        </p>
+                        <div style="margin-top: 30px;">
+                            <button onclick="window.close()" style="
+                                padding: 8px 25px;
+                                background: #6c757d;
+                                color: white;
+                                border: none;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                transition: background-color 0.2s;
+                            ">
+                                <i class="fas fa-times ml-1"></i> إغلاق النافذة
+                            </button>
+                        </div>
                     </div>`;
+                
+                // Try to get data from hash
+                invoiceData = getInvoiceDataFromHash();
+                if (invoiceData) {
+                    setTimeout(generateInvoice, 100);
+                } else {
+                    // If still no data after a delay, show error
+                    setTimeout(() => {
+                        if (!invoiceData) {
+                            showError('تعذر تحميل الفاتورة', 'لم يتم العثور على بيانات الفاتورة. يرجى المحاولة مرة أخرى.');
+                        }
+                    }, 3000);
+                }
+            } else {
+                // We have data, generate the invoice
+                generateInvoice();
+            }
+            
+            // Auto-print if specified
+            if (autoPrint === 'true') {
+                window.print();
             }
         };
     </script>
