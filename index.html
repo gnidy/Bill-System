@@ -3532,87 +3532,99 @@
             }
             
             renderProductsTable(productsList = this.products) {
-                // Store the filtered products for pagination
-                this.filteredProducts = productsList;
-                
-                const startIndex = (this.currentPage.products - 1) * this.itemsPerPage;
-                const endIndex = startIndex + this.itemsPerPage;
-                const paginatedProducts = productsList.slice(startIndex, endIndex);
-                
-                this.tables.products.innerHTML = '';
-                
-                if (paginatedProducts.length === 0) {
-                    this.tables.products.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="empty-state">
-                                <i class="fas fa-box-open"></i>
-                                <h3>لا توجد منتجات متاحة</h3>
-                                <p>استخدم زر "إضافة منتج جديد" لإضافة منتجات إلى المخزون</p>
-                            </td>
-                        </tr>
-                    `;
-                    this.pagination.products.style.display = 'none';
-                    return;
-                }
-                
-                // Show pagination if there are multiple pages
-                if (productsList.length > this.itemsPerPage) {
-                    this.renderPagination('products', productsList.length);
-                } else {
-                    this.pagination.products.style.display = 'none';
-                }
-                
-                paginatedProducts.forEach((product, index) => {
-                    const row = document.createElement('tr');
-                    const actualIndex = startIndex + index + 1;
+                try {
+                    console.log('Rendering products table with', productsList.length, 'products');
                     
-                    // Determine product status
-                    let statusClass, statusText;
-                    if (product.quantity === 0) {
-                        statusClass = 'status-danger';
-                        statusText = 'منتهي';
-                    } else if (product.quantity <= 10) {
-                        statusClass = 'status-warning';
-                        statusText = 'كمية منخفضة';
-                    } else {
-                        statusClass = 'status-success';
-                        statusText = 'متوفر';
+                    // Store the filtered products for pagination
+                    this.filteredProducts = productsList;
+                    
+                    // Calculate pagination
+                    const startIndex = (this.currentPage.products - 1) * this.itemsPerPage;
+                    const endIndex = startIndex + this.itemsPerPage;
+                    const paginatedProducts = productsList.slice(startIndex, endIndex);
+                    
+                    // Clear the table
+                    this.tables.products.innerHTML = '';
+                    
+                    // Handle empty state
+                    if (paginatedProducts.length === 0) {
+                        this.tables.products.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    <i class="fas fa-box-open"></i>
+                                    <h3>لا توجد منتجات متاحة</h3>
+                                    <p>استخدم زر "إضافة منتج جديد" لإضافة منتجات إلى المخزون</p>
+                                </td>
+                            </tr>
+                        `;
+                        this.pagination.products.style.display = 'none';
+                        return;
                     }
                     
-                    row.innerHTML = `
-                        <td>${actualIndex}</td>
-                        <td>${product.name}</td>
-                        <td>${product.balance.toFixed(2)}</td>
-                        <td class="${product.quantity === 0 ? 'no-stock' : (product.quantity <= 10 ? 'low-stock' : '')}">
-                            ${product.quantity}
-                        </td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>
-                            <button class="action-btn edit" data-id="${product.id}" title="تعديل">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </td>
-                    `;
-                    
-                    this.tables.products.appendChild(row);
-                    
-                    // Add event listener to edit button
-                    row.querySelector('.action-btn.edit').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.openProductModal(product.id);
+                    // Render product rows
+                    paginatedProducts.forEach((product, index) => {
+                        const row = document.createElement('tr');
+                        const rowNumber = startIndex + index + 1;
+                        
+                        // Determine status class and text
+                        let statusClass, statusText;
+                        if (product.quantity === 0) {
+                            statusClass = 'status-danger';
+                            statusText = 'منتهي';
+                        } else if (product.quantity <= 10) {
+                            statusClass = 'status-warning';
+                            statusText = 'كمية منخفضة';
+                        } else {
+                            statusClass = 'status-success';
+                            statusText = 'متوفر';
+                        }
+                        
+                        row.innerHTML = `
+                            <td>${rowNumber}</td>
+                            <td>${product.name || 'غير معروف'}</td>
+                            <td>${(product.balance || 0).toFixed(2)} ج.م</td>
+                            <td>${product.quantity}</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td class="actions">
+                                <button class="action-btn edit" data-id="${product.id}" title="تعديل">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn history" data-id="${product.id}" title="سجل المنتج">
+                                    <i class="fas fa-history"></i>
+                                </button>
+                            </td>
+                        `;
+                        
+                        // Add event listeners
+                        const editBtn = row.querySelector('.edit');
+                        const historyBtn = row.querySelector('.history');
+                        
+                        if (editBtn) {
+                            editBtn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                this.openProductModal(product.id);
+                            });
+                        }
+                        
+                        if (historyBtn) {
+                            historyBtn.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                console.log('History button clicked for product ID:', product.id);
+                                this.showProductHistory(product.id);
+                            });
+                        }
+                        
+                        this.tables.products.appendChild(row);
                     });
-                });
-
-                // Handle print button clicks
-                document.querySelectorAll('#customer-history-modal .action-btn[title="طباعة"]').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const invoiceId = e.currentTarget.getAttribute('data-id');
-                        this.printInvoice(invoiceId);
-                    });
-                });
+                
+                    // Update pagination
+                    this.renderPagination('products', productsList.length);
+                } catch (error) {
+                    console.error('Error rendering products table:', error);
+                    this.showAlert('حدث خطأ أثناء عرض المنتجات', 'error');
+                }
             }
-
+            
             renderInvoicesTable(invoices = null) {
                 console.log('renderInvoicesTable called with:', { hasInvoices: !!invoices });
                 const tbody = document.getElementById('invoices-table-body');
@@ -4033,33 +4045,198 @@
             showProductHistory(productId) {
                 try {
                     console.log('Showing product history for product ID:', productId);
-                    const product = this.getProduct(productId);
+                    // Find the product in window.allProducts
+                    const product = window.allProducts.find(p => p.id === productId);
                     if (!product) {
                         console.error('Product not found with ID:', productId);
                         this.showAlert('المنتج غير موجود', 'error');
-                        return;
+                        return null;
                     }
                     console.log('Product found:', product.name, product);
 
-                    // Get supplier history for this product and sort by date (newest first)
-                    console.log('Getting supplier history for product:', product.name);
-                    const supplierHistory = (product.supplierHistory || []).sort((a, b) => {
+                    // Get product history and sort by date (newest first)
+                    const productHistory = (product.productHistory || []).sort((a, b) => {
                         const dateA = a.date ? new Date(a.date) : new Date(0);
                         const dateB = b.date ? new Date(b.date) : new Date(0);
                         return dateB - dateA; // Sort in descending order (newest first)
                     });
-                    console.log('Raw supplier history:', supplierHistory);
                     
-                    const supplierIds = [...new Set(supplierHistory.map(item => item.supplierId))];
-                    console.log('Unique supplier IDs:', supplierIds);
-                    
-                    const suppliers = supplierIds.map(id => {
-                        const supplier = this.getSupplier(id);
-                        console.log(`Supplier ${id}:`, supplier);
-                        return supplier;
-                    }).filter(Boolean);
-                    
-                    console.log('Filtered suppliers:', suppliers);
+                    // Get balance history and sort by date (newest first)
+                    const balanceHistory = (product.balanceEditHistory || []).sort((a, b) => {
+                        const dateA = a.date ? new Date(a.date) : new Date(0);
+                        const dateB = b.date ? new Date(b.date) : new Date(0);
+                        return dateB - dateA; // Sort in descending order (newest first)
+                    });
+
+                    // Calculate total sales
+                    const totalSales = productHistory.reduce((sum, sale) => sum + (parseFloat(sale.total) || 0), 0);
+                    const totalQuantity = productHistory.reduce((sum, sale) => sum + (parseInt(sale.quantity) || 0), 0);
+
+                    // Create modal HTML
+                    const modalHtml = `
+                        <div class="modal-overlay active" id="product-history-modal">
+                            <div class="modal" style="max-width: 900px;">
+                                <div class="modal-header">
+                                    <h3>سجل المنتج: ${product.name}</h3>
+                                    <button class="close-btn" id="close-product-history">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="product-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+                                            <div><strong>سعر الحالي:</strong> ${product.balance || 0}</div>
+                                            <div><strong>إجمالي المبيعات:</strong> ${totalQuantity} وحدة</div>
+                                            <div><strong>إجمالي قيمة المبيعات:</strong> ${totalSales.toFixed(2)} ج.م</div>
+                                            <div><strong>السعر الحالي:</strong> ${product.price || 0} ج.م</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tabs" style="margin-bottom: 20px;">
+                                        <button class="tab-btn active" data-tab="transactions">المعاملات</button>
+                                        <button class="tab-btn" data-tab="balance-history">تعديلات سعر</button>
+                                    </div>
+                                    
+                                    <div id="transactions-tab" class="tab-content" style="display: block;">
+                                        <h4 style="margin: 0 0 15px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
+                                            سجل المعاملات
+                                        </h4>
+                                        ${productHistory.length > 0 ? `
+                                            <div class="table-responsive">
+                                                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                                                    <thead>
+                                                        <tr style="background-color: #f8f9fa;">
+                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">التاريخ</th>
+                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">العميل</th>
+                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">الكمية</th>
+                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">السعر</th>
+                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">الإجمالي</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        ${productHistory.map((transaction, index) => {
+                                                            const transactionDate = transaction.date ? new Date(transaction.date) : new Date();
+                                                            const formattedDate = transactionDate.toLocaleDateString('ar-EG', {
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            });
+                                                            
+                                                            return `
+                                                                <tr style="border-bottom: 1px solid #eee;">
+                                                                    <td style="padding: 12px; text-align: right;">${formattedDate}</td>
+                                                                    <td style="padding: 12px; text-align: right;">${transaction.customersName || 'غير محدد'}</td>
+                                                                    <td style="padding: 12px; text-align: right;">${transaction.quantity || 0}</td>
+                                                                    <td style="padding: 12px; text-align: right;">${(transaction.price || 0).toFixed(2)} ج.م</td>
+                                                                    <td style="padding: 12px; text-align: right; font-weight: bold;">${(transaction.total || 0).toFixed(2)} ج.م</td>
+                                                                </tr>
+                                                            `;
+                                                        }).join('')}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ` : `
+                                            <div class="alert alert-info" style="text-align: center; padding: 15px; background: #e7f5ff; color: #0c63e4; border-radius: 8px;">
+                                                لا توجد معاملات مسجلة لهذا المنتج
+                                            </div>
+                                        `}
+                                    </div>
+                                    
+                                    <div id="balance-history-tab" class="tab-content" style="display: none;">
+                                        <h4 style="margin: 0 0 15px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
+                                            سجل تعديلات سعر المنتج
+                                        </h4>
+                                        ${balanceHistory.length > 0 ? `
+                                            <div class="table-responsive">
+                                                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                                                    <thead>
+                                                        <tr style="background-color: #f8f9fa;">
+                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">التاريخ</th>
+                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">سعر</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        ${balanceHistory.map((record, index) => {
+                                                            const recordDate = record.date ? new Date(record.date) : new Date();
+                                                            const formattedDate = recordDate.toLocaleDateString('ar-EG', {
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            });
+                                                            
+                                                            return `
+                                                                <tr style="border-bottom: 1px solid #eee;">
+                                                                    <td style="padding: 12px; text-align: right;">${formattedDate}</td>
+                                                                    <td style="padding: 12px; text-align: right; font-weight: bold;">${record.balance || 0}</td>
+                                                                </tr>
+                                                            `;
+                                                        }).join('')}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ` : `
+                                            <div class="alert alert-info" style="text-align: center; padding: 15px; background: #e7f5ff; color: #0c63e4; border-radius: 8px;">
+                                                لا توجد تعديلات على رصيد هذا المنتج
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" id="close-product-history-btn">
+                                        <i class="fas fa-times ml-1"></i> إغلاق
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <style>
+                            .tab-btn {
+                                padding: 8px 20px;
+                                background: #f1f1f1;
+                                border: none;
+                                border-radius: 4px 4px 0 0;
+                                cursor: pointer;
+                                margin-left: 5px;
+                                font-weight: 500;
+                                transition: all 0.3s ease;
+                            }
+                            .tab-btn.active {
+                                background: var(--primary);
+                                color: white;
+                            }
+                            .tab-content {
+                                display: none;
+                                padding: 15px 0;
+                            }
+                            .tab-content.active {
+                                display: block;
+                            }
+                            .data-table {
+                                width: 100%;
+                                margin-bottom: 1rem;
+                                color: #212529;
+                                border-collapse: collapse;
+                            }
+                            .data-table th,
+                            .data-table td {
+                                padding: 0.75rem;
+                                vertical-align: top;
+                                border-top: 1px solid #dee2e6;
+                            }
+                            .data-table thead th {
+                                vertical-align: bottom;
+                                border-bottom: 2px solid #dee2e6;
+                                background-color: #f8f9fa;
+                                color: #495057;
+                            }
+                            .data-table tbody tr:hover {
+                                background-color: rgba(0, 0, 0, 0.05);
+                            }
+                        </style>
+                    `;
 
                     // Remove any existing product history modal
                     const existingModal = document.getElementById('product-history-modal');
@@ -4083,22 +4260,20 @@
                         if (e.target === e.currentTarget) closeModal();
                     });
 
-                    // Handle print button clicks
-                    document.querySelectorAll('#product-history-modal .print-invoice-history-btn').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            try {
-                                const invoice = JSON.parse(btn.getAttribute('data-invoice').replace(/&#39;/g, "'"));
-                                if (invoice) {
-                                    console.log('Printing invoice from product history:', invoice);
-                                    this.printInvoice(invoice);
-                                } else {
-                                    this.showAlert('تعذر العثور على بيانات الفاتورة', 'error');
-                                }
-                            } catch (error) {
-                                console.error('Error parsing invoice data:', error);
-                                this.showAlert('حدث خطأ أثناء معالجة بيانات الفاتورة', 'error');
-                            }
+                    // Tab switching functionality
+                    const tabs = document.querySelectorAll('#product-history-modal .tab-btn');
+                    const tabContents = document.querySelectorAll('#product-history-modal .tab-content');
+                    
+                    tabs.forEach(tab => {
+                        tab.addEventListener('click', () => {
+                            // Remove active class from all tabs and contents
+                            tabs.forEach(t => t.classList.remove('active'));
+                            tabContents.forEach(c => c.style.display = 'none');
+                            
+                            // Add active class to clicked tab and show corresponding content
+                            tab.classList.add('active');
+                            const tabId = tab.getAttribute('data-tab');
+                            document.getElementById(`${tabId}-tab`).style.display = 'block';
                         });
                     });
 
@@ -4144,7 +4319,7 @@
                                     <div class="customer-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                                         <div style="display: flex; justify-content: space-between;">
                                             <div><strong>إجمالي المشتريات:</strong> ${customer.purchases?.length || 0}</div>
-                                            <div><strong>الرصيد الحالي:</strong> ${(customer.balance || 0).toFixed(2)} ج.م</div>
+                                            <div><strong>سعر الحالي:</strong> ${(customer.balance || 0).toFixed(2)} ج.م</div>
                                         </div>
                                     </div>
                                     
