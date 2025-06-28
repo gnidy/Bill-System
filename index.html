@@ -6,6 +6,99 @@
     <title>نظام إدارة المخزون والفواتير</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Print Invoice Modal Styles */
+        #print-invoice-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            z-index: 1100;
+            overflow-y: auto;
+        }
+        
+        #print-invoice-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        #print-invoice-modal .modal {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        #print-invoice-modal .modal-header {
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #print-invoice-modal .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+        
+        #print-invoice-modal .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        #print-invoice-modal .modal-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+        
+        #print-invoice-modal .close-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        
+        #print-invoice-modal .close-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Print-specific styles */
+        @media print {
+            #print-invoice-modal .modal {
+                box-shadow: none;
+                max-width: 100%;
+                max-height: none;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+        }
+        
         :root {
             --primary: #2c3e50;
             --primary-dark: #1a252f;
@@ -806,43 +899,78 @@
             margin-bottom: 0;
         }
         
-        /* Modals */
+        /* Print Invoice Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
             opacity: 0;
             visibility: hidden;
-            transition: var(--transition);
-            overflow-y: auto;
-            padding: 20px 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         
         .modal-overlay.active {
             opacity: 1;
             visibility: visible;
-            backdrop-filter: blur(4px);
+        }
+        
+        /* Print button styles */
+        .print-invoice-btn, .btn-print {
+            color: #2c3e50;
+            padding: 5px 12px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            line-height: 1.5;
+            text-decoration: none;
+        }
+        
+        .print-invoice-btn:hover, .btn-print:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+        
+        .print-invoice-btn i, .btn-print i {
+            margin-left: 6px;
+        }
+        
+        .btn-print {
+            margin: 5px;
         }
         
         .modal {
             background: white;
             border-radius: 8px;
-            width: 90%;
+            width: 100%;
             max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            animation: modalFadeIn 0.3s ease;
-            margin: 0 auto;
-            max-height: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+            opacity: 1;
         }
         
         .modal-body {
@@ -851,6 +979,8 @@
             flex: 1;
             -webkit-overflow-scrolling: touch;
             max-height: calc(90vh - 130px); /* Adjust based on header/footer height */
+            position: relative;
+            z-index: 1;
         }
         
         .modal-header {
@@ -2049,11 +2179,9 @@
                         total: Math.max(0, parseFloat(item.total) || 0)
                     })) : [],
                     subtotal: Math.max(0, parseFloat(i.subtotal) || 0),
-                    tax: Math.max(0, parseFloat(i.tax) || 0),
                     discount: Math.max(0, parseFloat(i.discount) || 0),
                     total: Math.max(0, parseFloat(i.total) || 0),
                     status: ['pending', 'paid', 'cancelled'].includes(i.status) ? i.status : 'pending',
-                    notes: i.notes || '',
                     createdAt: i.createdAt || new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                     ...i // Keep any additional properties
@@ -2070,7 +2198,6 @@
                     email: c.email || '',
                     address: c.address || '',
                     balance: !isNaN(parseFloat(c.balance)) ? parseFloat(c.balance) : 0,
-                    notes: c.notes || '',
                     createdAt: c.createdAt || new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                     ...c // Keep any additional properties
@@ -2088,7 +2215,6 @@
                     email: s.email || '',
                     address: s.address || '',
                     balance: !isNaN(parseFloat(s.balance)) ? parseFloat(s.balance) : 0,
-                    notes: s.notes || '',
                     createdAt: s.createdAt || new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                     ...s // Keep any additional properties
@@ -2999,300 +3125,363 @@
                 this.renderSuppliersTable();
             }
             
+            /**
+             * Handles printing an invoice
+             * @param {string|object} invoiceIdOrData - Either the invoice ID or the invoice data object
+             */
             printInvoice(invoiceIdOrData = null) {
-                console.log('printInvoice called with:', invoiceIdOrData);
-                let invoiceData = null;
-                let invoice = null;
-                
-                if (invoiceIdOrData) {
-                    // Check if we received an invoice object directly or an ID
-                    if (typeof invoiceIdOrData === 'object' && invoiceIdOrData !== null) {
-                        // Received an invoice object directly
-                        invoice = invoiceIdOrData;
-                        console.log('Using provided invoice data:', invoice);
-                    } else {
-                        // Received an invoice ID, look it up
-                        console.log('Looking up invoice with ID:', invoiceIdOrData);
-                        invoice = this.getInvoice(invoiceIdOrData);
-                        console.log('Retrieved invoice:', invoice);
+                try {
+                    console.log('printInvoice called with:', invoiceIdOrData);
+                    
+                    if (!invoiceIdOrData) {
+                        throw new Error('No invoice ID or data provided');
                     }
                     
-                    if (!invoice) {
-                        console.error('Invoice not found for:', invoiceIdOrData);
-                        this.showAlert('تعذر العثور على بيانات الفاتورة', 'danger');
+                    // If we have invoice data directly, use it
+                    if (typeof invoiceIdOrData === 'object' && invoiceIdOrData !== null) {
+                        this._openPrintModal(invoiceIdOrData);
                         return;
                     }
                     
-                    // Ensure we have items in the invoice
-                    if (!invoice.items && invoice.products) {
-                        invoice.items = invoice.products; // Handle case where items are stored in 'products' property
+                    // Otherwise, try to find the invoice by ID
+                    const invoice = this.getInvoice(invoiceIdOrData);
+                    if (!invoice) {
+                        throw new Error(`Invoice not found: ${invoiceIdOrData}`);
                     }
                     
-                    // Get customer name - handle both customer object and customerId
-                    let customerName = 'عميل نقدي';
-                    let customerPhone = '';
+                    this._openPrintModal(invoice);
+                } catch (error) {
+                    console.error('Error in printInvoice:', error);
+                    this.showAlert('حدث خطأ أثناء محاولة طباعة الفاتورة', 'error');
+                }
+            }
+            
+            /**
+             * Internal method to open the print modal with invoice data
+             * @private
+             * @param {object} invoice - The invoice data to print
+             */
+            _openPrintModal(invoice) {
+                if (!invoice) {
+                    console.error('No invoice data provided to _openPrintModal');
+                    this.showAlert('بيانات الفاتورة غير صالحة', 'error');
+                    return;
+                }
+                
+                // Ensure we have items in the invoice
+                if (!invoice.items && invoice.products) {
+                    invoice.items = invoice.products; // Handle case where items are stored in 'products' property
+                }
                     
-                    if (invoice.customer) {
-                        // If customer object is directly included in the invoice
-                        customerName = invoice.customer.name || customerName;
-                        customerPhone = invoice.customer.phone || customerPhone;
-                    } else if (invoice.customerId) {
-                        // If only customer ID is available, try to look it up
-                        const customer = this.getCustomer(invoice.customerId);
-                        if (customer) {
-                            customerName = customer.name;
-                            customerPhone = customer.phone || '';
+                // Get customer information
+                let customerName = 'عميل نقدي';
+                let customerPhone = '';
+                
+                if (invoice.customer) {
+                    // If customer object is directly included in the invoice
+                    customerName = invoice.customer.name || customerName;
+                    customerPhone = invoice.customer.phone || customerPhone;
+                } else if (invoice.customerId) {
+                    // If only customer ID is available, try to look it up
+                    const customer = this.getCustomer(invoice.customerId);
+                    if (customer) {
+                        customerName = customer.name || customerName;
+                        customerPhone = customer.phone || customerPhone;
+                    }
+                } else if (invoice.customerName) {
+                    // If customer name is directly in the invoice
+                    customerName = invoice.customerName;
+                }
+                    
+                // Prepare items data
+                const items = [];
+                console.log('Original invoice items:', JSON.stringify(invoice.items, null, 2));
+                
+                // First, try to get items from the invoice
+                const invoiceItems = Array.isArray(invoice.items) ? invoice.items : [];
+                
+                // If no items found, try to find items in other possible properties
+                const possibleItemArrays = [];
+                if (invoiceItems.length === 0) {
+                    // Look for arrays that might contain items
+                    Object.keys(invoice).forEach(key => {
+                        if (Array.isArray(invoice[key]) && key.toLowerCase() !== 'items') {
+                            console.log(`Found potential items array in property '${key}':`, invoice[key]);
+                            possibleItemArrays.push(...invoice[key]);
                         }
-                    } else if (invoice.customerName) {
-                        // If customer name is directly in the invoice
-                        customerName = invoice.customerName;
+                    });
+                }
+                    
+                // Combine all possible items
+                const allPossibleItems = [...invoiceItems, ...possibleItemArrays];
+                
+                console.log('Processing all possible items:', allPossibleItems);
+                
+                // Process all items
+                allPossibleItems.forEach(item => {
+                    if (!item) return;
+                    
+                    console.log('Processing item:', item);
+                    
+                    // Try to find the product in the allProducts array first
+                    let productName = 'منتج غير معروف';
+                    let productPrice = 0;
+                    
+                    // First try to find by ID in allProducts
+                    const productId = item.id || item.productId;
+                    if (productId) {
+                        const product = window.allProducts?.find(p => p.id === productId);
+                        if (product) {
+                            productName = product.name;
+                            productPrice = parseFloat(product.balance) || 0;
+                        }
                     }
                     
-                    // Prepare items data
-                    const items = [];
-                    console.log('Original invoice items:', JSON.stringify(invoice.items, null, 2));
+                    // If still not found, try to find by name in allProducts
+                    if (productName === 'منتج غير معروف' && item.productName) {
+                        const product = window.allProducts?.find(p => p.name === item.productName);
+                        if (product) {
+                            productName = product.name;
+                            productPrice = parseFloat(product.balance) || 0;
+                        }
+                    }
                     
-                    // First, try to get items from the invoice
-                    const invoiceItems = Array.isArray(invoice.items) ? invoice.items : [];
+                    // Fall back to item properties if product not found in allProducts
+                    if (productName === 'منتج غير معروف') {
+                        productName = item.productName || item.name || item.product?.name || 'منتج غير معروف';
+                        productPrice = parseFloat(item.balance || item.price || item.product?.price || 0);
+                    }
                     
-                    // If no items found, try to find items in other possible properties
-                    const possibleItemArrays = [];
-                    if (invoiceItems.length === 0) {
-                        // Look for arrays that might contain items
-                        Object.keys(invoice).forEach(key => {
-                            if (Array.isArray(invoice[key]) && key.toLowerCase() !== 'items') {
-                                console.log(`Found potential items array in property '${key}':`, invoice[key]);
-                                possibleItemArrays.push(...invoice[key]);
-                            }
+                    const quantity = parseFloat(item.quantity) || 0;
+                    const balance = parseFloat(item.balance || item.price || productPrice || 0);
+                    
+                    console.log(`Item details - ID: ${item.id || 'N/A'}, Name: ${productName}, Qty: ${quantity}, Price: ${balance}`);
+                    
+                    if (productName || balance > 0) {
+                        items.push({
+                            id: item.id,
+                            productId: item.productId,
+                            productName: productName,
+                            quantity: quantity,
+                            balance: balance,
+                            total: quantity * balance
                         });
                     }
+                });
+                
+                console.log('Processed items for printing:', items);
+                
+                // If still no items, try to extract from the invoice data directly
+                if (items.length === 0) {
+                    console.log('No items found in standard locations, trying direct extraction');
                     
-                    // Combine all possible items
-                    const allPossibleItems = [...invoiceItems, ...possibleItemArrays];
-                    
-                    console.log('Processing all possible items:', allPossibleItems);
-                    
-                    // Process all items
-                    allPossibleItems.forEach(item => {
-                        if (!item) return;
-                        
-                        console.log('Processing item:', item);
-                        
-                        // Try to find the product in the allProducts array first
-                        let productName = 'منتج غير معروف';
-                        let productPrice = 0;
-                        
-                        // First try to find by ID in allProducts
-                        const productId = item.id || item.productId;
-                        if (productId) {
-                            const product = window.allProducts.find(p => p.id === productId);
-                            if (product) {
-                                productName = product.name;
-                                productPrice = parseFloat(product.balance) || 0;
-                            }
-                        }
-                        
-                        // If still not found, try to find by name in allProducts
-                        if (productName === 'منتج غير معروف' && item.productName) {
-                            const product = window.allProducts.find(p => p.name === item.productName);
-                            if (product) {
-                                productName = product.name;
-                                productPrice = parseFloat(product.balance) || 0;
-                            }
-                        }
-                        
-                        // Fall back to item properties if product not found in allProducts
-                        if (productName === 'منتج غير معروف') {
-                            productName = item.productName || item.name || item.product?.name || 'منتج غير معروف';
-                            productPrice = parseFloat(item.balance || item.price || item.product?.price || 0);
-                        }
-                        
-                        const quantity = parseFloat(item.quantity) || 0;
-                        const balance = parseFloat(item.balance || item.price || productPrice || 0);
-                        
-                        console.log(`Item details - ID: ${item.id || 'N/A'}, Name: ${productName}, Qty: ${quantity}, Price: ${balance}`);
-                        
-                        if (productName || balance > 0) {
-                            items.push({
-                                id: item.id,
-                                productId: item.productId,
-                                productName: productName,
-                                quantity: quantity,
-                                balance: balance,
-                                total: quantity * balance
+                    // Look for any array in the invoice that might contain items
+                    Object.keys(invoice).forEach(key => {
+                        if (Array.isArray(invoice[key])) {
+                            console.log(`Checking array in '${key}':`, invoice[key]);
+                            invoice[key].forEach((potentialItem, index) => {
+                                if (potentialItem && (potentialItem.quantity || potentialItem.balance || potentialItem.price)) {
+                                    const productName = potentialItem.productName || 
+                                                     potentialItem.name || 
+                                                     potentialItem.product?.name || 
+                                                     `منتج ${index + 1}`;
+                                    const quantity = parseFloat(potentialItem.quantity) || 0;
+                                    const balance = parseFloat(potentialItem.balance || potentialItem.price || 0);
+                                    
+                                    items.push({
+                                        productName: productName,
+                                        quantity: quantity,
+                                        balance: balance,
+                                        total: quantity * balance
+                                    });
+                                }
                             });
                         }
                     });
                     
-                    console.log('Processed items for printing:', items);
+                    console.log('Items after direct extraction:', items);
+                }
                     
-                    // If still no items, try to extract from the invoice data directly
-                    if (items.length === 0) {
-                        console.log('No items found in standard locations, trying direct extraction');
-                        
-                        // Look for any array in the invoice that might contain items
-                        Object.keys(invoice).forEach(key => {
-                            if (Array.isArray(invoice[key])) {
-                                console.log(`Checking array in '${key}':`, invoice[key]);
-                                invoice[key].forEach((potentialItem, index) => {
-                                    if (potentialItem && (potentialItem.quantity || potentialItem.balance || potentialItem.price)) {
-                                        const productName = potentialItem.productName || 
-                                                         potentialItem.name || 
-                                                         potentialItem.product?.name || 
-                                                         `منتج ${index + 1}`;
-                                        const quantity = parseFloat(potentialItem.quantity) || 0;
-                                        const balance = parseFloat(potentialItem.balance || potentialItem.price || 0);
-                                        
-                                        items.push({
-                                            productName: productName,
-                                            quantity: quantity,
-                                            balance: balance,
-                                            total: quantity * balance
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                        
-                        console.log('Items after direct extraction:', items);
+                // Calculate subtotal from items
+                const subtotal = items.reduce((sum, item) => {
+                    return sum + (parseFloat(item.balance) * parseFloat(item.quantity) || 0);
+                }, 0);
+                
+                // Ensure all items have the correct structure
+                const formattedItems = items.map(item => ({
+                    productName: item.productName || item.name || 'منتج غير معروف',
+                    quantity: parseFloat(item.quantity) || 0,
+                    balance: parseFloat(item.balance || item.price || 0),
+                    total: (parseFloat(item.quantity) * parseFloat(item.balance || item.price || 0)) || 0
+                }));
+                
+                // Prepare the invoice data for printing
+                const invoiceData = {
+                    id: invoice.id || `INV-${Date.now()}`,
+                    invoiceNumber: invoice.invoiceNumber || invoice.id || `INV-${Date.now()}`,
+                    customerName: customerName,
+                    customerPhone: customerPhone,
+                    date: invoice.date || invoice.createdAt || new Date().toISOString(),
+                    items: formattedItems,
+                    subtotal: parseFloat(invoice.subtotal) || subtotal,
+                    tax: parseFloat(invoice.tax) || 0,
+                    total: parseFloat(invoice.total) || (subtotal + (parseFloat(invoice.tax) || 0)),
+                    status: invoice.status || 'unpaid',
+                    notes: invoice.notes || ''
+                };
+                
+                // If we have a customer object, include it
+                if (invoice.customer) {
+                    invoiceData.customer = invoice.customer;
+                } else if (invoice.customerId) {
+                    const customer = this.getCustomer(invoice.customerId);
+                    if (customer) {
+                        invoiceData.customer = customer;
                     }
+                }
                     
-                    // Prepare invoice data for printing
-                    const subtotal = items.reduce((sum, item) => {
-                        return sum + (parseFloat(item.balance) * parseFloat(item.quantity) || 0);
-                    }, 0);
-                    
-                    // Ensure all items have the correct structure
-                    const formattedItems = items.map(item => ({
-                        productName: item.productName || item.name || 'منتج غير معروف',
-                        quantity: parseFloat(item.quantity) || 0,
-                        balance: parseFloat(item.balance || item.price || 0),
-                        total: (parseFloat(item.quantity) * parseFloat(item.balance || item.price || 0)) || 0
-                    }));
-                    
-                    invoiceData = {
-                        id: invoice.id || `INV-${Date.now()}`,
-                        invoiceNumber: invoice.invoiceNumber || invoice.id || `INV-${Date.now()}`,
-                        customerName: customerName,
-                        customerPhone: customerPhone,
-                        date: invoice.date || invoice.createdAt || new Date().toISOString(),
-                        items: formattedItems,
-                        subtotal: parseFloat(invoice.subtotal) || subtotal,
-                        tax: parseFloat(invoice.tax) || 0,
-                        total: parseFloat(invoice.total) || (subtotal + (parseFloat(invoice.tax) || 0)),
-                        status: invoice.status || 'unpaid',
-                        notes: invoice.notes || ''
-                    };
-                    
-                    // If we have a customer object, include it
-                    if (invoice.customer) {
-                        invoiceData.customer = invoice.customer;
-                    } else if (invoice.customerId) {
-                        const customer = this.getCustomer(invoice.customerId);
-                        if (customer) {
-                            invoiceData.customer = customer;
-                        }
-                    }
-                    
-                    console.log('Prepared invoice data for printing:', JSON.stringify(invoiceData, null, 2));
+                console.log('Prepared invoice data for printing:', JSON.stringify(invoiceData, null, 2));
+                
+                // Open the print modal with the prepared data
+                if (window.printInvoice) {
+                    window.printInvoice.openModal(invoiceData);
                 } else {
-                    // Print from invoice modal - get data from form
-                    const customerSelect = document.getElementById('invoice-customer');
-                    const customerName = customerSelect?.options[customerSelect.selectedIndex]?.text || 'عميل نقدي';
-                    
-                    // Get invoice items from form
-                    const items = [];
-                    
-                    document.querySelectorAll('.invoice-item-row').forEach(row => {
-                        const productSelect = row.querySelector('.invoice-product');
-                        if (productSelect && productSelect.selectedIndex > 0) {
-                            const productName = productSelect.options[productSelect.selectedIndex].text.split('(')[0].trim();
-                            const quantity = parseFloat(row.querySelector('.invoice-quantity')?.value) || 0;
-                            const balance = parseFloat(productSelect.options[productSelect.selectedIndex].dataset.balance) || 0;
-                            
-                            if (productName && quantity > 0) {
-                                items.push({
-                                    productName: productName,
-                                    quantity: quantity,
-                                    balance: balance
-                                });
-                            }
-                        }
-                    });
-                    
-                    // Calculate totals if not available
-                    const subtotal = parseFloat(this.dashboardElements?.invoiceSubtotal?.textContent) || 
-                                   items.reduce((sum, item) => sum + (item.quantity * item.balance), 0);
-                    const tax = parseFloat(this.dashboardElements?.invoiceTax?.textContent) || 0;
-                    const total = parseFloat(this.dashboardElements?.invoiceTotal?.textContent) || (subtotal + tax);
-                    
-                    // Prepare invoice data
-                    invoiceData = {
-                        invoiceNumber: document.getElementById('invoice-id')?.value || 'جديد',
-                        customerName: customerName,
-                        date: document.getElementById('invoice-date')?.value || new Date().toISOString().split('T')[0],
-                        items: items,
-                        subtotal: subtotal,
-                        tax: tax,
-                        total: total,
-                        status: 'unpaid'
-                    };
+                    console.error('PrintInvoice is not available');
+                    this.showAlert('خطأ في تهيئة نظام الطباعة', 'error');
                 }
                 
                 if (!invoiceData || !Array.isArray(invoiceData.items) || invoiceData.items.length === 0) {
                     this.showAlert('لا توجد عناصر في الفاتورة للطباعة', 'warning');
                     return;
                 }
-                
-                console.log('Prepared invoice data:', invoiceData);
-                
+            }
+            
+            /**
+             * Handles printing an invoice
+             * @param {string|object} invoiceIdOrData - Either the invoice ID or the invoice data object
+             * @returns {Promise<void>}
+             */
+            async printInvoice(invoiceIdOrData = null) {
                 try {
-                    // Encode the invoice data for URL
-                    const encodedData = encodeURIComponent(JSON.stringify(invoiceData));
-                    console.log('Encoded data length:', encodedData.length);
+                    console.log('printInvoice called with:', invoiceIdOrData);
                     
-                    // Open print page with data in URL hash
-                    const printUrl = `print-invoice.html#${encodedData}`;
-                    console.log('Opening URL:', printUrl);
-                    
-                    // Check if we need to use a new window or the existing one
-                    let printWindow = window.open('', '_blank');
-                    
-                    if (!printWindow) {
-                        // Fallback to same window if popup is blocked
-                        window.location.href = printUrl;
-                        return;
+                    if (!invoiceIdOrData) {
+                        throw new Error('No invoice ID or data provided');
                     }
                     
-                    // Load the print page
-                    printWindow.location.href = printUrl;
+                    let invoiceData;
                     
-                    // Also try to send via postMessage as a fallback
-                    let messageSent = false;
-                    const checkPrintWindow = setInterval(() => {
-                        try {
-                            if (!messageSent) {
-                                console.log('Sending postMessage to print window');
-                                printWindow.postMessage({ 
-                                    type: 'PRINT_INVOICE', 
-                                    data: invoiceData 
-                                }, '*');
-                                messageSent = true;
-                            }
-                            clearInterval(checkPrintWindow);
-                        } catch (e) {
-                            console.log('Window not ready yet, will retry...');
+                    // If we have invoice data directly, use it
+                    if (typeof invoiceIdOrData === 'object' && invoiceIdOrData !== null) {
+                        invoiceData = invoiceIdOrData;
+                    } else {
+                        // Otherwise, try to find the invoice by ID
+                        invoiceData = this.getInvoice(invoiceIdOrData);
+                        if (!invoiceData) {
+                            throw new Error(`Invoice not found: ${invoiceIdOrData}`);
                         }
-                    }, 100);
+                    }
                     
-                    setTimeout(() => {
-                        clearInterval(checkPrintWindow);
-                        console.log('Print window timeout reached');
-                    }, 3000);
+                    // Process the invoice data
+                    const processedInvoice = this._processInvoiceData(invoiceData);
                     
+                    // Open the print modal with the processed data
+                    return this._openPrintModal(processedInvoice);
                 } catch (error) {
                     console.error('Error in printInvoice:', error);
-                    this.showAlert(`خطأ في فتح نافذة الطباعة: ${error.message}`, 'danger');
+                    this.showAlert('حدث خطأ أثناء محاولة طباعة الفاتورة', 'error');
+                    throw error; // Re-throw to allow caller to handle if needed
+                }
+            }
+            
+            /**
+             * Process and validate invoice data before printing
+             * @private
+             * @param {object} invoice - The invoice data to process
+             * @returns {object} Processed invoice data
+             */
+            _processInvoiceData(invoice) {
+                if (!invoice) {
+                    throw new Error('No invoice data provided');
+                }
+                
+                // Create a copy to avoid modifying the original
+                const processed = { ...invoice };
+                
+                // Ensure we have items in the invoice
+                if (!processed.items && processed.products) {
+                    processed.items = Array.isArray(processed.products) ? [...processed.products] : [];
+                } else if (!processed.items) {
+                    processed.items = [];
+                }
+                
+                // Ensure items is an array
+                if (!Array.isArray(processed.items)) {
+                    console.warn('Invoice items is not an array, converting...');
+                    processed.items = [];
+                }
+                
+                // Process each item to ensure it has required fields
+                processed.items = processed.items.map(item => ({
+                    id: item.id || `item-${Math.random().toString(36).substr(2, 9)}`,
+                    name: item.name || item.productName || 'منتج غير معروف',
+                    quantity: parseFloat(item.quantity) || 0,
+                    price: parseFloat(item.price) || parseFloat(item.balance) || 0,
+                    total: (parseFloat(item.quantity) || 0) * (parseFloat(item.price) || parseFloat(item.balance) || 0),
+                    ...item // Spread any additional properties
+                }));
+                
+                // Calculate totals if not provided
+                if (processed.total === undefined) {
+                    processed.total = processed.items.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
+                }
+                
+                // Ensure we have a valid ID for the invoice
+                if (!processed.id) {
+                    processed.id = processed.invoiceNumber || `temp-${Date.now()}`;
+                    console.warn('Generated temporary invoice ID:', processed.id);
+                }
+                
+                // Format dates if needed
+                if (processed.date && !(processed.date instanceof Date)) {
+                    try {
+                        processed.date = new Date(processed.date);
+                    } catch (e) {
+                        console.warn('Invalid date format in invoice:', processed.date);
+                        processed.date = new Date();
+                    }
+                } else if (!processed.date) {
+                    processed.date = new Date();
+                }
+                
+                return processed;
+            }
+            
+            /**
+             * Internal method to open the print modal with invoice data
+             * @private
+             * @param {object} invoice - The processed invoice data to print
+             * @returns {Promise<void>}
+             */
+            async _openPrintModal(invoice) {
+                try {
+                    if (!invoice) {
+                        throw new Error('No invoice data provided to _openPrintModal');
+                    }
+                    
+                    if (!window.printInvoice || typeof window.printInvoice.openModal !== 'function') {
+                        throw new Error('Print functionality is not properly initialized');
+                    }
+                    
+                    console.log('Opening print modal with invoice:', invoice);
+                    
+                    // Open the print modal
+                    await window.printInvoice.openModal(invoice);
+                    
+                } catch (error) {
+                    console.error('Error in _openPrintModal:', error);
+                    this.showAlert('حدث خطأ أثناء فتح نافذة الطباعة', 'error');
+                    throw error; // Re-throw to allow caller to handle if needed
                 }
             }
             
@@ -3816,8 +4005,7 @@
                                     <h3>لا توجد منتجات متاحة</h3>
                                     <p>استخدم زر "إضافة منتج جديد" لإضافة منتجات إلى المخزون</p>
                                 </td>
-                            </tr>
-                        `;
+                            </tr>`;
                         this.pagination.products.style.display = 'none';
                         return;
                     }
@@ -3958,42 +4146,22 @@
                         <td>${formattedDate}</td>
                         <td>${(invoice.total || 0).toFixed(2)} ج.م</td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>
+                        <td class="actions">
                             <button class="action-btn print-invoice-btn" 
-                                    data-invoice-id="${invoice.id}" 
+                                    data-invoice-id="${invoice.id ?? invoice.invoiceNumber ?? ''}" 
                                     title="طباعة الفاتورة">
                                 <i class="fas fa-print"></i>
                             </button>
                         </td>
                     `;
                     
-                    // Make row clickable
-                    row.style.cursor = 'pointer';
-                    row.addEventListener('click', (e) => {
-                        // Don't trigger if clicking on the print button
-                        if (!e.target.closest('.print-invoice-btn')) {
-                            this.showInvoiceDetails(invoice);
-                        }
-                    });
-                    
-                    // Add hover effect
-                    row.addEventListener('mouseenter', () => {
-                        row.style.backgroundColor = '#f8f9fa';
-                    });
                     row.addEventListener('mouseleave', () => {
                         row.style.backgroundColor = '';
                     });
                     
                     tbody.appendChild(row);
                     
-                    // Add click handler for print button
-                    const printBtn = row.querySelector('.print-invoice-btn');
-                    if (printBtn) {
-                        printBtn.addEventListener('click', (e) => {
-                            e.stopPropagation(); // Prevent row click
-                            this.printInvoice(invoice.id || invoice);
-                        });
-                    }
+                    // Print button click handler is now handled by event delegation in setupEventListeners
                 });
                 
                 // Render pagination
@@ -4038,28 +4206,6 @@
                                     </h3>
                                     <button class="close-btn" id="close-invoice-details" style="background: none; border: none; font-size: 1.25em; cursor: pointer; color: #6c757d; padding: 5px;">
                                         <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 20px;">
-                                <!-- Invoice Header -->
-                                <div class="card" style="margin-bottom: 25px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
-                                    <div class="card-body" style="padding: 20px;">
-                                        <div style="display: flex; flex-wrap: wrap; margin: 0 -10px;">
-                                            <div style="flex: 0 0 50%; max-width: 50%; padding: 0 10px; margin-bottom: 15px;">
-                                                <div style="margin-bottom: 8px;">
-                                                    <div style="font-size: 0.9em; color: #6c757d; margin-bottom: 3px;">العميل</div>
-                                                    <div style="font-weight: 500; font-size: 1.1em;">${customerName}</div>
-                                                </div>
-                                            </div>
-                                            <div style="flex: 0 0 50%; max-width: 50%; padding: 0 10px; margin-bottom: 15px;">
-                                                <div style="margin-bottom: 8px; text-align: left;">
-                                                    <div style="font-size: 0.9em; color: #6c757d; margin-bottom: 3px;">التاريخ</div>
-                                                    <div style="font-weight: 500; font-size: 1.1em;">${formattedDate}</div>
-                                                </div>
-                                            </div>
-                                            <div style="flex: 0 0 50%; max-width: 50%; padding: 0 10px;">
-                                                <div style="margin-bottom: 8px;">
                                                     <div style="font-size: 0.9em; color: #6c757d; margin-bottom: 3px;">رقم الفاتورة</div>
                                                     <div style="font-weight: 500; font-size: 1.1em;">#${invoice.id || 'N/A'}</div>
                                                 </div>
@@ -4127,16 +4273,17 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer" style="display: flex; justify-content: space-between; padding: 15px; border-top: 1px solid #eee;">
+                            </div>
+                            </div>
+                            <div class="modal-footer" style="padding: 15px; border-top: 1px solid #eee;">
                                 <button class="btn btn-outline-secondary" id="close-invoice-details-btn">
                                     <i class="fas fa-times ml-1"></i> إغلاق
                                 </button>
-                                <button class="btn btn-primary" id="print-invoice-details">
-                                    <i class="fas fa-print ml-1"></i> طباعة الفاتورة
+                                <button class="btn btn-primary print-invoice-btn" id="print-invoice-details" data-invoice-id="${invoice.id || ''}" style="display: inline-flex; align-items: center; gap: 5px;">
+                                    <i class="fas fa-print"></i> طباعة الفاتورة
                                 </button>
                             </div>
-                        </div>
-                    </div>`;
+                    `;
                 
                 // Add modal to the DOM
                 const modalContainer = document.createElement('div');
@@ -4165,18 +4312,41 @@
                     if (btn) btn.addEventListener('click', closeModal);
                 });
                 
-                // Print button
-                const printBtn = modalContainer.querySelector('#print-invoice-details');
-                if (printBtn) {
-                    printBtn.addEventListener('click', () => this.printInvoice(invoice.id || invoice));
-                }
+                // Print button click is handled by event delegation in setupEventListeners
                 
                 // Add escape key listener
                 document.addEventListener('keydown', handleEscape);
             }
             
+            /**
+             * Shows the supplier history modal with purchase history
+             * @param {string} supplierId - The ID of the supplier
+             */
             showSupplierHistory(supplierId) {
+                if (!supplierId) {
+                    console.error('No supplier ID provided to showSupplierHistory');
+                    this.showAlert('معرف المورد غير صالح', 'error');
+                    return;
+                }
+                
                 console.log('showSupplierHistory called with ID:', supplierId);
+                
+                // Define closeModal function
+                const closeModal = () => {
+                    const modal = document.getElementById('supplier-history-modal');
+                    if (modal && modal.parentNode) {
+                        document.body.removeChild(modal);
+                    }
+                    document.removeEventListener('keydown', handleEscape);
+                };
+
+                // Handle escape key
+                const handleEscape = (e) => {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                    }
+                };
+
                 try {
                     console.log('Creating loading modal...');
                     // Show loading state
@@ -4201,12 +4371,24 @@
 
                     // Remove any existing supplier history modal
                     const existingModal = document.getElementById('supplier-history-modal');
-                    if (existingModal) {
-                        existingModal.remove();
+                    if (existingModal && existingModal.parentNode) {
+                        document.body.removeChild(existingModal);
                     }
 
                     // Add loading modal to the page
-                    document.body.insertAdjacentHTML('beforeend', loadingHtml);
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = loadingHtml.trim();
+                    const modalElement = tempDiv.firstChild;
+                    document.body.appendChild(modalElement);
+
+                    // Add event listener for close button
+                    const closeButton = document.getElementById('close-supplier-history');
+                    if (closeButton) {
+                        closeButton.addEventListener('click', closeModal);
+                    }
+
+                    // Add escape key listener
+                    document.addEventListener('keydown', handleEscape);
 
                     // Get supplier data
                     console.log('Fetching supplier with ID:', supplierId);
@@ -4409,10 +4591,11 @@
                                                 <i class="fas fa-times"></i> إغلاق
                                             </button>
                                             ${items.length > 0 ? `
-                                                <button class="btn btn-primary" id="print-supplier-history" style="padding: 8px 20px;">
-                                                    <i class="fas fa-print"></i> طباعة السجل
-                                                </button>
-                                            ` : ''}
+                                                <button class="btn btn-primary print-invoice-btn" id="print-invoice-details" data-invoice-id="${invoice.id || ''}" style="display: inline-flex; align-items: center; gap: 5px;">
+                                                    <i class="fas fa-print"></i>
+                                                    طباعة الفاتورة
+                                                </button>`
+                                            : ''}
                                         </div>
                                     </div>
                                 </div>
@@ -5720,14 +5903,14 @@
                     });
             
                     // Close modal functionality
-                    const closeModal = () => {
+                    const closeProductHistoryModal = () => {
                         try {
                             const modal = document.getElementById('product-history-modal');
                             if (modal) {
                                 // Remove event listeners first
                                 const closeBtns = modal.querySelectorAll('#close-product-history, #close-product-history-btn');
                                 closeBtns.forEach(btn => {
-                                    if (btn) btn.removeEventListener('click', closeModal);
+                                    if (btn) btn.removeEventListener('click', closeProductHistoryModal);
                                 });
                                 
                                 const printBtn = modal.querySelector('#print-product-history');
@@ -5793,20 +5976,25 @@
                             style.innerHTML = printStyles;
                             document.head.appendChild(style);
                             
-                            // Trigger print
-                            window.print();
-                            
-                            // Clean up
+                            // Trigger print after a short delay
                             setTimeout(() => {
-                                style.remove();
-                            }, 1000);
+                                window.print();
+                                // Remove the style after printing
+                                setTimeout(() => style.remove(), 1000);
+                            }, 200);
                         } catch (error) {
                             console.error('Error printing product history:', error);
-                            this.showAlert('حدث خطأ أثناء محاولة الطباعة', 'error');
+                            this.showAlert('حدث خطأ أثناء الطباعة', 'error');
                         }
                     };
                     
                     // Add close button event listeners
+                    // Add close button event listeners
+                    const closeModal = () => {
+                        const modal = document.getElementById('product-history-modal');
+                        if (modal) modal.remove();
+                    };
+                    
                     document.getElementById('close-product-history')?.addEventListener('click', closeModal);
                     document.getElementById('close-product-history-btn')?.addEventListener('click', closeModal);
             
@@ -5857,6 +6045,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             window.inventorySystem = new InventorySystem();
             
+            // Initialize print invoice functionality
+            window.printInvoice = new PrintInvoice();
+            
             // Initialize reports page if it's the active page on load
             const reportsPage = document.getElementById('reports-page');
             if (reportsPage && window.getComputedStyle(reportsPage).display !== 'none') {
@@ -5872,6 +6063,21 @@
             if (invoiceModal) {
                 invoiceModal.addEventListener('show.bs.modal', function () {
                     window.inventorySystem.populateCustomerDropdown();
+                });
+            }
+            
+            // Handle print button in invoice details modal
+            const printDetailsBtn = document.getElementById('print-invoice-details');
+            if (printDetailsBtn) {
+                printDetailsBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const invoiceId = document.querySelector('#invoice-details-modal .modal-title')?.textContent?.match(/#(\S+)/)?.[1];
+                    if (invoiceId) {
+                        const invoice = window.inventorySystem?.getInvoice(invoiceId);
+                        if (invoice) {
+                            window.printInvoice.openModal(invoice);
+                        }
+                    }
                 });
             }
         });
@@ -5917,6 +6123,624 @@
                 defaultPage.style.display = 'block';
                 document.querySelector('.menu-item[data-page="dashboard-page"]')?.classList.add('active');
             }
+        });
+    </script>
+
+    <!-- Print Invoice Modal will be created dynamically by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Print invoice functionality
+        class PrintInvoice {
+            constructor() {
+                this.printModal = document.getElementById('print-invoice-modal');
+                this.printContainer = this.printModal ? this.printModal.querySelector('.modal-body') : null;
+                this.closeBtn = document.getElementById('close-print-invoice-modal');
+                this.printBtn = document.getElementById('print-invoice-btn');
+                
+                if (!this.printModal || !this.printContainer || !this.closeBtn || !this.printBtn) {
+                    console.log('Creating print modal elements...');
+                    this.createPrintModal();
+                    // Re-initialize elements after creation
+                    this.printModal = document.getElementById('print-invoice-modal');
+                    this.printContainer = this.printModal ? this.printModal.querySelector('.modal-body') : null;
+                    this.closeBtn = document.getElementById('close-print-invoice-modal');
+                    this.printBtn = document.getElementById('print-invoice-btn');
+                }
+                
+                this.setupEventListeners();
+                console.log('PrintInvoice initialized successfully');
+            }
+            
+            createPrintModal() {
+                // Create the modal HTML
+                const modalHTML = `
+                    <div class="modal-overlay" id="print-invoice-modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 9999;">
+                        <div class="modal" style="background: white; border-radius: 8px; width: 90%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column;">
+                            <div class="modal-header" style="padding: 15px 20px; background: #f8f9fa; color: #2c3e50; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0;">
+                                <h3 style="margin: 0;">معاينة الفاتورة</h3>
+                                <button class="close-btn no-print" id="close-print-invoice-modal" style="background: none; border: none; color: #2c3e50; font-size: 1.2rem; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="print-invoice-content" style="padding: 20px; overflow-y: auto; flex: 1;">
+                                <!-- Invoice content will be inserted here -->
+                            </div>
+                            <!-- Modal Footer -->
+                            <div class="modal-footer no-print" style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; display: flex; justify-content: flex-start; gap: 10px;">
+                                <button id="print-invoice-btn" class="btn btn-primary" style="padding: 8px 20px; display: inline-flex; align-items: center;">
+                                    <i class="fas fa-print" style="margin-left: 8px;"></i>
+                                    طباعة الفاتورة
+                                </button>
+                                <button id="close-print-preview" class="btn btn-outline-secondary" style="padding: 8px 20px; display: inline-flex; align-items: center;">
+                                    <i class="fas fa-times" style="margin-left: 8px;"></i>
+                                    إغلاق النافذة
+                                </button>
+                            </div>
+                        </div>`;
+                    
+                // Add the modal to the body
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Update references
+                this.printModal = document.getElementById('print-invoice-modal');
+                this.printContainer = document.getElementById('print-invoice-content');
+                this.closeBtn = document.getElementById('close-print-invoice-modal');
+                this.printBtn = document.getElementById('print-invoice-btn');
+                
+                // Set up event listeners
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                // Remove any existing click listeners to prevent duplicates
+                if (this._clickHandler) {
+                    document.removeEventListener('click', this._clickHandler);
+                }
+                
+                // Close modal when clicking outside content
+                if (this.printModal) {
+                    this.printModal.addEventListener('click', (e) => {
+                        if (e.target === this.printModal) {
+                            this.closeModal();
+                        }
+                    });
+                }
+
+                // Create a bound handler function that we can remove later
+                this._clickHandler = (e) => {
+                    // Handle close buttons
+                    if (e.target.closest('#close-print-modal, #close-print-invoice-modal, #close-print-preview')) {
+                        this.closeModal();
+                        return;
+                    }
+                    
+                    // Handle print button - only if not already handling a print
+                    const printBtn = e.target.closest('#print-invoice-btn');
+                    if (printBtn && !printBtn._isPrinting) {
+                        printBtn._isPrinting = true;
+                        this.handlePrint().finally(() => {
+                            printBtn._isPrinting = false;
+                        });
+                        return;
+                    }
+                };
+                
+                // Add the event listener
+                document.addEventListener('click', this._clickHandler);
+                
+                // Close on Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.printModal && this.printModal.classList.contains('active')) {
+                        this.closeModal();
+                    }
+                });
+            }
+            
+            handlePrint() {
+                return new Promise((resolve, reject) => {
+                    try {
+                        if (!this.printContainer) {
+                            throw new Error('Print container not found');
+                        }
+                        
+                        // Close the modal first
+                        this.closeModal();
+                        
+                        // Small delay to allow modal to close before printing
+                        setTimeout(() => {
+                            try {
+                                // Create a print window
+                                const printWindow = window.open('', '_blank');
+                                if (!printWindow) {
+                                    throw new Error('Failed to open print window');
+                                }
+                    
+                                // Get the invoice HTML
+                                const invoiceHTML = `
+                                    <!DOCTYPE html>
+                                    <html dir="rtl">
+                                    <head>
+                                        <meta charset="UTF-8">
+                                        <title>طباعة الفاتورة</title>
+                                        <style>
+                                            @page { size: auto; margin: 10mm; }
+                                            body { 
+                                                font-family: Arial, sans-serif; 
+                                                line-height: 1.6; 
+                                                padding: 20px;
+                                            }
+                                            .print-page { 
+                                                max-width: 800px; 
+                                                margin: 0 auto; 
+                                                padding: 20px; 
+                                                border: 1px solid #eee;
+                                            }
+                                            .print-header { 
+                                                text-align: center; 
+                                                margin-bottom: 20px; 
+                                                border-bottom: 2px solid #eee;
+                                                padding-bottom: 20px;
+                                            }
+                                            .print-header h1 { 
+                                                margin: 0 0 10px; 
+                                                font-size: 24px; 
+                                                color: #2c3e50;
+                                            }
+                                            .invoice-number, .invoice-date { 
+                                                margin: 5px 0; 
+                                                color: #666;
+                                            }
+                                            .invoice-status { 
+                                                display: inline-block; 
+                                                padding: 5px 15px; 
+                                                border-radius: 4px; 
+                                                font-weight: bold; 
+                                                margin: 10px 0; 
+                                                font-size: 14px;
+                                            }
+                                            .status-paid { 
+                                                background-color: #d4edda; 
+                                                color: #155724; 
+                                            }
+                                            .status-unpaid { 
+                                                background-color: #f8d7da; 
+                                                color: #721c24; 
+                                            }
+                                            .print-details { 
+                                                margin: 20px 0; 
+                                                padding: 15px;
+                                                background: #f9f9f9;
+                                                border-radius: 4px;
+                                            }
+                                            .detail-section { 
+                                                margin-bottom: 15px; 
+                                            }
+                                            .detail-row { 
+                                                display: flex; 
+                                                margin: 8px 0; 
+                                            }
+                                            .detail-label { 
+                                                font-weight: bold; 
+                                                min-width: 120px;
+                                                color: #555;
+                                            }
+                                            .detail-value {
+                                                flex: 1;
+                                            }
+                                            .print-items { 
+                                                width: 100%; 
+                                                border-collapse: collapse; 
+                                                margin: 20px 0; 
+                                                font-size: 14px;
+                                            }
+                                            .print-items th, 
+                                            .print-items td { 
+                                                border: 1px solid #ddd; 
+                                                padding: 10px; 
+                                                text-align: right; 
+                                            }
+                                            .print-items th { 
+                                                background-color: #f5f5f5; 
+                                                font-weight: bold; 
+                                            }
+                                            .print-totals { 
+                                                margin: 20px 0; 
+                                                text-align: left; 
+                                            }
+                                            .totals-table { 
+                                                width: 300px; 
+                                                margin-left: auto; 
+                                                border-collapse: collapse; 
+                                            }
+                                            .totals-table td { 
+                                                padding: 10px; 
+                                                border: 1px solid #ddd; 
+                                            }
+                                            .summary-total { 
+                                                font-weight: bold; 
+                                                background-color: #f5f5f5; 
+                                            }
+                                            .print-notes { 
+                                                margin: 20px 0; 
+                                                padding: 15px; 
+                                                background-color: #f9f9f9; 
+                                                border-right: 4px solid #3498db; 
+                                                border-radius: 4px;
+                                            }
+                                            .print-footer { 
+                                                margin-top: 40px; 
+                                                text-align: center; 
+                                                color: #666; 
+                                                font-size: 14px; 
+                                                padding-top: 20px;
+                                                border-top: 1px solid #eee;
+                                            }
+                                            .print-timestamp { 
+                                                font-size: 12px; 
+                                                color: #999; 
+                                                margin-top: 10px; 
+                                            }
+                                            @media print {
+                                                body { 
+                                                    -webkit-print-color-adjust: exact; 
+                                                    padding: 0;
+                                                    margin: 0;
+                                                }
+                                                .print-page {
+                                                    border: none;
+                                                    padding: 0;
+                                                    margin: 0;
+                                                }
+                                                .no-print { 
+                                                    display: none !important; 
+                                                }
+                                            }
+                                        </style>
+                                    </head>
+                                    <body>
+                                        <div class="print-page">
+                                            ${this.printContainer.innerHTML}
+                                        </div>
+                                        <script>
+                                            // Auto-print when the print window loads
+                                            window.onload = function() {
+                                                try {
+                                                    window.print();
+                                                    // Close the window after printing
+                                                    setTimeout(function() {
+                                                        window.close();
+                                                    }, 100);
+                                                } catch (e) {
+                                                    console.error('Error during print:', e);
+                                                }
+                                            };
+                                        <\/script>
+                                    </body>
+                                    </html>
+                                `;
+                                
+                                // Write the HTML to the print window
+                                printWindow.document.open();
+                                printWindow.document.write(invoiceHTML);
+                                printWindow.document.close();
+                                
+                                // Resolve the promise when the print window is closed
+                                printWindow.onbeforeunload = function() {
+                                    resolve();
+                                };
+                                
+                            } catch (error) {
+                                console.error('Error in print handler:', error);
+                                reject(error);
+                            }
+                        }, 100);
+                    } catch (error) {
+                        console.error('Error in print setup:', error);
+                        reject(error);
+                    }
+                });
+            }
+            
+            openModal(invoiceData) {
+                console.log('openModal called with data:', invoiceData);
+                
+                // Ensure modal and its elements exist
+                if (!this.printModal || !this.printContainer) {
+                    console.log('Creating print modal...');
+                    this.createPrintModal();
+                    
+                    // Double check after creation
+                    if (!this.printModal || !this.printContainer) {
+                        console.error('Failed to create print modal or container');
+                        return;
+                    }
+                }
+                
+                try {
+                    // Generate the invoice HTML
+                    const html = this.generateInvoiceHTML(invoiceData);
+                    console.log('Generated HTML:', html);
+                    
+                    // Clear and insert the HTML into the container
+                    this.printContainer.innerHTML = '';
+                    this.printContainer.insertAdjacentHTML('beforeend', html);
+                    
+                    // Show the modal with animation
+                    this.printModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Trigger reflow to ensure the display style is applied
+                    void this.printModal.offsetWidth;
+                    
+                    // Add active class to trigger the animation
+                    this.printModal.classList.add('active');
+                    
+                    // Ensure the modal is scrolled to the top
+                    this.printModal.scrollTop = 0;
+                    
+                    // Focus the print button for better keyboard navigation
+                    const printBtn = this.printModal.querySelector('#print-invoice-btn');
+                    if (printBtn) {
+                        console.log('Print button found, focusing...');
+                        setTimeout(() => printBtn.focus(), 100);
+                    } else {
+                        console.warn('Print button not found in the modal');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error opening print modal:', error);
+                    alert('حدث خطأ أثناء فتح معاينة الفاتورة: ' + (error.message || 'خطأ غير معروف'));
+                }
+            }
+            
+            closeModal() {
+                if (!this.printModal) return;
+                
+                // Remove active class to trigger fade out
+                this.printModal.classList.remove('active');
+                
+                // After animation completes, hide the modal
+                setTimeout(() => {
+                    if (this.printModal) {
+                        this.printModal.style.display = 'none';
+                    }
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+            
+            generateInvoiceHTML(invoice) {
+                if (!invoice) return '<div class="error">لا توجد بيانات فاتورة متاحة</div>';
+                
+                const formatDate = (dateString) => {
+                    if (!dateString) return 'غير محدد';
+                    try {
+                        const date = new Date(dateString);
+                        if (isNaN(date.getTime())) return 'تاريخ غير صالح';
+                        const options = { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        };
+                        return date.toLocaleDateString('ar-EG', options);
+                    } catch (e) {
+                        console.error('Error formatting date:', e);
+                        return 'تاريخ غير صالح';
+                    }
+                };
+                
+                const formatCurrency = (amount) => {
+                    if (amount === undefined || amount === null || isNaN(amount)) return '0.00';
+                    return parseFloat(amount).toFixed(2);
+                };
+                
+                // Calculate subtotal from items if available, otherwise use the provided subtotal
+                let subtotal = 0;
+                if (invoice.items && Array.isArray(invoice.items) && invoice.items.length > 0) {
+                    subtotal = invoice.items.reduce((sum, item) => {
+                        const price = parseFloat(item.price || item.unitPrice || 0);
+                        const quantity = parseInt(item.quantity || 0);
+                        return sum + (price * quantity);
+                    }, 0);
+                } else if (invoice.products && Array.isArray(invoice.products) && invoice.products.length > 0) {
+                    subtotal = invoice.products.reduce((sum, item) => {
+                        const price = parseFloat(item.price || item.unitPrice || 0);
+                        const quantity = parseInt(item.quantity || 0);
+                        return sum + (price * quantity);
+                    }, 0);
+                } else {
+                    subtotal = parseFloat(invoice.subtotal || 0);
+                }
+                
+                const taxRate = parseFloat(invoice.taxRate || 0);
+                const taxAmount = subtotal * (taxRate / 100);
+                const total = parseFloat(invoice.total) || (subtotal + taxAmount);
+                
+                const items = Array.isArray(invoice.items) ? invoice.items : (Array.isArray(invoice.products) ? invoice.products : []);
+                
+                return `
+                <div class="print-page" style="font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto; direction: rtl;">
+                    <!-- Header Section -->
+                    <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #3498db;">
+                        <h1 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 28px;">سجل معاملات المورد</h1>
+                        <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 14px;">
+                            <div><strong>رقم الفاتورة:</strong> ${invoice.id || 'N/A'}</div>
+                            <div><strong>التاريخ:</strong> ${formatDate(invoice.date)}</div>
+                            <div><strong>الحالة:</strong> 
+                                <span style="color: ${invoice.paid ? '#27ae60' : '#e74c3c'}; font-weight: bold;">
+                                    ${invoice.paid ? 'مكتملة' : 'قيد الانتظار'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Supplier Information -->
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-right: 4px solid #3498db;">
+                        <h3 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 18px;">
+                            <i class="fas fa-user-tie" style="margin-left: 8px;"></i>
+                            معلومات المورد
+                        </h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
+                            <div><strong>الاسم:</strong> ${invoice.supplierName || 'غير محدد'}</div>
+                            ${invoice.supplierPhone && `<div><strong>الهاتف:</strong> ${invoice.supplierPhone}</div>`}
+                        </div>
+                    </div>
+
+                    <!-- Items Table -->
+                    <div style="margin: 25px 0; overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                            <thead>
+                                <tr style="background-color: #f1f5f9;">
+                                    <th style="padding: 12px; text-align: right; border: 1px solid #dee2e6; font-weight: 600;">المنتج</th>
+                                    <th style="padding: 12px; text-align: center; border: 1px solid #dee2e6; font-weight: 600;">الكمية</th>
+                                    <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">سعر الوحدة</th>
+                                    <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">المجموع</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${items.map((item, index) => {
+                                    const price = parseFloat(item.price || item.unitPrice || 0);
+                                    const quantity = parseInt(item.quantity || 0);
+                                    return `
+                                        <tr style="${index % 2 === 0 ? 'background-color: #f8fafc;' : ''}">
+                                            <td style="padding: 12px; border: 1px solid #dee2e6; text-align: right;">
+                                                <div style="font-weight: 500;">${item.name || item.productName || 'عنصر غير معروف'}</div>
+                                                ${item.code ? `<div style="font-size: 12px; color: #64748b;">الكود: ${item.code}</div>` : ''}
+                                            </td>
+                                            <td style="padding: 12px; border: 1px solid #dee2e6; text-align: center;">${quantity} ${item.unit || 'قطعة'}</td>
+                                            <td style="padding: 12px; border: 1px solid #dee2e6; text-align: left;">${formatCurrency(price)}</td>
+                                            <td style="padding: 12px; border: 1px solid #dee2e6; text-align: left; font-weight: 500;">${formatCurrency(price * quantity)}</td>
+                                        </tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Totals Section -->
+                    <div style="margin: 20px 0; display: flex; justify-content: flex-start;">
+                        <div style="width: 300px; margin-right: auto;">
+                            ${invoice.discount && invoice.discount > 0 ? `
+                            <div style="display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #e9ecef; color: #e74c3c;">
+                                <span>الخصم:</span>
+                                <span>-${formatCurrency(invoice.discount)}</span>
+                            </div>` : ''}
+                            <div style="display: flex; justify-content: space-between; padding: 10px 15px; background-color: #f8f9fa; font-weight: bold; font-size: 1.1em;">
+                                <span>الإجمالي النهائي:</span>
+                                <span>${formatCurrency(total)}</span>
+                            </div>
+                            ${invoice.paidAmount && invoice.paidAmount > 0 ? `
+                            <div style="display: flex; justify-content: space-between; padding: 10px 15px; border-top: 1px solid #e9ecef; color: #27ae60;">
+                                <span>المبلغ المدفوع:</span>
+                                <span>${formatCurrency(invoice.paidAmount)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 10px 15px; font-weight: bold; color: #f39c12;">
+                                <span>المتبقي:</span>
+                                <span>${formatCurrency(total - (invoice.paidAmount || 0))}</span>
+                            </div>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Payment & Notes -->
+                    <div style="margin-top: 30px; display: flex; flex-wrap: wrap; gap: 30px;">
+                        ${invoice.paymentMethod ? `
+                        <div style="flex: 1; min-width: 200px;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-right: 3px solid #3498db;">
+                                <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px; display: flex; align-items: center;">
+                                    <i class="fas fa-credit-card" style="margin-left: 8px;"></i>
+                                    طريقة الدفع
+                                </h4>
+                                <p style="margin: 0;">
+                                    ${invoice.paymentMethod === 'cash' ? 'نقداً' : 
+                                      invoice.paymentMethod === 'card' ? 'بطاقة ائتمان' : 
+                                      invoice.paymentMethod === 'bank' ? 'تحويل بنكي' : 
+                                      invoice.paymentMethod}
+                                </p>
+                            </div>
+                        </div>` : ''}
+                        
+                        ${invoice.notes ? `
+                        <div style="flex: 2; min-width: 200px;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-right: 3px solid #3498db; height: 100%;">
+                                <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px; display: flex; align-items: center;">
+                                    <i class="fas fa-sticky-note" style="margin-left: 8px;"></i>
+                                    ملاحظات
+                                </h4>
+                                <p style="margin: 0; white-space: pre-line;">${invoice.notes}</p>
+                            </div>
+                        </div>` : ''}
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #eee; text-align: center; color: #6b7280; font-size: 13px;">
+                        <p style="margin: 5px 0; font-weight: 500;">
+                            <i class="fas fa-store" style="margin-left: 8px;"></i>
+                            ${invoice.storeName || 'متجرك'}
+                        </p>
+                        <p style="margin: 5px 0; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                            <span><i class="fas fa-phone" style="margin-left: 5px;"></i> ${invoice.storePhone || '01 234 5678'}</span>
+                            ${invoice.storeEmail ? `<span><i class="fas fa-envelope" style="margin-right: 5px; margin-left: 15px;"></i> ${invoice.storeEmail}</span>` : ''}
+                        </p>
+                        <p style="margin: 10px 0 0 0; font-size: 12px; color: #9ca3af;">
+                            شكراً لتعاملكم معنا - ${new Date().getFullYear()} ©
+                        </p>
+                    </div>
+                    
+                </div>
+                `;
+            }
+        }
+        
+        // Initialize print invoice functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize PrintInvoice instance
+            window.printInvoice = new PrintInvoice();
+            
+            // Handle print button clicks
+            document.addEventListener('click', (e) => {
+                const printBtn = e.target.closest('.print-invoice-btn, #print-invoice-details, #print-invoice, .btn-print');
+                if (!printBtn) return;
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Handle different print button scenarios
+                if (printBtn.classList.contains('print-invoice-btn') || printBtn.classList.contains('btn-print')) {
+                    // Handle print buttons in the invoices list
+                    const invoiceId = printBtn.dataset.invoiceId || printBtn.dataset.id;
+                    if (invoiceId) {
+                        const invoice = window.inventorySystem?.getInvoice(invoiceId);
+                        if (invoice) {
+                            window.printInvoice.openModal(invoice);
+                        } else {
+                            console.error('Invoice not found:', invoiceId);
+                            window.inventorySystem?.showAlert('خطأ: لم يتم العثور على الفاتورة', 'error');
+                        }
+                    }
+                } else if (printBtn.id === 'print-invoice-details' || printBtn.closest('#print-invoice-details')) {
+                    // Handle print button in invoice details modal
+                    const invoiceModal = document.querySelector('#invoice-details-modal');
+                    if (invoiceModal) {
+                        const invoiceId = invoiceModal.querySelector('.modal-header h3')?.textContent?.match(/#(\S+)/)?.[1];
+                        if (invoiceId) {
+                            const invoice = window.inventorySystem?.getInvoice(invoiceId);
+                            if (invoice) {
+                                window.printInvoice.openModal(invoice);
+                                return;
+                            }
+                        }
+                    }
+                    // If we couldn't get invoice from modal, try to print the current invoice
+                    window.print();
+                } else if (printBtn.id === 'print-invoice' || printBtn.closest('#print-invoice')) {
+                    // Handle print button in print preview
+                    window.print();
+                }
+            });
         });
     </script>
 </body>
