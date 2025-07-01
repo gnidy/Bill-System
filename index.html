@@ -749,22 +749,45 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
         }
         
         .filter-group label {
             font-weight: 500;
             color: var(--text-dark);
+            white-space: nowrap;
         }
         
         .filter-select {
-            padding: 10px 15px;
+            padding: 8px 32px 8px 12px;
             border: 1px solid var(--border);
-            border-radius: 8px;
-            background: white;
-            font-size: 1rem;
+            border-radius: 6px;
+            background-color: white;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            min-width: 150px;
         }
         
-        /* Alert Messages */
+        .filter-select:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .filter-select:hover {
+            border-color: var(--secondary-light);
+        }
+        
         .alert {
             padding: 15px;
             margin-bottom: 20px;
@@ -773,17 +796,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        
-        .alert-success {
-            background: #eafaf1;
-            color: var(--success);
-            border: 1px solid var(--success);
-        }
-        
-        .alert-danger {
-            background: #fceae8;
-            color: var(--danger);
             border: 1px solid var(--danger);
         }
         
@@ -1476,10 +1488,21 @@
                 
                 <!-- Customers Page -->
                 <div id="customers-page" style="display: none;">
-                    <div class="content-header">
-                        <h2>إدارة العملاء</h2>
-                        <div>
-                            <button class="btn btn-primary" id="add-customer-btn">
+                    <div class="content-header" style="align-items: center;">
+                        <h2 style="margin: 0;">إدارة العملاء</h2>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <div class="search-box" style="position: relative; margin: 0;">
+                                <i class="fas fa-search" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
+                                <input type="text" id="customer-search" class="search-input" placeholder="ابحث عن عميل..." 
+                                    style="padding: 10px 40px 10px 15px; border: 1px solid #e0e0e0; border-radius: 8px; 
+                                    width: 300px; font-size: 14px; transition: all 0.3s ease;
+                                    background-color: #f8f9fa; outline: none;
+                                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                                    height: 42px;
+                                    border-color: #d1d5db;">
+                            </div>
+                            <button class="btn btn-primary" id="add-customer-btn" 
+                                style="white-space: nowrap; padding: 10px 20px; font-weight: 500;">
                                 <i class="fas fa-plus"></i> إضافة عميل جديد
                             </button>
                         </div>
@@ -2191,7 +2214,7 @@
                 
                 return customers.map(c => ({
                     id: c.id || `cust_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                    name: c.name || 'عميل نقدي',
+                    name: c.name || 'عميل',
                     phone: c.phone || '',
                     balance: !isNaN(parseFloat(c.balance)) ? parseFloat(c.balance) : 0,
                     createdAt: c.createdAt || new Date().toISOString(),
@@ -2206,7 +2229,6 @@
                 return suppliers.map(s => ({
                     id: s.id || `supp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                     name: s.name || 'مورد بدون اسم',
-                    contactPerson: s.contactPerson || '',
                     phone: s.phone || '',
                     balance: !isNaN(parseFloat(s.balance)) ? parseFloat(s.balance) : 0,
                     createdAt: s.createdAt || new Date().toISOString(),
@@ -2759,15 +2781,20 @@
                 if (id) {
                     const customer = this.getCustomer(id);
                     if (customer) {
-                        document.getElementById('customer-name').value = customer.name;
-                        document.getElementById('customer-phone').value = customer.phone;
-                        document.getElementById('customer-balance').value = customer.balance || 0;
-                        document.getElementById('customer-id').value = customer.id;
-                        document.getElementById('customer-modal-title').textContent = 'تعديل بيانات العميل';
+                        const nameField = document.getElementById('customer-name');
+                        const phoneField = document.getElementById('customer-phone');
+                        const idField = document.getElementById('customer-id');
+                        const titleElement = document.getElementById('customer-modal-title');
+                        
+                        if (nameField) nameField.value = customer.name || '';
+                        if (phoneField) phoneField.value = customer.phone || '';
+                        if (idField) idField.value = customer.id || '';
+                        if (titleElement) titleElement.textContent = 'تعديل بيانات العميل';
                     }
                 } else {
                     this.resetForm('customer');
-                    document.getElementById('customer-modal-title').textContent = 'إضافة عميل جديد';
+                    const titleElement = document.getElementById('customer-modal-title');
+                    if (titleElement) titleElement.textContent = 'إضافة عميل جديد';
                 }
             }
             
@@ -3048,27 +3075,38 @@
                         return;
                     }
                     
-                    // Create customer data object
+                    // Check if this is an update or new customer
+                    const existingIndex = this.customers.findIndex(c => c.id === id);
+                    const now = new Date().toISOString();
+                    
+                    // Create customer data object with all required fields
                     const customerData = { 
                         id, 
                         name, 
                         phone,
-                        updatedAt: new Date().toISOString()
+                        balance: 0,
+                        purchases: [],
+                        updatedAt: now,
+                        ...(existingIndex === -1 ? { createdAt: now } : {})
                     };
                     
-                    // Check if this is an update or new customer
-                    const existingIndex = this.customers.findIndex(c => c.id === id);
-                    
                     if (existingIndex !== -1) {
-                        // Update existing customer - preserve creation date
+                        // Update existing customer - preserve creation date, balance, and purchases
                         const existingCustomer = this.customers[existingIndex];
-                        customerData.createdAt = existingCustomer.createdAt || new Date().toISOString();
+                        customerData.createdAt = existingCustomer.createdAt || now;
+                        customerData.balance = typeof existingCustomer.balance === 'number' ? existingCustomer.balance : 0;
+                        customerData.purchases = Array.isArray(existingCustomer.purchases) ? existingCustomer.purchases : [];
+                        
                         this.customers[existingIndex] = customerData;
                         this.showAlert('تم تحديث بيانات العميل بنجاح', 'success');
                     } else {
-                        // Add new customer
-                        customerData.createdAt = new Date().toISOString();
-                        this.customers.push(customerData);
+                        // Add new customer with all required fields
+                        this.customers.push({
+                            ...customerData,
+                            balance: 0,
+                            purchases: [],
+                            createdAt: now
+                        });
                         this.showAlert('تم إضافة العميل بنجاح', 'success');
                     }
                     
@@ -3098,18 +3136,26 @@
                 const supplierData = {
                     id,
                     name,
-                    phone
+                    phone,
+                    balance: 0,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    transactions: []
                 };
                 
                 if (form.id.value) {
-                    // Update existing supplier
+                    // Update existing supplier - preserve creation date and balance
                     const index = this.suppliers.findIndex(s => s.id === id);
                     if (index !== -1) {
+                        const existingSupplier = this.suppliers[index];
+                        supplierData.balance = existingSupplier.balance || 0;
+                        supplierData.createdAt = existingSupplier.createdAt || new Date().toISOString();
+                        supplierData.transactions = Array.isArray(existingSupplier.transactions) ? existingSupplier.transactions : [];
                         this.suppliers[index] = supplierData;
                         this.showAlert('تم تحديث المورد بنجاح', 'success');
                     }
                 } else {
-                    // Add new supplier
+                    // Add new supplier with all required fields
                     this.suppliers.push(supplierData);
                     this.showAlert('تم إضافة المورد بنجاح', 'success');
                 }
@@ -3168,7 +3214,7 @@
                 }
                     
                 // Get customer information
-                let customerName = 'عميل نقدي';
+                let customerName = 'عميل';
                 let customerPhone = '';
                 
                 if (invoice.customer) {
@@ -3354,42 +3400,6 @@
              * Handles printing an invoice
              * @param {string|object} invoiceIdOrData - Either the invoice ID or the invoice data object
              * @returns {Promise<void>}
-             */
-            async printInvoice(invoiceIdOrData = null) {
-                try {
-                    console.log('printInvoice called with:', invoiceIdOrData);
-                    
-                    if (!invoiceIdOrData) {
-                        throw new Error('No invoice ID or data provided');
-                    }
-                    
-                    let invoiceData;
-                    
-                    // If we have invoice data directly, use it
-                    if (typeof invoiceIdOrData === 'object' && invoiceIdOrData !== null) {
-                        invoiceData = invoiceIdOrData;
-                    } else {
-                        // Otherwise, try to find the invoice by ID
-                        invoiceData = this.getInvoice(invoiceIdOrData);
-                        if (!invoiceData) {
-                            throw new Error(`Invoice not found: ${invoiceIdOrData}`);
-                        }
-                    }
-                    
-                    // Process the invoice data
-                    const processedInvoice = this._processInvoiceData(invoiceData);
-                    
-                    // Open the print modal with the processed data
-                    return this._openPrintModal(processedInvoice);
-                } catch (error) {
-                    console.error('Error in printInvoice:', error);
-                    this.showAlert('حدث خطأ أثناء محاولة طباعة الفاتورة', 'error');
-                    throw error; // Re-throw to allow caller to handle if needed
-                }
-            }
-            
-            /**
-             * Process and validate invoice data before printing
              * @private
              * @param {object} invoice - The invoice data to process
              * @returns {object} Processed invoice data
@@ -3469,8 +3479,33 @@
                     
                     console.log('Opening print modal with invoice:', invoice);
                     
-                    // Open the print modal
-                    await window.printInvoice.openModal(invoice);
+                    // Ensure we have customer data in the invoice object
+                    let customerData = { ...invoice };
+                    
+                    // If we have a customer ID but no customer object, try to look it up
+                    if (invoice.customerId && !invoice.customer) {
+                        const customer = this.getCustomer(invoice.customerId);
+                        if (customer) {
+                            customerData.customer = customer;
+                            customerData.customerName = customer.name || invoice.customerName || 'عميل';
+                            customerData.customerPhone = customer.phone || invoice.customerPhone || 'N/A';
+                        }
+                    }
+                    // If we have a customer object, ensure the direct properties are set
+                    else if (invoice.customer) {
+                        customerData.customerName = invoice.customer.name || invoice.customerName || 'عميل';
+                        customerData.customerPhone = invoice.customer.phone || invoice.customerPhone || 'N/A';
+                    }
+                    // Default for cash customers
+                    else {
+                        customerData.customerName = invoice.customerName || 'عميل';
+                        customerData.customerPhone = invoice.customerPhone || 'N/A';
+                    }
+                    
+                    console.log('Invoice data with customer info:', customerData);
+                    
+                    // Open the print modal with the complete invoice data
+                    await window.printInvoice.openModal(customerData);
                     
                 } catch (error) {
                     console.error('Error in _openPrintModal:', error);
@@ -3493,7 +3528,7 @@
                 
                 // Get customer and ensure purchases array exists
                 const customer = this.getCustomer(customerId);
-                const customerName = customer ? customer.name : 'عميل نقدي';
+                const customerName = customer ? customer.name : 'عميل';
                 
                 // Ensure customer has a purchases array
                 if (customer && !customer.purchases) {
@@ -4110,7 +4145,7 @@
                     const rowNumber = startIndex + index + 1;
                     
                     // Get customer name with proper fallback logic
-                    let customerName = invoice.customerName || invoice.customersName || 'عميل نقدي';
+                    let customerName = invoice.customerName || invoice.customersName || 'عميل';
                     if (invoice.customerId && customerName === 'undefined') {
                         const customer = this.getCustomer(invoice.customerId);
                         if (customer) {
@@ -4170,7 +4205,7 @@
                 }) : 'غير محدد';
                 
                 // Get customer name with proper fallback logic
-                let customerName = invoice.customerName || invoice.customersName || 'عميل نقدي';
+                let customerName = invoice.customerName || invoice.customersName || 'عميل';
                 if (invoice.customerId && customerName === 'undefined') {
                     const customer = this.getCustomer(invoice.customerId);
                     if (customer) {
@@ -4728,7 +4763,7 @@
                                             productHistory.map(transaction => `
                                                 <tr>
                                                     <td>${formatDate(transaction.date)}</td>
-                                                    <td>${transaction.customerName || 'عميل نقدي'}</td>
+                                                    <td>${transaction.customerName || 'عميل'}</td>
                                                     <td>${transaction.quantity || 0}</td>
                                                     <td>${(transaction.price || 0).toFixed(2)} ج.م</td>
                                                     <td>${(transaction.total || 0).toFixed(2)} ج.م</td>
@@ -5016,26 +5051,49 @@
 
                     // Handle print button clicks
                     document.querySelectorAll('#customer-history-modal .print-invoice-history-btn').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
+                        btn.addEventListener('click', async (e) => {
                             e.stopPropagation();
                             try {
                                 const invoice = JSON.parse(btn.getAttribute('data-invoice').replace(/&#39;/g, "'"));
                                 if (invoice) {
                                     console.log('Printing invoice from history:', invoice);
+                                    
+                                    // Get the full invoice data if we only have a reference
+                                    let fullInvoice = invoice;
+                                    if (invoice.invoiceId && !invoice.items) {
+                                        fullInvoice = this.getInvoice(invoice.invoiceId) || invoice;
+                                    }
+                                    
                                     // Ensure we have the customer data
-                                    const customer = this.getCustomer(invoice.customerId) || { name: 'عميل نقدي' };
-                                    const invoiceWithCustomer = {
-                                        ...invoice,
-                                        customer: customer,
-                                        customerName: customer.name
+                                    const customer = this.getCustomer(fullInvoice.customerId) || { 
+                                        id: 'cash-customer',
+                                        name: 'عميل',
+                                        phone: 'N/A'
                                     };
-                                    this.printInvoice(invoiceWithCustomer);
+                                    
+                                    // Create a complete invoice object with all required fields
+                                    const invoiceWithCustomer = {
+                                        ...fullInvoice,
+                                        customer: customer,
+                                        customerName: customer.name,
+                                        customerPhone: customer.phone || 'N/A',
+                                        customerId: customer.id,
+                                        items: fullInvoice.items || [],
+                                        total: fullInvoice.total || 0,
+                                        status: fullInvoice.status || 'unpaid',
+                                        date: fullInvoice.date || new Date().toISOString().split('T')[0],
+                                        id: fullInvoice.id || `inv-${Date.now()}`,
+                                        invoiceId: fullInvoice.invoiceId || fullInvoice.id || `inv-${Date.now()}`
+                                    };
+                                    
+                                    console.log('Printing invoice with data:', invoiceWithCustomer);
+                                    await this.printInvoice(invoiceWithCustomer);
                                 } else {
                                     this.showAlert('تعذر العثور على بيانات الفاتورة', 'error');
                                 }
                             } catch (error) {
                                 console.error('Error parsing invoice data:', error);
-                                this.showAlert('حدث خطأ أثناء معالجة بيانات الفاتورة', 'error');
+                                this.showAlert('حدث خطأ أثناء معالجة بيانات الفاتورة: ' + error.message, 'error');
                             }
                         });
                     });
@@ -5054,15 +5112,17 @@
                 }
             }
 
-            renderCustomersTable() {
+            renderCustomersTable(customersList = null) {
                 const tbody = document.getElementById('customers-table-body');
                 if (!tbody) return;
                 
                 tbody.innerHTML = '';
                 
+                const customersToDisplay = customersList || this.customers;
+                
                 const start = (this.currentPage.customers - 1) * this.itemsPerPage;
                 const end = start + this.itemsPerPage;
-                const paginatedCustomers = this.customers.slice(start, end);
+                const paginatedCustomers = customersToDisplay.slice(start, end);
                 
                 if (paginatedCustomers.length === 0) {
                     tbody.innerHTML = `
@@ -5070,23 +5130,42 @@
                             <td colspan="5" class="text-center py-4">
                                 <div class="empty-state">
                                     <i class="fas fa-users"></i>
-                                    <h3>لا يوجد عملاء</h3>
-                                    <p>قم بإضافة عملاء جدد لعرضهم هنا</p>
+                                    <h3>${customersList ? 'لا توجد نتائج' : 'لا يوجد عملاء'}</h3>
+                                    <p>${customersList ? 'لم يتم العثور على عملاء يطابقون بحثك' : 'قم بإضافة عملاء جدد لعرضهم هنا'}</p>
                                 </div>
                             </td>
                         </tr>`;
+                    this.pagination.customers.style.display = 'none';
                     return;
                 }
                 
                 paginatedCustomers.forEach((customer, index) => {
                     const row = document.createElement('tr');
-                    row.style.cursor = 'pointer';
-                    row.title = 'انقر لعرض سجل المعاملات';
+                    const rowNumber = start + index + 1;
+                    
+                    // Format balance with proper styling based on value
+                    let balanceText = '0.00';
+                    let balanceClass = 'text-muted';
+                    
+                    if (customer.balance !== undefined && customer.balance !== null) {
+                        const balance = parseFloat(customer.balance);
+                        if (!isNaN(balance)) {
+                            balanceText = Math.abs(balance).toFixed(2);
+                            if (balance > 0) {
+                                balanceClass = 'text-success';
+                                balanceText = `+${balanceText}`;
+                            } else if (balance < 0) {
+                                balanceClass = 'text-danger';
+                                balanceText = `-${balanceText}`;
+                            }
+                        }
+                    }
+                    
                     row.innerHTML = `
-                        <td>${start + index + 1}</td>
-                        <td>${customer.name}</td>
-                        <td>${customer.phone}</td>
-                        <td>${parseFloat(customer.balance || 0).toFixed(2)} ج.م</td>
+                        <td>${rowNumber}</td>
+                        <td>${customer.name || 'غير معروف'}</td>
+                        <td>${customer.phone || 'غير متوفر'}</td>
+                        <td class="${balanceClass}">${balanceText} ج.م</td>
                         <td class="actions">
                             <button class="action-btn edit" data-id="${customer.id}" title="تعديل">
                                 <i class="fas fa-edit"></i>
@@ -5094,25 +5173,18 @@
                             <button class="action-btn delete" data-id="${customer.id}" title="حذف">
                                 <i class="fas fa-trash"></i>
                             </button>
-                            <button class="action-btn history" data-id="${customer.id}" title="سجل المعاملات">
+                            <button class="action-btn history" data-id="${customer.id}" title="سجل المشتريات">
                                 <i class="fas fa-history"></i>
                             </button>
-                        </td>`;
+                        </td>
+                    `;
+                    
                     tbody.appendChild(row);
-
-                    // Add click handler to the row
-                    row.addEventListener('click', (e) => {
-                        // Don't trigger if clicking on action buttons
-                        if (!e.target.closest('.action-btn')) {
-                            this.showCustomerHistory(customer.id);
-                        }
-                    });
                 });
                 
                 // Add event listeners to action buttons
                 tbody.querySelectorAll('.edit').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
                         const id = e.currentTarget.getAttribute('data-id');
                         this.openCustomerModal(id);
                     });
@@ -5134,8 +5206,25 @@
                     });
                 });
                 
-                // Render pagination
-                this.renderPagination('customers', this.customers.length);
+                // Add search functionality
+                const searchInput = document.getElementById('customer-search');
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        const searchTerm = e.target.value.toLowerCase();
+                        const filtered = this.customers.filter(customer => 
+                            (customer.name && customer.name.toLowerCase().includes(searchTerm)) ||
+                            (customer.phone && customer.phone.includes(searchTerm))
+                        );
+                        this.renderCustomersTable(filtered);
+                    });
+                }
+                
+                // Render pagination if not filtered
+                if (!customersList) {
+                    this.renderPagination('customers', this.customers.length);
+                } else {
+                    this.renderPagination('customers', customersList.length);
+                }
             }
             
             renderSuppliersTable(filteredSuppliers = null) {
@@ -5490,8 +5579,8 @@
                             statusText = 'غير معروفة';
                     }
                     
-                    // Get customer name, fallback to invoice.customer or 'عميل نقدي'
-                    const customer = this.getCustomer(invoice.customerId) || { name: invoice.customer || 'عميل نقدي' };
+                    // Get customer name, fallback to invoice.customer or 'عميل'
+                    const customer = this.getCustomer(invoice.customerId) || { name: invoice.customer || 'عميل' };
                     
                     row.innerHTML = `
                         <td>${rowNumber}</td>
@@ -6406,6 +6495,14 @@
                     }
                 }
                 
+                // Close customer transactions log if open
+                const customerHistoryModal = document.getElementById('customer-history-modal');
+                if (customerHistoryModal && window.getComputedStyle(customerHistoryModal).display !== 'none') {
+                    customerHistoryModal.style.display = 'none';
+                    document.body.style.overflow = ''; // Re-enable scrolling
+                    console.log('Customer transactions log closed');
+                }
+                
                 try {
                     // Generate the invoice HTML
                     const html = this.generateInvoiceHTML(invoiceData);
@@ -6504,33 +6601,63 @@
                 const taxAmount = subtotal * (taxRate / 100);
                 const total = parseFloat(invoice.total) || (subtotal + taxAmount);
                 
-                const items = Array.isArray(invoice.items) ? invoice.items : (Array.isArray(invoice.products) ? invoice.products : []);
+                const items = Array.isArray(invoice.items) ? invoice.items : 
+                              (Array.isArray(invoice.products) ? invoice.products : []);
                 
-                console.log(invoice)
+                // Determine if this is a customer or supplier invoice
+                const isSupplierInvoice = invoice.type === 'purchase' || invoice.supplierId;
+                const title = isSupplierInvoice ? 'سجل معاملات المورد' : 'فاتورة مبيعات';
+                const infoTitle = isSupplierInvoice ? 'معلومات المورد' : 'معلومات العميل';
+                
+                // Get customer/supplier information with better fallbacks
+                let customerName = 'غير محدد';
+                let customerPhone = 'غير محدد';
+                
+                // Priority 1: Use direct properties from invoice
+                customerName = invoice.customerName || invoice.customer?.name || 'عميل';
+                customerPhone = invoice.customerPhone || invoice.customer?.phone || 'N/A';
+                
+                // Priority 2: If we have customerId but no customer object, try to look it up
+                if ((!customerName || customerName === 'غير محدد') && invoice.customerId) {
+                    const customer = window.inventorySystem?.getCustomer(invoice.customerId);
+                    if (customer) {
+                        customerName = customer.name || customerName;
+                        customerPhone = customer.phone || customerPhone;
+                    }
+                }
+                
+                // Priority 3: If we have a customer object, use it
+                if (invoice.customer) {
+                    customerName = invoice.customer.name || customerName;
+                    customerPhone = invoice.customer.phone || customerPhone;
+                }
+                
                 return `
                 <div class="print-page" style="font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto; direction: rtl;">
                     <!-- Header Section -->
                     <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #3498db;">
-                        <h1 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 28px;">سجل معاملات المورد</h1>
+                        <h1 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 28px;">${title}</h1>
                         <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 14px;">
+                            <div><strong>رقم الفاتورة:</strong> ${invoice.invoiceNumber || invoice.id || 'N/A'}</div>
                             <div><strong>التاريخ:</strong> ${formatDate(invoice.date)}</div>
                             <div><strong>الحالة:</strong> 
-                                <span style="color: ${invoice.paid ? '#27ae60' : '#e74c3c'}; font-weight: bold;">
-                                    ${invoice.paid ? 'مدفوعة' : 'غير مدفوعة'}
+                                <span style="color: ${invoice.status === 'paid' || invoice.paid ? '#27ae60' : '#e74c3c'}; font-weight: bold;">
+                                    ${invoice.status === 'paid' || invoice.paid ? 'مدفوعة' : 'غير مدفوعة'}
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Supplier Information -->
+                    <!-- Customer/Supplier Information -->
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-right: 4px solid #3498db;">
                         <h3 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 18px;">
                             <i class="fas fa-user-tie" style="margin-left: 8px;"></i>
-                            معلومات المورد
+                            ${infoTitle}
                         </h3>
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
-                            <div><strong>الاسم:</strong> ${invoice.customerName || invoice.customersName || 'غير محدد'}</div>
-                            <div><strong>الهاتف:</strong> ${invoice.customerPhone || invoice.phone || 'غير محدد'}</div>
+                            <div><strong>الاسم:</strong> ${customerName}</div>
+                            <div><strong>الهاتف:</strong> ${customerPhone}</div>
+                            ${invoice.customerAddress ? `<div><strong>العنوان:</strong> ${invoice.customerAddress}</div>` : ''}
                         </div>
                     </div>
 
@@ -6555,7 +6682,7 @@
                                                 <div style="font-weight: 500;">${item.name || item.productName || 'عنصر غير معروف'}</div>
                                                 ${item.code ? `<div style="font-size: 12px; color: #64748b;">الكود: ${item.code}</div>` : ''}
                                             </td>
-                                            <td style="padding: 12px; border: 1px solid #dee2e6; text-align: center;">${quantity} ${item.unit || 'قطعة'}</td>
+                                            <td style="padding: 12px; border: 1px solid #dee2e6; text-align: center;">${quantity} ${item.unit || ''}</td>
                                             <td style="padding: 12px; border: 1px solid #dee2e6; text-align: left;">${formatCurrency(price)}</td>
                                             <td style="padding: 12px; border: 1px solid #dee2e6; text-align: left; font-weight: 500;">${formatCurrency(price * quantity)}</td>
                                         </tr>`;
@@ -6626,6 +6753,8 @@
                         <p style="margin: 10px 0 0 0; font-size: 12px; color: #9ca3af;">
                             شكراً لتعاملكم معنا - ${new Date().getFullYear()} ©
                         </p>
+                    </div>
+                </div>
                     </div>
                     
                 </div>
