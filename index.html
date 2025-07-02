@@ -3037,40 +3037,79 @@
                         const existingProduct = this.products[index];
                         const newQuantity = (parseFloat(existingProduct.quantity) + quantity).toFixed(2);
                         
+                        // Format date as YYYY-MM-DD
+                        const transactionDate = new Date().toISOString().split('T')[0];
+                        
+                        // Get supplier info if available
+                        let supplierInfo = {};
+                        if (supplierId) {
+                            const supplier = this.suppliers.find(s => s.id === supplierId);
+                            if (supplier) {
+                                supplierInfo = {
+                                    supplierId: supplier.id,
+                                    supplierName: supplier.name
+                                };
+                            }
+                        }
+                        
+                        // Create transaction object with supplier info
+                        const transaction = {
+                            ...supplierInfo,
+                            date: transactionDate,
+                            quantity: quantity,
+                            price: price,
+                            total: (quantity * price).toFixed(2)
+                        };
+                        
+                        // Initialize productHistory if it doesn't exist
+                        if (!existingProduct.productHistory) {
+                            existingProduct.productHistory = [];
+                        }
+                        
+                        // Add transaction to product history
+                        existingProduct.productHistory.unshift(transaction);
+                        
                         // Update product
                         this.products[index] = {
                             ...existingProduct,
+                            quantity: parseFloat(newQuantity),
                             balance: price, // Update price to the new value
-                            quantity: newQuantity,
-                            supplierId: supplierId,
                             updatedAt: new Date().toISOString()
                         };
                         
-                        // Add to product history
-                        if (!this.products[index].productHistory) {
-                            this.products[index].productHistory = [];
-                        }
-                        
-                        // Get supplier name if supplierId exists
-                        let supplierName = '';
+                        // Add transaction to supplier if supplier is selected
                         if (supplierId) {
-                            const supplier = this.suppliers.find(s => s.id === supplierId);
-                            supplierName = supplier ? supplier.name : '';
+                            const supplierIndex = this.suppliers.findIndex(s => s.id === supplierId);
+                            if (supplierIndex !== -1) {
+                                const supplier = this.suppliers[supplierIndex];
+                                
+                                // Initialize transactions array if it doesn't exist
+                                if (!supplier.transactions) {
+                                    supplier.transactions = [];
+                                }
+                                
+                                // Format date as YYYY-MM-DD
+                                const transactionDate = new Date().toISOString().split('T')[0];
+                                
+                                // Add transaction to supplier in the desired format
+                                supplier.transactions.unshift({
+                                    id: `trans-${Date.now()}`,
+                                    date: transactionDate,
+                                    name: productName,
+                                    price: price,
+                                    quantity: quantity,
+                                    total: (quantity * price).toFixed(2)
+                                });
+                                
+                                // Update supplier's balance
+                                supplier.balance = (parseFloat(supplier.balance || 0) + (quantity * price)).toFixed(2);
+                                
+                                // Save the updated supplier
+                                this.suppliers[supplierIndex] = supplier;
+                            }
                         }
                         
-                        // Calculate total for this transaction
-                        const total = (price * quantity).toFixed(2);
-                        
-                        this.products[index].productHistory.unshift({
-                            quantity: quantity,
-                            price: price,  // Price per unit
-                            total: total,   // Total for this transaction
-                            supplierId: supplierId,
-                            supplierName: supplierName,
-                            date: new Date().toISOString()
-                        });
-                        
-                        // Save and update UI
+                        // Save changes and update UI
                         await this.saveData();
                         this.closeModal('product');
                         this.renderProductsTable();
@@ -4796,9 +4835,7 @@
             return date.toLocaleDateString('ar-EG', {
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+                day: 'numeric'
             });
         };
 
@@ -5055,8 +5092,6 @@
                                                     year: 'numeric',
                                                     month: 'long',
                                                     day: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
                                                 });
                                                 
                                                 const total = parseFloat(invoice.total) || 0;
@@ -6825,9 +6860,8 @@
                     <!-- Header Section -->
                     <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #3498db;">
                         <h1 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 28px;">${title}</h1>
-                        <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 14px;">
-                            <div><strong>رقم الفاتورة:</strong> ${invoice.invoiceNumber || invoice.id || 'N/A'}</div>
-                            <div><strong>التاريخ:</strong> ${formatDate(invoice.date)}</div>
+                        <div style="display: flex; justify-content: center; gap: 30px; margin-top: 15px; font-size: 14px;">
+                            <div><strong>التاريخ:</strong> ${window.inventorySystem.formatDate(invoice.date)}</div>
                             <div><strong>الحالة:</strong> 
                                 <span style="color: ${invoice.status === 'paid' || invoice.paid ? '#27ae60' : '#e74c3c'}; font-weight: bold;">
                                     ${invoice.status === 'paid' || invoice.paid ? 'مدفوعة' : 'غير مدفوعة'}
