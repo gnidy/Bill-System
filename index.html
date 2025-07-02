@@ -1361,7 +1361,7 @@
                         <h2>إدارة المنتجات</h2>
                         <div>
                             <button class="btn btn-primary" id="add-product-btn" style="margin-left: 10px;">
-                                <i class="fas fa-plus"></i> إضافة كمية وسعر
+                                <i class="fas fa-plus"></i> إضافة كمية
                             </button>
                             <button class="btn btn-outline" id="add-product-name-btn">
                                 <i class="fas fa-plus"></i> إضافة اسم منتج فقط
@@ -1586,7 +1586,7 @@
     <div class="modal-overlay" id="product-modal">
         <div class="modal">
             <div class="modal-header">
-                <h3 id="product-modal-title">إضافة كمية وسعر</h3>
+                <h3 id="product-modal-title">إضافة كمية</h3>
                 <button class="close-btn" id="close-product-modal">
                     <i class="fas fa-times"></i>
                 </button>
@@ -1600,21 +1600,21 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <label for="product-name">اسم المنتج *</label>
                             <button type="button" id="toggle-product-input" class="btn btn-sm btn-link" style="padding: 0;">
-                                <i class="fas fa-plus"></i> <span id="toggle-text">إضافة كمية وسعر</span>
+                                <i class="fas fa-exchange-alt"></i> <span id="toggle-text">إضافة منتج جديد</span>
                             </button>
                         </div>
                         
-                        <!-- Product Select (initially shown) -->
-                        <div id="product-select-container">
-                            <select id="product-name" class="form-control" required>
+                        <!-- Product Select (initially hidden) -->
+                        <div id="product-select-container" style="display: none;">
+                            <select id="product-name" class="form-control">
                                 <option value="">-- اختر المنتج --</option>
                                 <!-- Products will be populated by JavaScript -->
                             </select>
                         </div>
                         
-                        <!-- Product Name Input (initially hidden) -->
-                        <div id="product-name-input-container" style="display: none; margin-top: 10px;">
-                            <input type="text" id="product-name-input" class="form-control" placeholder="اكتب اسم المنتج الجديد هنا">
+                        <!-- Product Name Input (initially shown) -->
+                        <div id="product-name-input-container" style="margin-top: 10px;">
+                            <input type="text" id="product-name-input" class="form-control" placeholder="اكتب اسم المنتج الجديد هنا" required>
                         </div>
                     </div>
                     
@@ -2557,7 +2557,7 @@
                         // Adding new item
                         const titleElement = document.getElementById(`${modalType}-modal-title`);
                         if (titleElement) {
-                            titleElement.textContent = `إضافة ${modalType === 'product' ? 'كمية وسعر' : modalType === 'customer' ? 'عميل جديد' : modalType === 'supplier' ? 'مورد جديد' : 'فاتورة جديدة'}`;
+                            titleElement.textContent = `إضافة ${modalType === 'product' ? 'كمية' : modalType === 'customer' ? 'عميل جديد' : modalType === 'supplier' ? 'مورد جديد' : 'فاتورة جديدة'}`;
                         }
                         
                         // Set default values for new items
@@ -2672,7 +2672,7 @@
                         productSelectContainer.style.display = 'block';
                         productSelect.required = true;
                         productInput.required = false;
-                        toggleText.textContent = 'إضافة كمية وسعر';
+                        toggleText.textContent = 'إضافة كمية';
                         productSelect.focus();
                         
                         // Show quantity and supplier fields in select mode
@@ -3018,16 +3018,34 @@
                     if (isEditMode) {
                         const index = this.products.findIndex(p => p.id === formData.id);
                         if (index !== -1) {
-                            // Preserve existing data and only update quantity
                             const existingProduct = this.products[index];
+                            const priceChanged = existingProduct.balance !== parseFloat(formData.balance);
+                            
+                            // Initialize balanceEditHistory if it doesn't exist
+                            if (!existingProduct.balanceEditHistory) {
+                                existingProduct.balanceEditHistory = [];
+                            }
+                            
+                            // Add current price to history if it has changed
+                            if (priceChanged) {
+                                existingProduct.balanceEditHistory.unshift({
+                                    date: new Date().toISOString().split('T')[0],
+                                    balance: parseFloat(formData.balance)
+                                });
+                            }
+                            
+                            // Update product fields except quantity
                             this.products[index] = { 
-                                ...existingProduct, 
-                                quantity: existingProduct.quantity + productData.quantity, // Add to existing quantity
-                                updatedAt: productData.updatedAt, // Keep the update time
-                                // Preserve the original balance (price) from the existing product
-                                balance: existingProduct.balance
+                                ...existingProduct,
+                                name: formData.name,
+                                balance: parseFloat(formData.balance),
+                                // Keep the existing quantity, don't update it here
+                                // quantity is only updated when adding stock via bill or إضافة كمية
+                                supplierId: formData.supplierId,
+                                updatedAt: productData.updatedAt
                             };
-                            this.showAlert('تم تحديث كمية المنتج بنجاح', 'success');
+                            
+                            this.showAlert('تم تحديث المنتج بنجاح', 'success');
                         }
                     } else {
                         // Add new product
@@ -5656,8 +5674,8 @@
                     
                     console.log('Showing product history for product ID:', productId);
                     
-                    // Find the product in window.allProducts
-                    const product = window.allProducts?.find(p => p.id === productId);
+                    // Find the product in products array
+                    const product = this.products.find(p => p.id === productId);
                     if (!product) {
                         console.error('Product not found with ID:', productId);
                         this.showAlert('المنتج غير موجود', 'error');
@@ -5683,20 +5701,47 @@
                         : [];
                     
                     // Process and sort price history
-                    const balanceHistory = Array.isArray(product.balanceEditHistory)
-                        ? [...product.balanceEditHistory]
-                            .filter(record => record && record.balance !== undefined)
-                            .sort((a, b) => {
-                                try {
-                                    const dateA = a.date ? new Date(a.date) : new Date(0);
-                                    const dateB = b.date ? new Date(b.date) : new Date(0);
-                                    return dateB - dateA; // Newest first
-                                } catch (error) {
-                                    console.error('Error sorting balance history:', error);
-                                    return 0;
+                    let balanceHistory = [];
+                    
+                    // Check if balanceEditHistory exists, if not initialize it
+                    if (!product.balanceEditHistory) {
+                        product.balanceEditHistory = [];
+                    }
+                    
+                    console.log('Raw balanceEditHistory:', JSON.parse(JSON.stringify(product.balanceEditHistory)));
+                    
+                    // Process all history entries, including those with the same date
+                    if (Array.isArray(product.balanceEditHistory)) {
+                        balanceHistory = [...product.balanceEditHistory]
+                            .map((record, index) => ({
+                                ...record,
+                                // Ensure we have a unique key for each record
+                                _id: `${record.date}_${index}_${record.balance}`
+                            }))
+                            .filter(record => {
+                                const isValid = record && 
+                                    record.balance !== undefined && 
+                                    record.date && 
+                                    !isNaN(new Date(record.date).getTime());
+                                if (!isValid) {
+                                    console.warn('Skipping invalid balance history record:', record);
                                 }
+                                return isValid;
                             })
-                        : [];
+                            // Sort by date in descending order (newest first)
+                            .sort((a, b) => new Date(b.date) - new Date(a.date));
+                        
+                        // Add current balance if it's not already in history
+                        if (product.balance !== undefined && 
+                            !balanceHistory.some(r => r.balance === product.balance)) {
+                            balanceHistory.unshift({
+                                date: new Date().toISOString(),
+                                balance: product.balance,
+                                _id: `current_${Date.now()}`,
+                                isCurrent: true
+                            });
+                        }
+                    }
             
                     // Calculate totals with proper error handling
                     const totalSales = productHistory.reduce((sum, sale) => {
@@ -5820,11 +5865,42 @@
                                                                 hour12: true
                                                             });
                                                             
-                                                            const priceDiff = index < balanceHistory.length - 1 
-                                                                ? (record.balance - balanceHistory[index + 1].balance).toFixed(2)
-                                                                : 0;
-                                                            const diffClass = priceDiff > 0 ? 'text-success' : priceDiff < 0 ? 'text-danger' : '';
-                                                            const diffSign = priceDiff > 0 ? '▲' : priceDiff < 0 ? '▼' : '';
+                                                            let priceDiff = 0;
+                                                            let diffClass = '';
+                                                            let diffSign = '';
+                                                            
+                                                            if (index < balanceHistory.length - 1) {
+                                                                try {
+                                                                    const currentBalance = parseFloat(record.balance);
+                                                                    const previousBalance = parseFloat(balanceHistory[index + 1].balance);
+                                                                    
+                                                                    if (!isNaN(currentBalance) && !isNaN(previousBalance)) {
+                                                                        priceDiff = currentBalance - previousBalance;
+                                                                        diffClass = priceDiff > 0 ? 'text-danger' : priceDiff < 0 ? 'text-success' : '';
+                                                                        diffSign = priceDiff > 0 ? '▲' : priceDiff < 0 ? '▼' : '';
+                                                                        priceDiff = Math.abs(priceDiff).toFixed(2);
+                                                                            
+                                                                        console.log('Price change:', {
+                                                                            current: currentBalance,
+                                                                            previous: previousBalance,
+                                                                            diff: priceDiff,
+                                                                            sign: diffSign,
+                                                                            currentDate: new Date(record.date).toISOString(),
+                                                                            previousDate: new Date(balanceHistory[index + 1].date).toISOString(),
+                                                                            currentId: record._id,
+                                                                            previousId: balanceHistory[index + 1]._id
+                                                                        });
+                                                                    }
+                                                                } catch (error) {
+                                                                    console.error('Error calculating price change:', error, {
+                                                                        record,
+                                                                        nextRecord: balanceHistory[index + 1]
+                                                                    });
+                                                                    priceDiff = 0;
+                                                                    diffClass = '';
+                                                                    diffSign = '';
+                                                                }
+                                                            }
                                                             
                                                             return `
                                                                 <tr style="border-bottom: 1px solid #eee;" class="${index % 2 === 0 ? 'bg-light' : ''}">
@@ -5833,7 +5909,7 @@
                                                                         ${(record.balance || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م
                                                                     </td>
                                                                     <td class="${diffClass}" style="padding: 10px; text-align: right; font-weight: bold;">
-                                                                        ${priceDiff != 0 ? `${diffSign} ${Math.abs(priceDiff).toLocaleString('ar-EG')} ج.م` : 'التسعيرة الأولى'}
+                                                                        ${index < balanceHistory.length - 1 ? `${diffSign} ${parseFloat(priceDiff).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م` : 'التسعيرة الأولى'}
                                                                     </td>
                                                                 </tr>
                                                             `;
@@ -6791,6 +6867,27 @@
                 } else if (printBtn.id === 'print-invoice-details' || printBtn.closest('#print-invoice-details')) {
                     // Handle print button in invoice details modal
                     const invoiceModal = document.querySelector('#invoice-details-modal');
+                    if (invoiceModal) {
+                        const invoiceId = invoiceModal.querySelector('.modal-header h3')?.textContent?.match(/#(\S+)/)?.[1];
+                        if (invoiceId) {
+                            const invoice = window.inventorySystem?.getInvoice(invoiceId);
+                            if (invoice) {
+                                window.printInvoice.openModal(invoice);
+                                return;
+                            }
+                        }
+                    }
+                    // If we couldn't get invoice from modal, try to print the current invoice
+                    window.print();
+                } else if (printBtn.id === 'print-invoice' || printBtn.closest('#print-invoice')) {
+                    // Handle print button in print preview
+                    window.print();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
                     if (invoiceModal) {
                         const invoiceId = invoiceModal.querySelector('.modal-header h3')?.textContent?.match(/#(\S+)/)?.[1];
                         if (invoiceId) {
