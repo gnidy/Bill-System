@@ -2995,76 +2995,149 @@
              */
             async saveProduct() {
                 try {
-                    // Validate form data
-                    const { isValid, data: formData, errors } = this.validateProductForm();
+                    // Get form elements
+                    const productSelect = document.getElementById('product-name');
+                    const productInput = document.getElementById('product-name-input');
+                    const priceInput = document.getElementById('product-balance');
+                    const quantityInput = document.getElementById('product-quantity');
+                    const supplierSelect = document.getElementById('product-supplier');
+                    const modalTitle = document.getElementById('product-modal-title').textContent;
                     
-                    if (!isValid) {
-                        this.showAlert(errors.join('<br>'), 'danger');
-                        return;
-                    }
-
-                    const isEditMode = !!this.formFields.product.id?.value;
+                    // Check if we're in 'Add Quantity' mode
+                    const isAddQuantityMode = modalTitle === 'إضافة كمية';
                     
-                    // Prepare product data
-                    const productData = {
-                        ...formData,
-                        updatedAt: new Date().toISOString(),
-                        createdAt: isEditMode 
-                            ? (this.getProduct(formData.id)?.createdAt || new Date().toISOString())
-                            : new Date().toISOString()
-                    };
-
-                    // Update or add product
-                    if (isEditMode) {
-                        const index = this.products.findIndex(p => p.id === formData.id);
-                        if (index !== -1) {
-                            const existingProduct = this.products[index];
-                            const priceChanged = existingProduct.balance !== parseFloat(formData.balance);
-                            
-                            // Initialize balanceEditHistory if it doesn't exist
-                            if (!existingProduct.balanceEditHistory) {
-                                existingProduct.balanceEditHistory = [];
-                            }
-                            
-                            // Add current price to history if it has changed
-                            if (priceChanged) {
-                                existingProduct.balanceEditHistory.unshift({
-                                    date: new Date().toISOString().split('T')[0],
-                                    balance: parseFloat(formData.balance)
-                                });
-                            }
-                            
-                            // Update product fields except quantity
-                            this.products[index] = { 
-                                ...existingProduct,
-                                name: formData.name,
-                                balance: parseFloat(formData.balance),
-                                // Keep the existing quantity, don't update it here
-                                // quantity is only updated when adding stock via bill or إضافة كمية
-                                supplierId: formData.supplierId,
-                                updatedAt: productData.updatedAt
-                            };
-                            
-                            this.showAlert('تم تحديث المنتج بنجاح', 'success');
+                    // Get product data based on input mode
+                    let productId, productName, price, quantity, supplierId;
+                    
+                    if (isAddQuantityMode) {
+                        // In add quantity mode, we should have a selected product
+                        if (productSelect.selectedIndex <= 0) {
+                            this.showAlert('الرجاء اختيار منتج', 'danger');
+                            return;
                         }
-                    } else {
-                        // Add new product
-                        this.products.push(productData);
-                        this.showAlert('تم إضافة المنتج بنجاح', 'success');
                         
-                        // If adding a new product, reset the form for next entry
-                        if (formData.isUsingInput) {
-                            const productInput = document.getElementById('product-name-input');
-                            const priceInput = document.getElementById('product-balance');
-                            const quantityInput = document.getElementById('product-quantity');
-                            const supplierSelect = document.getElementById('product-supplier');
-                            
-                            productInput.value = '';
-                            priceInput.value = '';
-                            quantityInput.value = '1';
-                            if (supplierSelect) supplierSelect.value = '';
-                            productInput.focus();
-                            return; // Keep the modal open for next entry
+                        productId = productSelect.value;
+                        productName = productSelect.options[productSelect.selectedIndex].text.split(' (')[0];
+                        price = parseFloat(priceInput.value) || 0;
+                        quantity = parseFloat(quantityInput.value) || 0;
+                        supplierId = supplierSelect?.value || null;
+                        
+                        if (isNaN(quantity) || quantity <= 0) {
+                            this.showAlert('الرجاء إدخال كمية صحيحة', 'danger');
+                            return;
+                        }
+                        
+                        // Find existing product
+                        const index = this.products.findIndex(p => p.id === productId);
+                        if (index === -1) {
+                            this.showAlert('المنتج غير موجود', 'danger');
+                            return;
+                        }
+                        
+                        const existingProduct = this.products[index];
+                        const newQuantity = (parseFloat(existingProduct.quantity) + quantity).toFixed(2);
+                        
+                        // Update product
+                        this.products[index] = {
+                            ...existingProduct,
+                            balance: price, // Update price to the new value
+                            quantity: newQuantity,
+                            supplierId: supplierId,
+                            updatedAt: new Date().toISOString()
+                        };
+                        
+                        // Add to product history
+                        if (!this.products[index].productHistory) {
+                            this.products[index].productHistory = [];
+                        }
+                        
+                        // Get supplier name if supplierId exists
+                        let supplierName = '';
+                        if (supplierId) {
+                            const supplier = this.suppliers.find(s => s.id === supplierId);
+                            supplierName = supplier ? supplier.name : '';
+                        }
+                        
+                        // Calculate total for this transaction
+                        const total = (price * quantity).toFixed(2);
+                        
+                        this.products[index].productHistory.unshift({
+                            quantity: quantity,
+                            price: price,  // Price per unit
+                            total: total,   // Total for this transaction
+                            supplierId: supplierId,
+                            supplierName: supplierName,
+                            date: new Date().toISOString()
+                        });
+                        
+                        // Save and update UI
+                        await this.saveData();
+                        this.closeModal('product');
+                        this.renderProductsTable();
+                        this.updateDashboard();
+                        this.showAlert(`تم إضافة ${quantity} إلى الكمية الحالية`, 'success');
+                        return;
+                        
+                    } else {
+                        // Regular product save (new or edit)
+                        const { isValid, data: formData, errors } = this.validateProductForm();
+                        
+                        if (!isValid) {
+                            this.showAlert(errors.join('<br>'), 'danger');
+                            return;
+                        }
+                        
+                        const isEditMode = !!this.formFields.product.id?.value;
+                        
+                        // Prepare product data
+                        const productData = {
+                            ...formData,
+                            updatedAt: new Date().toISOString(),
+                            createdAt: isEditMode 
+                                ? (this.getProduct(formData.id)?.createdAt || new Date().toISOString())
+                                : new Date().toISOString()
+                        };
+                        
+                        // Update or add product
+                        if (isEditMode) {
+                            const index = this.products.findIndex(p => p.id === formData.id);
+                            if (index !== -1) {
+                                const existingProduct = this.products[index];
+                                const priceChanged = existingProduct.balance !== parseFloat(formData.balance);
+                                
+                                // Initialize balanceEditHistory if it doesn't exist
+                                if (!existingProduct.balanceEditHistory) {
+                                    existingProduct.balanceEditHistory = [];
+                                }
+                                
+                                // Add current price to history if it has changed
+                                if (priceChanged) {
+                                    existingProduct.balanceEditHistory.unshift({
+                                        date: new Date().toISOString().split('T')[0],
+                                        balance: parseFloat(formData.balance)
+                                    });
+                                }
+                                
+                                // Update product
+                                this.products[index] = {
+                                    ...existingProduct,
+                                    name: formData.name,
+                                    balance: parseFloat(formData.balance),
+                                    supplierId: formData.supplierId,
+                                    updatedAt: productData.updatedAt
+                                };
+                                
+                                this.showAlert('تم تحديث المنتج بنجاح', 'success');
+                            }
+                        } else {
+                            // Add new product
+                            this.products.push({
+                                ...productData,
+                                quantity: 0, // New products start with 0 quantity
+                                createdAt: new Date().toISOString(),
+                                productHistory: []
+                            });
+                            this.showAlert('تمت إضافة المنتج بنجاح', 'success');
                         }
                     }
 
