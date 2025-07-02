@@ -4,6 +4,9 @@ window.InvoiceSystem = window.InvoiceSystem || {};
 // Sample products data
 window.allProducts = [
     {id: "a1", name: "فيبر", balance: 575, quantity: 43, productHistory: [
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 34, price: 503, total: 17102, date: "2025-06-10"},
+        {supplierId: "sup-2", supplierName: 'مؤسسة النور للمواد الكهربائية', quantity: 1, price: 50, total: 50, date: "2025-06-02"},
+        {supplierId: "sup-5", supplierName: 'شركة النصر للألوان والدهانات', quantity: 25, price: 570, total: 14250, date: "2025-06-01"},
         {customersId: "cust-1", customerName: 'محمد أحمد', quantity: 33, price: 575, total: 18975, date: "2025-06-20"},
         {customersId: "cust-5", customerName: 'مؤسسة المدينة المنورة', quantity: 34, price: 75, total: 2550, date: "2025-06-21"},
     ],
@@ -12,7 +15,9 @@ window.allProducts = [
             {date: "2025-06-20", balance: 72},
             {date: "2025-06-19", balance: 65},
         ]},
+    
     {id: "a2", name: "فيبر محمل", balance: 590, quantity: 31, productHistory: [
+        {supplierId: "sup-2", supplierName: 'مؤسسة النور للمواد الكهربائية', quantity: 33, price: 3, total: 99, date: "2025-06-07"},
         {customersId: "cust-1", customerName: 'محمد أحمد', quantity: 38, price: 590, total: 22420, date: "2025-06-20"},
     ],
         balanceEditHistory: [
@@ -20,6 +25,7 @@ window.allProducts = [
             {date: "2025-06-02", balance: 487},
         ]},
     {id: "a3", name: "كلادين", balance: 750, quantity: 0, productHistory: [
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 110, price: 750, total: 750, date: "2025-06-21"},
         {customersId: "cust-1", customerName: 'محمد أحمد', quantity: 40, price: 750, total: 30000, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -27,6 +33,7 @@ window.allProducts = [
             {date: "2025-06-01", balance: 680},
         ]},
     {id: "a4", name: "U.V", balance: 580, quantity: 4, productHistory: [
+        {supplierId: "sup-2", supplierName: 'مؤسسة النور للمواد الكهربائية', quantity: 4, price: 54, total: 216, date: "2025-06-12"},
         {customersId: "cust-2", customerName: 'شركة النور للمقاولات', quantity: 24, price: 580, total: 13920, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -34,6 +41,7 @@ window.allProducts = [
             {date: "2025-06-01", balance: 490},
         ]},
     {id: "a5", name: "بروديوم", balance: 755, quantity: 21, productHistory: [
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 110, price: 755, total: 755, date: "2025-06-21"},
         {customersId: "cust-2", customerName: 'شركة النور للمقاولات', quantity: 2, price: 755, total: 1510, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -41,6 +49,7 @@ window.allProducts = [
             {date: "2025-06-01", balance: 720},
         ]},
     {id: "a10", name: "استرتش ثقيل ١٠سم", balance: 75, quantity: 3, productHistory: [
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 110, price: 75, total: 75, date: "2025-06-21"},
         {customersId: "cust-3", customerName: 'سارة محمود', quantity: 13, price: 75, total: 975, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -48,6 +57,7 @@ window.allProducts = [
             {date: "2025-06-01", balance: 65},
         ]},
     {id: "a11", name: "اكرة بلية صيني اسود", balance: 4, quantity: 16, productHistory: [
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 110, price: 4, total: 4, date: "2025-06-21"},
         {customersId: "cust-3", customerName: 'سارة محمود', quantity: 16, price: 45, total: 720, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -56,6 +66,7 @@ window.allProducts = [
             {date: "2025-05-20", balance: 40},
         ]},
     {id: "a20", name: "انبوبة فوم", balance: 98, quantity: 5, productHistory: [
+        {supplierId: "sup-3", supplierName: 'شركة المصنع العربي للحديد', quantity: 30, price: 95, total: 2850, date: "2025-06-03"},
         {customersId: "cust-4", customerName: 'أحمد علي', quantity: 25, price: 98, total: 2450, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -63,6 +74,7 @@ window.allProducts = [
             {date: "2025-06-01", balance: 90},
         ]},
     {id: "a22", name: "بسكوتة خضراء", balance: 12, quantity: 9, productHistory: [
+        {supplierId: "sup-3", supplierName: 'شركة المصنع العربي للحديد', quantity: 50, price: 11, total: 550, date: "2025-06-08"},
         {customersId: "cust-4", customerName: 'أحمد علي', quantity: 94, price: 12, total: 1128, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -70,6 +82,7 @@ window.allProducts = [
             {date: "2025-06-01", balance: 10},
         ]},
     {id: "a31", name: "بنطة ٥مم", balance: 9, quantity: 47, productHistory: [
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 110, price: 9, total: 9, date: "2025-06-21"},
         {customersId: "cust-5", customerName: 'مؤسسة المدينة المنورة', quantity: 27, price: 9, total: 243, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -77,6 +90,7 @@ window.allProducts = [
             {date: "2025-06-01", balance: 8},
         ]},
     {id: "a35", name: "ترباس PS بلاستيك اسود", balance: 14, quantity: 0, productHistory: [
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 110, price: 14, total: 14, date: "2025-06-21"},
         {customersId: "cust-5", customerName: 'مؤسسة المدينة المنورة', quantity: 80, price: 14, total: 1120, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -84,6 +98,7 @@ window.allProducts = [
             {date: "2025-06-01", balance: 12},
         ]},
     {id: "a39", name: "ترولي ١٦سم GM", balance: 575, quantity: 5, productHistory: [
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 110, price: 575, total: 575, date: "2025-06-21"},
         {customersId: "cust-6", customerName: 'عمر خالد', quantity: 1, price: 575, total: 575, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -91,6 +106,8 @@ window.allProducts = [
             {date: "2025-06-01", balance: 500},
         ]},
     {id: "a42", name: "ثلاثي ٢٫٥ ابيض SM", balance: 2.50, quantity: 80, productHistory: [
+        {supplierId: "sup-4", supplierName: 'مؤسسة الأصيل للأدوات الصحية', quantity: 500, price: 2.45, total: 1225, date: "2025-06-04"},
+        {supplierId: "sup-7", supplierName: 'مؤسسة النهضة للمواد الإنشائية', quantity: 600, price: 2.35, total: 1410, date: "2025-06-08"},
         {customersId: "cust-6", customerName: 'عمر خالد', quantity: 690, price: 2.50, total: 1725, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -99,6 +116,8 @@ window.allProducts = [
             {date: "2025-05-20", balance: 2.50},
         ]},
     {id: "a50", name: "ثلاثي ٢٫٥ بيج SM", balance: 2.50, quantity: 13, productHistory: [
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 10, price: 500, total: 5000, date: "2025-06-05"},
+        {supplierId: "sup-7", supplierName: 'مؤسسة النهضة للمواد الإنشائية', quantity: 800, price: 2.45, total: 1960, date: "2025-06-15"},
         {customersId: "cust-7", customerName: 'شركة الأهرام', quantity: 1663, price: 2.50, total: 4157.5, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -106,6 +125,8 @@ window.allProducts = [
             {date: "2025-06-01", balance: 500},
         ]},
     {id: "a79", name: "دبل بجناح SM", balance: 0.85, quantity: 100, productHistory: [
+        {supplierId: "sup-4", supplierName: 'مؤسسة الأصيل للأدوات الصحية', quantity: 3000, price: 0.82, total: 2460, date: "2025-06-11"},
+        {supplierId: "sup-8", supplierName: 'شركة التقوى للأدوات المنزلية', quantity: 2000, price: 0.85, total: 1700, date: "2025-06-03"},
         {customersId: "cust-7", customerName: 'شركة الأهرام', quantity: 9440, price: 0.85, total: 8024, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -113,6 +134,8 @@ window.allProducts = [
             {date: "2025-06-01", balance: 0.75},
         ]},
     {id: "a80", name: "كابلات كهرباء 2.5 مم", balance: 15.75, quantity: 250, productHistory: [
+        {supplierId: "sup-6", supplierName: 'شركة الأمانة للمواد الكهربائية', quantity: 30, price: 15.50, total: 465, date: "2025-06-11"},
+        {supplierId: "sup-9", supplierName: 'مؤسسة الرشاد للأدوات الصحية', quantity: 200, price: 15.75, total: 3150, date: "2025-06-18"},
         {customersId: "cust-8", customerName: 'وليد سعيد', quantity: 25, price: 15.75, total: 3937.5, date: "2025-06-20"}
     ],
         balanceEditHistory: [
@@ -143,6 +166,8 @@ window.allProducts = [
             {date: "2025-06-01", balance: 16.75},
         ]},
     {id: "a84", name: "مواسير مياه 3 بوصة", balance: 120.00, quantity: 75, productHistory: [
+        {supplierId: "sup-4", supplierName: 'مؤسسة الأصيل للأدوات الصحية', quantity: 100, price: 115.00, total: 11500, date: "2025-06-10"},
+        {supplierId: "sup-7", supplierName: 'مؤسسة النهضة للمواد الإنشائية', quantity: 50, price: 118.00, total: 5900, date: "2025-06-12"},
         {customersId: "cust-10", customerName: 'مطعم الكبابجي', quantity: 50, price: 118, total: 5900, date: "2025-06-15"},
         {customersId: "cust-10", customerName: 'مطعم الكبابجي', quantity: 25, price: 120.00, total: 3000, date: "2025-06-20"}
     ],
@@ -151,6 +176,8 @@ window.allProducts = [
             {date: "2025-06-01", balance: 110.00},
         ]},
     {id: "a85", name: "صامولة ستانلس 10 مم", balance: 2.75, quantity: 500, productHistory: [
+        {supplierId: "sup-6", supplierName: 'شركة الأمانة للمواد الكهربائية', quantity: 1000, price: 2.50, total: 2500, date: "2025-06-08"},
+        {supplierId: "sup-9", supplierName: 'مؤسسة الرشاد للأدوات الصحية', quantity: 500, price: 2.65, total: 1325, date: "2025-06-12"},
         {customersId: "cust-10", customerName: 'مطعم الكبابجي', quantity: 300, price: 2.7, total: 810, date: "2025-06-15"},
         {customersId: "cust-10", customerName: 'مطعم الكبابجي', quantity: 200, price: 2.75, total: 550, date: "2025-06-20"}
     ],
@@ -159,6 +186,8 @@ window.allProducts = [
             {date: "2025-06-01", balance: 2.50},
         ]},
     {id: "a86", name: "براغي حديد 10 سم", balance: 1.50, quantity: 800, productHistory: [
+        {supplierId: "sup-3", supplierName: 'شركة المصنع العربي للحديد', quantity: 2000, price: 1.20, total: 2400, date: "2025-06-05"},
+        {supplierId: "sup-6", supplierName: 'شركة الأمانة للمواد الكهربائية', quantity: 1000, price: 1.35, total: 1350, date: "2025-06-10"},
         {customersId: "cust-11", customerName: ' محمود حمدي ', quantity: 500, price: 1.45, total: 725, date: "2025-06-15"},
         {customersId: "cust-11", customerName: ' محمود حمدي ', quantity: 300, price: 1.50, total: 450, date: "2025-06-20"}
     ],
@@ -167,6 +196,8 @@ window.allProducts = [
             {date: "2025-06-01", balance: 1.35},
         ]},
     {id: "a87", name: "شريط لاصق عازل", balance: 8.00, quantity: 420, productHistory: [
+        {supplierId: "sup-2", supplierName: 'مؤسسة النور للمواد الكهربائية', quantity: 1000, price: 7.50, total: 7500, date: "2025-06-05"},
+        {supplierId: "sup-5", supplierName: 'شركة النصر للألوان والدهانات', quantity: 500, price: 7.80, total: 3900, date: "2025-06-10"},
         {customersId: "cust-11", customerName: ' محمود حمدي ', quantity: 250, price: 7.8, total: 1950, date: "2025-06-15"},
         {customersId: "cust-11", customerName: ' محمود حمدي ', quantity: 170, price: 8.00, total: 1360, date: "2025-06-20"}
     ],
@@ -176,6 +207,8 @@ window.allProducts = [
             {date: "2025-05-20", balance: 6.50},
         ]},
     {id: "a88", name: "مفتاح ضغط هواء", balance: 45.00, quantity: 900, productHistory: [
+        {supplierId: "sup-8", supplierName: 'شركة التقوى للأدوات المنزلية', quantity: 1000, price: 42.50, total: 42500, date: "2025-06-17"},
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 40, price: 5.00, total: 200, date: "2025-06-15"},
         {customersId: "cust-11", customerName: ' محمود حمدي ', quantity: 60, price: 44.5, total: 2670, date: "2025-06-15"},
         {customersId: "cust-11", customerName: ' محمود حمدي ', quantity: 30, price: 45.00, total: 1350, date: "2025-06-20"}
     ],
@@ -185,6 +218,8 @@ window.allProducts = [
             {date: "2025-05-20", balance: 38.00},
         ]},
     {id: "a89", name: "مفتاح ضغط هواء", balance: 45.00, quantity: 100, productHistory: [
+        {supplierId: "sup-8", supplierName: 'شركة التقوى للأدوات المنزلية', quantity: 200, price: 42.50, total: 8500, date: "2025-06-17"},
+        {supplierId: "sup-1", supplierName: 'شركة مواد البناء الحديثة', quantity: 100, price: 5.00, total: 500, date: "2025-06-15"},
         {customersId: "cust-11", customerName: ' محمود حمدي ', quantity: 60, price: 44.5, total: 2670, date: "2025-06-15"},
         {customersId: "cust-11", customerName: ' محمود حمدي ', quantity: 30, price: 45.00, total: 1350, date: "2025-06-20"}
     ],
@@ -194,6 +229,8 @@ window.allProducts = [
             {date: "2025-05-20", balance: 38.00},
         ]},
     {id: "a90", name: "مفتاح ضوء حساس", balance: 28.50, quantity: 200, productHistory: [
+        {supplierId: "sup-6", supplierName: 'شركة الأمانة للمواد الكهربائية', quantity: 300, price: 25.00, total: 7500, date: "2025-06-10"},
+        {supplierId: "sup-9", supplierName: 'مؤسسة الرشاد للأدوات الصحية', quantity: 200, price: 27.50, total: 5500, date: "2025-06-12"},
         {customersId: "cust-12", customerName: ' مطعم الشام ', quantity: 150, price: 28.25, total: 4237.5, date: "2025-06-15"},
         {customersId: "cust-12", customerName: ' مطعم الشام ', quantity: 50, price: 28.50, total: 1425, date: "2025-06-20"}
     ],
@@ -747,6 +784,16 @@ window.sampleSuppliers = [
             { date: '2025-06-05', id: 'a10', name: 'استرتش ثقيل ١٠سم', price: 70, quantity: 20, total: 1400 },
             { date: '2025-06-12', id: 'a11', name: 'استرتش خفيف ٥سم', price: 40, quantity: 25, total: 1000 },
             { date: '2025-06-19', id: 'a20', name: 'بنطة ٥مم', price: 92, quantity: 35, total: 3220 }
+        ]
+    },
+    { 
+        id: 'sup-12', 
+        name: 'شركة التقنية الحديثة للمواد الكهربائية', 
+        phone: '01004448888',
+        transactions: [
+            { date: '2025-06-10', id: 'a1', name: 'فيبر', price: 580, quantity: 30, total: 17400 },
+            { date: '2025-06-15', id: 'a3', name: 'كلادين', price: 745, quantity: 25, total: 18625 },
+            { date: '2025-06-20', id: 'a5', name: 'بروديوم', price: 755, quantity: 15, total: 11325 }
         ]
     },
 ];

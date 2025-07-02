@@ -5660,6 +5660,45 @@
                 }, 5000);
             }
             
+            formatDate(dateString) {
+                if (!dateString) return 'غير محدد';
+                try {
+                    let date;
+                    if (typeof dateString === 'string') {
+                        if (dateString.includes('T')) {
+                            date = new Date(dateString);
+                        } else {
+                            const parts = dateString.split(/[-/]/);
+                            if (parts.length === 3) {
+                                if (parts[0].length === 4) {
+                                    date = new Date(parts[0], parts[1] - 1, parts[2]);
+                                } else {
+                                    date = new Date(parts[2], parts[1] - 1, parts[0]);
+                                }
+                            } else {
+                                date = new Date(dateString);
+                            }
+                        }
+                    } else if (dateString instanceof Date) {
+                        date = dateString;
+                    } else {
+                        return 'تنسيق تاريخ غير صالح';
+                    }
+                    
+                    if (isNaN(date.getTime())) return 'تاريخ غير صالح';
+                    
+                    return date.toLocaleDateString('ar-EG', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        calendar: 'gregory'
+                    });
+                } catch (e) {
+                    console.error('Error formatting date:', e);
+                    return 'تاريخ غير صالح';
+                }
+            }
+
             /**
              * Displays the product history modal with transaction and price history
              * @param {string} productId - The ID of the product to show history for
@@ -5809,21 +5848,17 @@
                                                     </thead>
                                                     <tbody>
                                                         ${productHistory.map((transaction, index) => {
-                                                            const transactionDate = transaction.date ? new Date(transaction.date) : new Date();
-                                                            const formattedDate = transactionDate.toLocaleString('ar-EG', {
-                                                                year: 'numeric',
-                                                                month: '2-digit',
-                                                                day: '2-digit',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit',
-                                                                hour12: true
-                                                            });
+                                                            const formattedDate = this.formatDate(transaction.date);
                                                             
                                                             return `
                                                                 <tr style="border-bottom: 1px solid #eee;" class="${index % 2 === 0 ? 'bg-light' : ''}">
                                                                     <td style="padding: 10px; text-align: right;">${formattedDate}</td>
-                                                                    <td style="padding: 10px; text-align: right;">${transaction.customerName || transaction.customerName || 'غير محدد'}</td>
-                                                                    <td style="padding: 10px; text-align: right;">${(transaction.quantity || 0).toLocaleString('ar-EG')}</td>
+                                                                    <td style="padding: 10px; text-align: right;">
+                                                                        ${transaction.supplierName || transaction.customerName || 'غير محدد'}
+                                                                    </td>
+                                                                    <td style="padding: 10px; text-align: right; font-weight: bold; color: ${transaction.supplierId ? '#28a745' : (transaction.type === 'مرتجع' ? '#28a745' : '#dc3545')};">
+                                                                        ${transaction.supplierId ? '+' : (transaction.type === 'مرتجع' ? '+' : '-')} ${(transaction.quantity || 0).toLocaleString('ar-EG')}
+                                                                    </td>
                                                                     <td style="padding: 10px; text-align: right;">${(transaction.price || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م</td>
                                                                     <td style="padding: 10px; text-align: right; font-weight: bold;">${(transaction.total || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م</td>
                                                                 </tr>
@@ -5848,22 +5883,14 @@
                                                 <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
                                                     <thead>
                                                         <tr style="background-color: #f8f9fa; position: sticky; top: 0; z-index: 1;">
-                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">التاريخ والوقت</th>
+                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">التاريخ</th>
                                                             <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">سعر الوحدة</th>
-                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">الفرق عن السابق</th>
+                                                            <th style="padding: 12px; text-align: right; border-bottom: 1px solid #dee2e6;">التغيير</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         ${balanceHistory.map((record, index) => {
-                                                            const recordDate = record.date ? new Date(record.date) : new Date();
-                                                            const formattedDate = recordDate.toLocaleString('ar-EG', {
-                                                                year: 'numeric',
-                                                                month: '2-digit',
-                                                                day: '2-digit',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit',
-                                                                hour12: true
-                                                            });
+                                                            const formattedDate = this.formatDate(record.date);
                                                             
                                                             let priceDiff = 0;
                                                             let diffClass = '';
@@ -5879,23 +5906,9 @@
                                                                         diffClass = priceDiff > 0 ? 'text-danger' : priceDiff < 0 ? 'text-success' : '';
                                                                         diffSign = priceDiff > 0 ? '▲' : priceDiff < 0 ? '▼' : '';
                                                                         priceDiff = Math.abs(priceDiff).toFixed(2);
-                                                                            
-                                                                        console.log('Price change:', {
-                                                                            current: currentBalance,
-                                                                            previous: previousBalance,
-                                                                            diff: priceDiff,
-                                                                            sign: diffSign,
-                                                                            currentDate: new Date(record.date).toISOString(),
-                                                                            previousDate: new Date(balanceHistory[index + 1].date).toISOString(),
-                                                                            currentId: record._id,
-                                                                            previousId: balanceHistory[index + 1]._id
-                                                                        });
                                                                     }
                                                                 } catch (error) {
-                                                                    console.error('Error calculating price change:', error, {
-                                                                        record,
-                                                                        nextRecord: balanceHistory[index + 1]
-                                                                    });
+                                                                    console.error('Error calculating price change:', error);
                                                                     priceDiff = 0;
                                                                     diffClass = '';
                                                                     diffSign = '';
@@ -6630,25 +6643,51 @@
                 }, 300);
             }
             
+            formatDate(dateString) {
+                if (!dateString) return 'غير محدد';
+                try {
+                    // Handle different date string formats
+                    let date;
+                    if (typeof dateString === 'string') {
+                        // Try parsing ISO format first
+                        if (dateString.includes('T')) {
+                            date = new Date(dateString);
+                        } else {
+                            // Handle other date string formats (e.g., YYYY-MM-DD)
+                            const parts = dateString.split(/[-/]/);
+                            if (parts.length === 3) {
+                                // Assume YYYY-MM-DD or DD/MM/YYYY format
+                                if (parts[0].length === 4) {
+                                    date = new Date(parts[0], parts[1] - 1, parts[2]);
+                                } else {
+                                    date = new Date(parts[2], parts[1] - 1, parts[0]);
+                                }
+                            } else {
+                                date = new Date(dateString);
+                            }
+                        }
+                    } else if (dateString instanceof Date) {
+                        date = dateString;
+                    } else {
+                        return 'تنسيق تاريخ غير صالح';
+                    }
+                    
+                    if (isNaN(date.getTime())) return 'تاريخ غير صالح';
+                    
+                    return date.toLocaleDateString('ar-EG', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        calendar: 'gregory'
+                    });
+                } catch (e) {
+                    console.error('Error formatting date:', e);
+                    return 'تاريخ غير صالح';
+                }
+            }
+            
             generateInvoiceHTML(invoice) {
                 if (!invoice) return '<div class="error">لا توجد بيانات فاتورة متاحة</div>';
-                
-                const formatDate = (dateString) => {
-                    if (!dateString) return 'غير محدد';
-                    try {
-                        const date = new Date(dateString);
-                        if (isNaN(date.getTime())) return 'تاريخ غير صالح';
-                        const options = { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric'
-                        };
-                        return date.toLocaleDateString('ar-EG', options);
-                    } catch (e) {
-                        console.error('Error formatting date:', e);
-                        return 'تاريخ غير صالح';
-                    }
-                };
                 
                 const formatCurrency = (amount) => {
                     if (amount === undefined || amount === null || isNaN(amount)) return '0.00';
