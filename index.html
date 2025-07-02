@@ -6888,24 +6888,3 @@
     </script>
 </body>
 </html>
-                    if (invoiceModal) {
-                        const invoiceId = invoiceModal.querySelector('.modal-header h3')?.textContent?.match(/#(\S+)/)?.[1];
-                        if (invoiceId) {
-                            const invoice = window.inventorySystem?.getInvoice(invoiceId);
-                            if (invoice) {
-                                window.printInvoice.openModal(invoice);
-                                return;
-                            }
-                        }
-                    }
-                    // If we couldn't get invoice from modal, try to print the current invoice
-                    window.print();
-                } else if (printBtn.id === 'print-invoice' || printBtn.closest('#print-invoice')) {
-                    // Handle print button in print preview
-                    window.print();
-                }
-            });
-        });
-    </script>
-</body>
-</html>
