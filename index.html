@@ -1913,6 +1913,7 @@
         // Main Application Class
         class InventorySystem {
             constructor() {
+                // Initialize properties
                 this.products = [];
                 this.invoices = [];
                 this.customers = [];
@@ -1924,6 +1925,21 @@
                     suppliers: 1
                 };
                 this.itemsPerPage = 10;
+                
+                // Store filter states
+                this.filterStates = {
+                    products: {
+                        searchTerm: '',
+                        statusFilter: 'all'
+                    },
+                    invoices: {
+                        searchTerm: '',
+                        statusFilter: 'all'
+                    },
+                    suppliers: {
+                        searchTerm: ''
+                    }
+                };
                 this.currentDeleteId = null;
                 this.currentDeleteType = null;
                 this.filteredProducts = []; // Store filtered products for pagination
@@ -2815,20 +2831,130 @@
                 }
             }
             
+            /**
+             * Calculates the total for the invoice and updates the UI
+             * Handles quantity validation and shows appropriate alerts
+             */
+            calculateInvoiceTotal() {
+                let subtotal = 0;
+                const rows = document.querySelectorAll('.invoice-item-row');
+                
+                rows.forEach(row => {
+                    const productSelect = row.querySelector('.invoice-product');
+                    const quantityInput = row.querySelector('.invoice-quantity');
+                    const totalCell = row.querySelector('.item-total');
+                    const alertDiv = row.querySelector('.quantity-alert');
+                    const alertText = alertDiv ? alertDiv.querySelector('.alert-text') : null;
+                    
+                    if (productSelect && quantityInput && totalCell) {
+                        const selectedOption = productSelect.options[productSelect.selectedIndex];
+                        
+                        if (selectedOption && selectedOption.value) {
+                            const price = parseFloat(selectedOption.dataset.balance) || 0;
+                            const availableQuantity = parseInt(selectedOption.dataset.quantity) || 0;
+                            let quantity = parseInt(quantityInput.value) || 0;
+                            
+                            // Validate quantity
+                            if (quantity < 1) {
+                                quantity = 1;
+                                quantityInput.value = '1';
+                            }
+                            
+                            // Check if quantity exceeds available stock
+                            if (quantity > availableQuantity) {
+                                if (alertDiv && alertText) {
+                                    alertDiv.style.display = 'flex';
+                                    alertDiv.style.background = '#ffebee';
+                                    alertDiv.style.color = '#c62828';
+                                    alertDiv.style.borderColor = '#ffcdd2';
+                                    alertText.textContent = `الكمية المطلوبة (${quantity}) تتجاوز الكمية المتاحة (${availableQuantity})`;
+                                }
+                                quantityInput.style.borderColor = '#f44336';
+                            } 
+                            // Check for low stock
+                            else if (availableQuantity <= 10) {
+                                if (alertDiv && alertText) {
+                                    alertDiv.style.display = 'flex';
+                                    alertDiv.style.background = availableQuantity <= 5 ? '#fff3e0' : '#fff8e1';
+                                    alertDiv.style.color = availableQuantity <= 5 ? '#e65100' : '#ff8f00';
+                                    alertDiv.style.borderColor = availableQuantity <= 5 ? '#ffe0b2' : '#ffe082';
+                                    alertText.textContent = `تنبيه: الكمية المتبقية ${availableQuantity} فقط`;
+                                }
+                                quantityInput.style.borderColor = availableQuantity <= 5 ? '#ff9800' : '#ffc107';
+                            } 
+                            // No issues
+                            else {
+                                if (alertDiv) alertDiv.style.display = 'none';
+                                quantityInput.style.borderColor = '#e0e0e0';
+                            }
+                            
+                            // Calculate row total and update UI
+                            const rowTotal = price * quantity;
+                            subtotal += rowTotal;
+                            totalCell.textContent = `${rowTotal.toFixed(2)} ج.م`;
+                            
+                            // Update max quantity based on available stock
+                            quantityInput.max = availableQuantity;
+                            
+                            // Ensure quantity doesn't exceed available stock when changed
+                            if (quantity > availableQuantity) {
+                                quantityInput.value = availableQuantity;
+                                quantity = availableQuantity;
+                                if (alertDiv && alertText) {
+                                    alertText.textContent = `تم تعديل الكمية إلى الحد الأقصى المتاح (${availableQuantity})`;
+                                }
+                            }
+                        } else {
+                            // No product selected
+                            totalCell.textContent = '0.00 ج.م';
+                            if (alertDiv) alertDiv.style.display = 'none';
+                            quantityInput.style.borderColor = '#e0e0e0';
+                        }
+                    }
+                });
+                
+                // Update subtotal, tax, and total
+                const subtotalElement = document.getElementById('invoice-subtotal');
+                const taxElement = document.getElementById('invoice-tax');
+                const totalElement = document.getElementById('invoice-total');
+                
+                if (subtotalElement) subtotalElement.textContent = `${subtotal.toFixed(2)} ج.م`;
+                    
+                // Calculate tax (assuming 15% tax rate)
+                const taxRate = 0.15;
+                const tax = subtotal * taxRate;
+                const total = subtotal + tax;
+                
+                if (taxElement) taxElement.textContent = `${tax.toFixed(2)} ج.م`;
+                if (totalElement) totalElement.textContent = `${total.toFixed(2)} ج.م`;
+                
+                return total;
+            }
+            
+            /**
+             * Adds a new invoice item row to the invoice
+             * @returns {HTMLElement} The created row element
+             */
             addInvoiceItem() {
                 const row = document.createElement('tr');
                 row.className = 'invoice-item-row';
                 row.style.backgroundColor = '#fff';
                 row.style.borderBottom = '1px solid #f0f0f0';
+                row.style.position = 'relative';
                 row.innerHTML = `
-                    <td style="padding: 12px 15px; text-align: right; vertical-align: middle;">
+                    <td style="padding: 12px 15px; text-align: right; vertical-align: middle; position: relative;">
                         <select class="form-control invoice-product" required 
                                 style="border: 1px solid #e0e0e0; border-radius: 4px; padding: 8px 12px; width: 100%;">
                             <option value="">اختر منتج</option>
                             ${this.products.map(p => 
-                                `<option value="${p.id}" data-balance="${p.balance}">${p.name} (${p.balance.toFixed(2)} ج.م)</option>`
+                                `<option value="${p.id}" data-balance="${p.balance}" data-quantity="${p.quantity || 0}">
+                                    ${p.name} (${p.balance.toFixed(2)} ج.م)
+                                </option>`
                             ).join('')}
                         </select>
+                        <div class="quantity-alert" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff8e1; color: #ff8f00; padding: 4px 8px; font-size: 12px; border-radius: 0 0 4px 4px; border: 1px solid #ffe0b2; border-top: none; z-index: 10;">
+                            <i class="fas fa-exclamation-triangle"></i> <span class="alert-text"></span>
+                        </div>
                     </td>
                     <td style="padding: 12px 15px; text-align: center; vertical-align: middle; width: 200px;">
                         <input type="number" class="form-control invoice-quantity" min="1" value="1" required 
@@ -2868,6 +2994,17 @@
                         if (this.tables.invoiceItems.children.length > 1) {
                             row.remove();
                             this.calculateInvoiceTotal();
+                        } else {
+                            // Reset the single remaining row instead of removing it
+                            const productSelect = row.querySelector('.invoice-product');
+                            const quantityInput = row.querySelector('.invoice-quantity');
+                            const alertDiv = row.querySelector('.quantity-alert');
+                            
+                            if (productSelect) productSelect.selectedIndex = 0;
+                            if (quantityInput) quantityInput.value = '1';
+                            if (alertDiv) alertDiv.style.display = 'none';
+                            
+                            this.calculateInvoiceTotal();
                         }
                     });
                 }
@@ -2875,45 +3012,6 @@
                 this.calculateInvoiceTotal();
                 return row;
             }
-            
-            calculateInvoiceTotal() {
-                let total = 0;
-                
-                document.querySelectorAll('.invoice-item-row').forEach(row => {
-                    const productSelect = row.querySelector('.invoice-product');
-                    const quantity = parseFloat(row.querySelector('.invoice-quantity').value) || 0;
-                    let rowTotal = 0;
-                    
-                    if (productSelect && productSelect.selectedIndex > 0) {
-                        const selectedOption = productSelect.options[productSelect.selectedIndex];
-                        const balance = selectedOption ? parseFloat(selectedOption.dataset.balance) || 0 : 0;
-                        rowTotal = quantity * balance;
-                    }
-                    
-                    // Update row total
-                    const totalCell = row.querySelector('.item-total');
-                    if (totalCell) {
-                        totalCell.textContent = rowTotal.toFixed(2) + ' ج.م';
-                    }
-                    
-                    total += rowTotal;
-                });
-                
-                // Update invoice total
-                const totalElement = document.getElementById('invoice-total');
-                if (totalElement) {
-                    totalElement.textContent = total.toFixed(2) + ' ج.م';
-                }
-            }
-            
-            /**
-             * Validates product form data
-             * @returns {Object} Object containing validation status and data/errors
-             */
-            /**
-             * Validates product form data
-             * @returns {Object} Object containing validation status and data/errors
-             */
             /**
              * Validates the product form data
              * @returns {Object} Object containing validation status, form data, and errors
@@ -3645,174 +3743,219 @@
             }
             
             saveInvoice() {
-                const form = this.formFields.invoice;
-                const id = form.id.value || `INV-${Date.now().toString().substr(-6)}`;
-                const customerId = form.customer.value;
-                const date = form.date.value;
-                
-                // Validate inputs
-                if (!customerId || !date) {
-                    this.showAlert('الرجاء ملء جميع الحقول المطلوبة', 'danger');
-                    return;
-                }
-                
-                // Get customer and ensure purchases array exists
-                const customer = this.getCustomer(customerId);
-                const customerName = customer ? customer.name : 'عميل';
-                
-                // Ensure customer has a purchases array
-                if (customer && !customer.purchases) {
-                    customer.purchases = [];
-                }
-                
-                // Collect invoice items
-                const items = [];
-                const invalidFields = [];
-                let hasValidItems = false;
-                
-                document.querySelectorAll('.invoice-item-row').forEach((row, index) => {
-                    const productSelect = row.querySelector('.invoice-product');
-                    const productId = productSelect?.value;
-                    const quantityInput = row.querySelector('.invoice-quantity');
-                    const quantity = quantityInput ? parseInt(quantityInput.value, 10) : NaN;
+                try {
+                    const form = this.formFields.invoice;
+                    const id = form.id.value || `INV-${Date.now().toString().substr(-6)}`;
+                    const customerId = form.customer.value;
+                    const date = form.date.value || new Date().toISOString().split('T')[0];
                     
-                    // Skip empty rows (all fields empty)
-                    if (!productId && (isNaN(quantity) || quantity === 0)) {
+                    // Validate inputs
+                    if (!customerId || !date) {
+                        this.showAlert('الرجاء ملء جميع الحقول المطلوبة', 'danger');
                         return;
                     }
                     
-                    // Get balance from the selected product option's data attribute
-                    let balance = 0;
-                    if (productSelect && productSelect.selectedIndex > 0) {
-                        const selectedOption = productSelect.options[productSelect.selectedIndex];
-                        balance = parseFloat(selectedOption?.dataset.balance) || 0;
+                    // Get customer and ensure purchases array exists
+                    const customer = this.getCustomer(customerId);
+                    const customerName = customer ? customer.name : 'عميل';
+                    
+                    // Ensure customer has a purchases array
+                    if (customer && !Array.isArray(customer.purchases)) {
+                        customer.purchases = [];
                     }
                     
-                    // Validate the row
-                    if (!productId) {
-                        invalidFields.push(`- الرجاء اختيار منتج في البند ${index + 1}`);
-                    } else if (isNaN(quantity) || quantity <= 0) {
-                        const productName = productSelect.options[productSelect.selectedIndex]?.text || 'المنتج';
-                        invalidFields.push(`- الكمية غير صالحة لـ ${productName}`);
-                    } else if (isNaN(balance) || balance < 0) {
-                        invalidFields.push(`- سعر المنتج غير صالح في البند ${index + 1}`);
-                    } else {
-                        // Only add to items if all validations pass
-                        items.push({ productId, quantity, balance });
-                        hasValidItems = true;
-                    }
-                });
-                
-                // Show all validation errors at once
-                if (invalidFields.length > 0) {
-                    this.showAlert(`الرجاء تصحيح الأخطاء التالية:<br>${invalidFields.join('<br>')}`, 'danger');
-                    return;
-                }
-                
-                if (!hasValidItems) {
-                    this.showAlert('الرجاء إضافة منتج واحد على الأقل للفاتورة', 'danger');
-                    return;
-                }
-                
-                // Get status from the form
-                const status = document.getElementById('invoice-status')?.value || 'unpaid';
-                
-                // Calculate totals and prepare items with full product details
-                let subtotal = 0;
-                const processedItems = [];
-                
-                items.forEach(item => {
-                    const product = this.getProduct(item.productId);
-                    const itemTotal = item.quantity * item.balance;
-                    subtotal += itemTotal;
+                    // Collect invoice items
+                    const items = [];
+                    const invalidFields = [];
+                    let hasValidItems = false;
                     
-                    processedItems.push({
-                        productId: item.productId,
-                        name: product?.name || 'منتج غير معروف',
-                        quantity: item.quantity,
-                        price: item.balance,
-                        total: itemTotal
+                    document.querySelectorAll('.invoice-item-row').forEach((row, index) => {
+                        const productSelect = row.querySelector('.invoice-product');
+                        const productId = productSelect?.value;
+                        const quantityInput = row.querySelector('.invoice-quantity');
+                        const quantity = quantityInput ? parseFloat(quantityInput.value) : NaN;
+                        
+                        // Skip empty rows (all fields empty)
+                        if (!productId && (isNaN(quantity) || quantity === 0)) {
+                            return;
+                        }
+                        
+                        // Get balance from the selected product option's data attribute
+                        let balance = 0;
+                        if (productSelect && productSelect.selectedIndex > 0) {
+                            const selectedOption = productSelect.options[productSelect.selectedIndex];
+                            balance = parseFloat(selectedOption?.dataset.balance) || 0;
+                        }
+                        
+                        // Validate the row
+                        if (!productId) {
+                            invalidFields.push(`- الرجاء اختيار منتج في البند ${index + 1}`);
+                        } else if (isNaN(quantity) || quantity <= 0) {
+                            const productName = productSelect.options[productSelect.selectedIndex]?.text || 'المنتج';
+                            invalidFields.push(`- الكمية غير صالحة لـ ${productName}`);
+                        } else if (isNaN(balance) || balance < 0) {
+                            invalidFields.push(`- سعر المنتج غير صالح في البند ${index + 1}`);
+                        } else {
+                            // Check product availability
+                            const product = this.getProduct(productId);
+                            if (product) {
+                                if (product.quantity < quantity) {
+                                    invalidFields.push(`- الكمية المتوفرة غير كافية لـ ${product.name} (المتاح: ${product.quantity})`);
+                                } else {
+                                    items.push({ productId, quantity, balance });
+                                    hasValidItems = true;
+                                }
+                            } else {
+                                invalidFields.push(`- المنتج المحدد غير موجود`);
+                            }
+                        }
                     });
-                });
-                
-                // Calculate final total
-                const total = subtotal;
-                const paid = status === 'paid' ? total : 0;
-                const remaining = total - paid;
-                
-                const invoiceData = {
-                    id,
-                    customerId,
-                    customerName: customerName,
-                    date,
-                    items: processedItems,
-                    subtotal: parseFloat(subtotal.toFixed(2)),
-                    total: parseFloat(total.toFixed(2)),
-                    paid: parseFloat(paid.toFixed(2)),
-                    status: status
-                };
-                
-                if (form.id.value) {
-                    // Update existing invoice
-                    const index = this.invoices.findIndex(i => i.id === id);
-                    if (index !== -1) {
-                        this.invoices[index] = invoiceData;
-                        this.showAlert('تم تحديث الفاتورة بنجاح', 'success');
-                    }
-                } else {
-                    // Add new invoice
-                    this.invoices.unshift(invoiceData);
                     
-                    // Update product quantities
+                    // Show all validation errors at once
+                    if (invalidFields.length > 0) {
+                        this.showAlert(`الرجاء تصحيح الأخطاء التالية:<br>${invalidFields.join('<br>')}`, 'danger');
+                        return;
+                    }
+                    
+                    if (!hasValidItems) {
+                        this.showAlert('الرجاء إضافة منتج واحد على الأقل للفاتورة', 'danger');
+                        return;
+                    }
+                    
+                    // Get status from the form
+                    const status = document.getElementById('invoice-status')?.value || 'unpaid';
+                    
+                    // Calculate totals and prepare items with full product details
+                    let subtotal = 0;
+                    const processedItems = [];
+                    
+                    // Process each item in the invoice
                     items.forEach(item => {
                         const product = this.getProduct(item.productId);
-                        if (product) {
-                            product.quantity -= item.quantity;
-                            if (product.quantity < 0) product.quantity = 0;
+                        if (!product) return;
+                        
+                        const itemTotal = item.quantity * item.balance;
+                        subtotal += itemTotal;
+                        
+                        // Add to processed items for the invoice
+                        processedItems.push({
+                            productId: item.productId,
+                            name: product.name || 'منتج غير معروف',
+                            quantity: item.quantity,
+                            price: item.balance,
+                            total: itemTotal
+                        });
+                        
+                        // Update product quantity
+                        product.quantity -= item.quantity;
+                        if (product.quantity < 0) product.quantity = 0;
+                        
+                        // Initialize product history if it doesn't exist
+                        if (!product.productHistory) {
+                            product.productHistory = [];
                         }
+                        
+                        // Add transaction to product history
+                        product.productHistory.unshift({
+                            type: 'sale',
+                            invoiceId: id,
+                            customerId: customerId,
+                            customerName: customerName,
+                            date: date,
+                            quantity: -item.quantity, // Negative for sales
+                            price: item.balance,
+                            total: itemTotal
+                        });
+                        
+                        // Add balance edit history
+                        if (!product.balanceEditHistory) {
+                            product.balanceEditHistory = [];
+                        }
+                        
+                        product.balanceEditHistory.unshift({
+                            date: date,
+                            balance: product.quantity,
+                            note: `بيع ${item.quantity} وحدة للعميل ${customerName}`
+                        });
                     });
                     
-                    // Update customer's purchase history if customer exists
+                    // Calculate final total
+                    const total = subtotal;
+                    const paid = status === 'paid' ? total : 0;
+                    
+                    const invoiceData = {
+                        id,
+                        customerId,
+                        customerName: customerName,
+                        date,
+                        items: processedItems,
+                        subtotal: parseFloat(subtotal.toFixed(2)),
+                        total: parseFloat(total.toFixed(2)),
+                        paid: parseFloat(paid.toFixed(2)),
+                        remaining: parseFloat((total - paid).toFixed(2)),
+                        status: status,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    // Check if this is an update or new invoice
+                    const existingInvoiceIndex = this.invoices.findIndex(i => i.id === id);
+                    
+                    if (existingInvoiceIndex !== -1) {
+                        // Update existing invoice
+                        this.invoices[existingInvoiceIndex] = invoiceData;
+                    } else {
+                        // Add new invoice
+                        this.invoices.unshift(invoiceData);
+                    }
+                    
+                    // Update customer's purchase history and balance
                     if (customer) {
-                        // Ensure customer has a purchases array
-                        if (!Array.isArray(customer.purchases)) {
-                            customer.purchases = [];
-                        }
-                        
-                        // Check if invoice already exists in customer's purchases
-                        const existingIndex = customer.purchases.findIndex(
-                            inv => inv.id === invoiceData.id || 
-                                  (inv.date === invoiceData.date && inv.total === invoiceData.total)
-                        );
-                        
-                        // Create a clean purchase record with essential data
+                        // Create a clean purchase record
                         const purchaseRecord = {
                             id: invoiceData.id,
-                            invoiceId: invoiceData.id, // Add explicit invoiceId reference
                             date: invoiceData.date,
                             total: invoiceData.total,
                             status: invoiceData.status,
-                            // Don't store full items here to avoid data duplication
-                            // Items will be fetched from the main invoices array when needed
+                            itemsCount: invoiceData.items.length
                         };
                         
-                        if (existingIndex !== -1) {
+                        // Check if invoice already exists in customer's purchases
+                        const existingPurchaseIndex = customer.purchases.findIndex(
+                            inv => inv.id === invoiceData.id
+                        );
+                        
+                        if (existingPurchaseIndex !== -1) {
                             // Update existing purchase record
-                            customer.purchases[existingIndex] = purchaseRecord;
+                            customer.purchases[existingPurchaseIndex] = purchaseRecord;
                         } else {
                             // Add new purchase record
                             customer.purchases.unshift(purchaseRecord);
+                            
+                            // Only update balance for new invoices
+                            if (status === 'unpaid') {
+                                // Initialize balance if it doesn't exist
+                                if (customer.balance === undefined) {
+                                    customer.balance = 0;
+                                }
+                                // Add the invoice total to the customer's balance
+                                customer.balance = (parseFloat(customer.balance) || 0) + parseFloat(total);
+                            }
                         }
                     }
                     
-                    this.showAlert('تم إضافة الفاتورة بنجاح', 'success');
+                    // Save all changes
+                    this.saveData();
+                    this.closeModal('invoice');
+                    this.renderInvoicesTable();
+                    this.renderProductsTable();
+                    this.updateDashboard();
+                    
+                    this.showAlert('تم حفظ الفاتورة بنجاح', 'success');
+                    
+                } catch (error) {
+                    console.error('Error saving invoice:', error);
+                    this.showAlert('حدث خطأ أثناء حفظ الفاتورة', 'danger');
                 }
-                
-                this.saveData();
-                this.closeModal('invoice');
-                this.renderInvoicesTable();
-                this.renderProductsTable();
-                this.updateDashboard();
             }
             
             confirmDelete() {
@@ -3938,95 +4081,62 @@
             }
             
             filterProducts() {
-                const searchTerm = this.searchInputs.products.value.toLowerCase();
-                const status = this.filterSelects.products.value;
+                const searchTerm = this.searchInputs.products?.value?.toLowerCase() || '';
+                const status = this.filterSelects.products?.value || 'all';
+                const quantityMin = document.getElementById('quantity-min')?.value ? 
+                    parseInt(document.getElementById('quantity-min').value) : null;
+                const quantityMax = document.getElementById('quantity-max')?.value ? 
+                    parseInt(document.getElementById('quantity-max').value) : null;
                 
-                let filtered = [...this.products];
+                // Store filter state
+                this.filterStates.products = { 
+                    searchTerm, 
+                    statusFilter: status,
+                    quantityMin,
+                    quantityMax
+                };
                 
-                // Apply search
-                if (searchTerm) {
-                    filtered = filtered.filter(p => 
-                        p.name.toLowerCase().includes(searchTerm) || 
-                        (p.description && p.description.toLowerCase().includes(searchTerm))
-                    );
-                }
-                
-                // Apply status filter
-                if (status !== 'all') {
-                    if (status === 'available') {
-                        filtered = filtered.filter(p => p.quantity > 10);
-                    } else if (status === 'low') {
-                        filtered = filtered.filter(p => p.quantity > 0 && p.quantity <= 10);
-                    } else if (status === 'out') {
-                        filtered = filtered.filter(p => p.quantity === 0);
-                    }
-                }
-                // Clear existing rows
-                tbody.innerHTML = '';
-                
-                if (filteredInvoices.length === 0) {
-                    console.log('No invoices match the filter criteria');
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="text-center py-4">
-                                <div class="empty-state">
-                                    <i class="fas fa-receipt"></i>
-                                    <h3>لا توجد فواتير متطابقة مع معايير البحث</h3>
-                                    <p>حاول تغيير كلمات البحث أو فلتر الحالة</p>
-                                </div>
-                            </td>
-                        </tr>`;
+                // If no filters are applied, show all products
+                if (!searchTerm && status === 'all' && quantityMin === null && quantityMax === null) {
+                    this.renderProductsTable();
                     return;
                 }
                 
-                // Render the filtered invoices
-                filteredInvoices.forEach((invoice, index) => {
-                    const row = document.createElement('tr');
-                    row.className = 'fade-in';
+                // Filter products based on search, status, and quantity range
+                const filteredProducts = this.products.filter(product => {
+                    // Filter by search term
+                    const matchesSearch = !searchTerm || 
+                        product.name.toLowerCase().includes(searchTerm) ||
+                        (product.description && product.description.toLowerCase().includes(searchTerm));
                     
-                    // Format status
-                    let statusClass = '';
-                    let statusText = '';
-                    
-                    switch(invoice.status) {
-                        case 'sales':
-                            statusClass = 'info';
-                            statusText = 'فاتورة مبيعات';
-                            break;
-                        case 'paid':
-                            statusClass = 'success';
-                            statusText = 'مدفوعة';
-                            break;
-                        case 'unpaid':
-                            statusClass = 'danger';
-                            statusText = 'غير مدفوعة';
-                            break;
-                        case 'partial':
-                            statusClass = 'warning';
-                            statusText = 'مدفوعة جزئياً';
-                            break;
-                        default:
-                            statusClass = 'secondary';
-                            statusText = 'غير معروفة';
+                    // Filter by status
+                    let matchesStatus = true;
+                    if (status === 'available') {
+                        matchesStatus = product.quantity > 10;
+                    } else if (status === 'low') {
+                        matchesStatus = product.quantity > 0 && product.quantity <= 10;
+                    } else if (status === 'out') {
+                        matchesStatus = product.quantity === 0;
                     }
                     
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${invoice.customer || 'غير محدد'}</td>
-                        <td>${invoice.date || 'غير محدد'}</td>
-                        <td>${(invoice.total || 0).toFixed(2)} ج.م</td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>
-                            <button class="action-btn print-invoice-btn" 
-                                    data-invoice-id="${invoice.id}" 
-                                    title="طباعة الفاتورة">
-                                <i class="fas fa-print"></i>
-                            </button>
-                        </td>
-                    `;
+                    // Filter by quantity range
+                    let matchesQuantity = true;
+                    if (quantityMin !== null && product.quantity < quantityMin) {
+                        matchesQuantity = false;
+                    }
+                    if (quantityMax !== null && product.quantity > quantityMax) {
+                        matchesQuantity = false;
+                    }
                     
-                    tbody.appendChild(row);
+                    return matchesSearch && matchesStatus && matchesQuantity;
                 });
+                
+                // Reset to first page when filtering
+                this.currentPage.products = 1;
+                
+                // Store filtered products and render the table
+                this.filteredProducts = filteredProducts;
+                this.renderProductsTable(filteredProducts);
             }
             
             filterInvoices() {
@@ -4044,6 +4154,9 @@
                     const searchTerm = searchInput.value.trim().toLowerCase();
                     const statusValue = statusFilter.value;
                     
+                    // Store filter state once
+                    this.filterStates.invoices = { searchTerm, statusFilter: statusValue };
+                    
                     console.log('Filter parameters:', { searchTerm, statusValue });
                     console.log('Total invoices to filter:', this.invoices.length);
                     
@@ -4060,9 +4173,15 @@
                         // Check if the invoice matches the status filter
                         let matchesStatus = true;
                         if (statusValue === 'paid') {
-                            matchesStatus = invoice.status === 'paid' || invoice.paid === true;
+                            matchesStatus = (invoice.status === 'paid' || invoice.paid === true);
                         } else if (statusValue === 'unpaid') {
-                            matchesStatus = invoice.status === 'unpaid' || invoice.paid === false || invoice.paid === undefined;
+                            matchesStatus = (invoice.status === 'unpaid' || invoice.paid === false);
+                            // Only consider undefined as unpaid if status is also not 'paid'
+                            if (invoice.paid === undefined && invoice.status !== 'paid') {
+                                matchesStatus = true;
+                            } else if (invoice.paid === undefined) {
+                                matchesStatus = false;
+                            }
                         }
                         // If status is 'all', matchesStatus remains true
                         
@@ -4097,12 +4216,18 @@
                     (supplier.phone?.includes(searchTerm) || false)
                 );
                 
+                // Store filter state
+                this.filterStates.suppliers = { searchTerm };
+                
+                // Reset to first page when filtering
+                this.currentPage.suppliers = 1;
+                
+                // Store filtered suppliers and render the table
+                this.filteredSuppliers = filteredSuppliers;
                 this.renderSuppliersTable(filteredSuppliers);
-            }
-            
-            filterProducts() {
-                const searchTerm = (this.searchInputs.products?.value || '').toLowerCase();
-                const statusFilter = this.filterSelects.products?.value || 'all';
+                
+                // Store filter state
+                this.filterStates.products = { searchTerm, statusFilter };
                 
                 // If no search term and no filter, show all products
                 if (!searchTerm && statusFilter === 'all') {
@@ -4137,7 +4262,29 @@
                 this.renderProductsTable(filteredProducts);
             }
             
-            renderProductsTable(productsList = this.products) {
+            renderProductsTable(productsList = null) {
+                // Apply stored filters if no specific list is provided
+                if (productsList === null) {
+                    const { searchTerm, statusFilter } = this.filterStates.products || { searchTerm: '', statusFilter: 'all' };
+                    productsList = this.products.filter(product => {
+                        // Filter by search term
+                        const matchesSearch = !searchTerm || 
+                            product.name.toLowerCase().includes(searchTerm) ||
+                            (product.description && product.description.toLowerCase().includes(searchTerm));
+                        
+                        // Filter by status
+                        let matchesStatus = true;
+                        if (statusFilter === 'available') {
+                            matchesStatus = product.quantity > 10;
+                        } else if (statusFilter === 'low') {
+                            matchesStatus = product.quantity > 0 && product.quantity <= 10;
+                        } else if (statusFilter === 'out') {
+                            matchesStatus = product.quantity === 0;
+                        }
+                        
+                        return matchesSearch && matchesStatus;
+                    });
+                }
                 try {
                     console.log('Rendering products table with', productsList.length, 'products');
                     
@@ -4231,6 +4378,36 @@
             }
             
             renderInvoicesTable(invoices = null) {
+                // If no invoices provided, use filtered invoices
+                if (!invoices) {
+                    const { searchTerm, statusFilter } = this.filterStates.invoices || { searchTerm: '', statusFilter: 'all' };
+                    invoices = this.invoices.filter(invoice => {
+                        // Check if the invoice matches the search term
+                        const matchesSearch = 
+                            !searchTerm || // If search is empty, match all
+                            (invoice.id && invoice.id.toLowerCase().includes(searchTerm)) ||
+                            (invoice.customer && typeof invoice.customer === 'string' && invoice.customer.toLowerCase().includes(searchTerm)) ||
+                            (invoice.customer && typeof invoice.customer === 'object' && 
+                             invoice.customer.name && invoice.customer.name.toLowerCase().includes(searchTerm)) ||
+                            (invoice.date && invoice.date.toString().includes(searchTerm));
+                            
+                        // Check if the invoice matches the status filter
+                        let matchesStatus = true;
+                        if (statusFilter === 'paid') {
+                            matchesStatus = (invoice.status === 'paid' || invoice.paid === true);
+                        } else if (statusFilter === 'unpaid') {
+                            matchesStatus = (invoice.status === 'unpaid' || invoice.paid === false);
+                            // Only consider undefined as unpaid if status is also not 'paid'
+                            if (invoice.paid === undefined && invoice.status !== 'paid') {
+                                matchesStatus = true;
+                            } else if (invoice.paid === undefined) {
+                                matchesStatus = false;
+                            }
+                        }
+                        
+                        return matchesSearch && matchesStatus;
+                    });
+                }
                 console.log('renderInvoicesTable called with:', { hasInvoices: !!invoices });
                 const tbody = document.getElementById('invoices-table-body');
                 if (!tbody) {
@@ -4466,7 +4643,7 @@
                     if (btn) btn.addEventListener('click', closeModal);
                 });
                 
-                // Print button click is handled by event delegation in setupEventListeners
+                // Print button click is now handled by event delegation in setupEventListeners
                 
                 // Add escape key listener
                 document.addEventListener('keydown', handleEscape);
@@ -4614,14 +4791,12 @@
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>
-                                <div class="modal-body" style="flex: 1; overflow: auto; padding: 0 20px 20px 20px;">
+                                <div class="modal-body" style="flex: 1; overflow: auto; padding: 0 20px;">
                                     <div class="supplier-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                                         <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
                                             <div><strong>اسم المورد:</strong> ${supplier.name || 'غير معروف'}</div>
                                             <div><strong>رقم الهاتف:</strong> ${supplier.phone || 'غير محدد'}</div>
                                             <div><strong>إجمالي المعاملات:</strong> ${items.length}</div>
-                                            <div><strong>إجمالي الكميات:</strong> ${totalItems.toLocaleString('ar-EG')} وحدة</div>
-                                            <div><strong>إجمالي المشتريات:</strong> ${totalPurchases.toFixed(2)} ج.م</div>
                                         </div>
                                     </div>
                                     
@@ -5278,11 +5453,11 @@
                         if (!isNaN(balance)) {
                             balanceText = Math.abs(balance).toFixed(2);
                             if (balance > 0) {
-                                balanceClass = 'text-success';
-                                balanceText = `+${balanceText}`;
-                            } else if (balance < 0) {
                                 balanceClass = 'text-danger';
                                 balanceText = `-${balanceText}`;
+                            } else if (balance < 0) {
+                                balanceClass = 'text-success';
+                                balanceText = `+${Math.abs(balance).toFixed(2)}`;
                             }
                         }
                     }
@@ -5467,6 +5642,56 @@
             }
             
             renderPagination(type, totalItems) {
+                // Apply filters before calculating total pages
+                if (type === 'products') {
+                    const { searchTerm, statusFilter } = this.filterStates.products;
+                    if (searchTerm || statusFilter !== 'all') {
+                        const filtered = this.products.filter(product => {
+                            const matchesSearch = !searchTerm || 
+                                product.name.toLowerCase().includes(searchTerm) ||
+                                (product.description && product.description.toLowerCase().includes(searchTerm));
+                            
+                            let matchesStatus = true;
+                            if (statusFilter === 'available') {
+                                matchesStatus = product.quantity > 10;
+                            } else if (statusFilter === 'low') {
+                                matchesStatus = product.quantity > 0 && product.quantity <= 10;
+                            } else if (statusFilter === 'out') {
+                                matchesStatus = product.quantity === 0;
+                            }
+                            
+                            return matchesSearch && matchesStatus;
+                        });
+                        totalItems = filtered.length;
+                    }
+                } else if (type === 'invoices') {
+                    const { searchTerm, statusFilter } = this.filterStates.invoices;
+                    if (searchTerm || statusFilter !== 'all') {
+                        const filtered = this.invoices.filter(invoice => {
+                            const matchesSearch = !searchTerm || 
+                                (invoice.id && invoice.id.toLowerCase().includes(searchTerm)) ||
+                                (invoice.customer && typeof invoice.customer === 'string' && invoice.customer.toLowerCase().includes(searchTerm)) ||
+                                (invoice.customer && typeof invoice.customer === 'object' && 
+                                 invoice.customer.name && invoice.customer.name.toLowerCase().includes(searchTerm)) ||
+                                (invoice.date && invoice.date.toString().includes(searchTerm));
+                                
+                            let matchesStatus = true;
+                            if (statusFilter === 'paid') {
+                                matchesStatus = (invoice.status === 'paid' || invoice.paid === true);
+                            } else if (statusFilter === 'unpaid') {
+                                matchesStatus = (invoice.status === 'unpaid' || invoice.paid === false);
+                                if (invoice.paid === undefined && invoice.status !== 'paid') {
+                                    matchesStatus = true;
+                                } else if (invoice.paid === undefined) {
+                                    matchesStatus = false;
+                                }
+                            }
+                            
+                            return matchesSearch && matchesStatus;
+                        });
+                        totalItems = filtered.length;
+                    }
+                }
                 const pagination = this.pagination[type];
                 if (!pagination) return;
                 
@@ -5481,7 +5706,7 @@
                 
                 pagination.style.display = 'flex';
                 
-                // Ensure current page is within bounds
+                // Ensure current page is within valid range
                 if (this.currentPage[type] > totalPages) {
                     this.currentPage[type] = totalPages;
                 }
@@ -5928,7 +6153,6 @@
                                         <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
                                             <div><strong>الكمية المتوفرة:</strong> ${currentStock.toLocaleString('ar-EG')} وحدة</div>
                                             <div><strong>إجمالي المبيعات:</strong> ${totalQuantity.toLocaleString('ar-EG')} وحدة</div>
-                                            <div><strong>إجمالي قيمة المبيعات:</strong> ${totalSales.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م</div>
                                             <div><strong>السعر الحالي:</strong> ${currentPrice.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م</div>
                                         </div>
                                     </div>
