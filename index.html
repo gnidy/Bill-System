@@ -1908,7 +1908,7 @@
 
     <!-- Add Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="assets.js"></script>
+    <!-- assets.js content has been moved inline -->
     <script>
         // Main Application Class
         class InventorySystem {
@@ -5109,13 +5109,13 @@
                                                         <td>${(edit.oldBalance || 0).toFixed(2)} ج.م</td>
                                                         <td>${(edit.newBalance || 0).toFixed(2)} ج.م</td>
                                                         <td class="${priceDiff > 0 ? 'text-success' : priceDiff < 0 ? 'text-danger' : ''}">
-                                                            ${priceDiff > 0 ? '+' : ''}${priceDiff !== 0 ? priceDiff.toFixed(2) : '0.00'} ج.م
+                                                            ${priceDiff !== 0 ? priceDiff.toFixed(2) : '0.00'} ج.م
                                                         </td>
                                                     </tr>
                                                 `;
                                             }).join('')}
                                         </tbody>
-                                    </table>
+                                    </table>    
                                 </div>` : 
                                 `<div class="text-center py-3">لا توجد تعديلات سابقة على السعر</div>`
                             }
@@ -6189,10 +6189,12 @@
                                                                         ${transaction.supplierName || transaction.customerName || 'غير محدد'}
                                                                     </td>
                                                                     <td style="padding: 10px; text-align: right; font-weight: bold; color: ${transaction.supplierId ? '#28a745' : (transaction.type === 'مرتجع' ? '#28a745' : '#dc3545')};">
-                                                                        ${transaction.supplierId ? '+' : (transaction.type === 'مرتجع' ? '+' : '-')} ${(transaction.quantity || 0).toLocaleString('ar-EG')}
+                                                                        ${transaction.supplierId || transaction.type === 'مرتجع' ? '+' : ''}${(transaction.quantity || 0).toLocaleString('ar-EG', {useGrouping: true})} ${transaction.unit || ''}
                                                                     </td>
-                                                                    <td style="padding: 10px; text-align: right;">${(transaction.price || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م</td>
-                                                                    <td style="padding: 10px; text-align: right; font-weight: bold;">${(transaction.total || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م</td>
+                                                                    <td style="padding: 10px; text-align: right;">${(transaction.price || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })} ج.م</td>
+                                                                    <td style="padding: 10px; text-align: right; font-weight: bold;">
+                                                                        ${Math.abs(transaction.total || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })} ج.م
+                                                                    </td>
                                                                 </tr>
                                                             `;
                                                         }).join('')}
@@ -6479,20 +6481,45 @@
             }
             
             populateCustomerDropdown() {
-                const customerSelect = document.getElementById('invoice-customer');
-                if (customerSelect) {
+                try {
+                    console.log('Populating customer dropdown...');
+                    const customerSelect = document.getElementById('invoice-customer');
+                    
+                    if (!customerSelect) {
+                        console.error('Customer select element not found');
+                        return;
+                    }
+                    
+                    console.log(`Found ${this.customers?.length || 0} customers to add`);
+                    
                     // Clear existing options except the first one
                     while (customerSelect.options.length > 1) {
                         customerSelect.remove(1);
                     }
                     
+                    // Check if we have customers to add
+                    if (!this.customers || this.customers.length === 0) {
+                        console.warn('No customers found to populate in the dropdown');
+                        return;
+                    }
+                    
                     // Add customers to the dropdown
-                    this.customers.forEach(customer => {
+                    this.customers.forEach((customer, index) => {
+                        if (!customer || !customer.id || !customer.name) {
+                            console.warn(`Invalid customer data at index ${index}:`, customer);
+                            return;
+                        }
+                        
                         const option = document.createElement('option');
                         option.value = customer.id;
                         option.textContent = customer.name;
                         customerSelect.appendChild(option);
                     });
+                    
+                    console.log(`Successfully added ${customerSelect.options.length - 1} customers to dropdown`);
+                    
+                } catch (error) {
+                    console.error('Error populating customer dropdown:', error);
                 }
             }
         }
@@ -6540,7 +6567,7 @@
     </script>
     
     <!-- Load sample data -->
-    <script src="assets.js"></script>
+    <!-- assets.js content has been moved inline -->
     
     <!-- Main application script -->
     <script>
@@ -7208,53 +7235,269 @@
             }
         }
         
-        // Initialize print invoice functionality
+        /**
+         * ===========================================
+         * APPLICATION INITIALIZATION
+         * ===========================================
+         */
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize PrintInvoice instance
-            window.printInvoice = new PrintInvoice();
+            // Initialize main application
+            window.inventorySystem = new InventorySystem();
             
-            // Handle print button clicks
+            // Initialize print functionality if available
+            if (window.printInvoice) {
+                window.printInvoice.setupEventListeners();
+            }
+            
+            // Handle print button clicks using event delegation
+            setupPrintFunctionality();
+        });
+        
+        /**
+         * Sets up event delegation for print functionality
+         */
+        function setupPrintFunctionality() {
             document.addEventListener('click', (e) => {
-                const printBtn = e.target.closest('.print-invoice-btn, #print-invoice-details, #print-invoice, .btn-print');
+                const printBtn = e.target.closest('.print-invoice-btn, .print-btn, #print-invoice, #print-invoice-details');
                 if (!printBtn) return;
                 
                 e.preventDefault();
-                e.stopPropagation();
-                
-                // Handle different print button scenarios
-                if (printBtn.classList.contains('print-invoice-btn') || printBtn.classList.contains('btn-print')) {
-                    // Handle print buttons in the invoices list
-                    const invoiceId = printBtn.dataset.invoiceId || printBtn.dataset.id;
-                    if (invoiceId) {
-                        const invoice = window.inventorySystem?.getInvoice(invoiceId);
-                        if (invoice) {
-                            window.printInvoice.openModal(invoice);
-                        } else {
-                            console.error('Invoice not found:', invoiceId);
-                            window.inventorySystem?.showAlert('خطأ: لم يتم العثور على الفاتورة', 'error');
-                        }
-                    }
-                } else if (printBtn.id === 'print-invoice-details' || printBtn.closest('#print-invoice-details')) {
-                    // Handle print button in invoice details modal
-                    const invoiceModal = document.querySelector('#invoice-details-modal');
-                    if (invoiceModal) {
-                        const invoiceId = invoiceModal.querySelector('.modal-header h3')?.textContent?.match(/#(\S+)/)?.[1];
-                        if (invoiceId) {
-                            const invoice = window.inventorySystem?.getInvoice(invoiceId);
-                            if (invoice) {
-                                window.printInvoice.openModal(invoice);
-                                return;
-                            }
-                        }
-                    }
-                    // If we couldn't get invoice from modal, try to print the current invoice
-                    window.print();
-                } else if (printBtn.id === 'print-invoice' || printBtn.closest('#print-invoice')) {
-                    // Handle print button in print preview
-                    window.print();
-                }
+                handlePrintButtonClick(printBtn);
             });
-        });
+        }
+        
+        /**
+         * Handles click events for print buttons
+         * @param {HTMLElement} printBtn - The clicked print button
+         */
+        function handlePrintButtonClick(printBtn) {
+            // Handle print buttons in the invoices list
+            if (printBtn.classList.contains('print-invoice-btn')) {
+                handleInvoiceListPrint(printBtn);
+            } 
+            // Handle print button in invoice details modal
+            else if (printBtn.id === 'print-invoice-details' || printBtn.closest('#print-invoice-details')) {
+                handleDetailsModalPrint();
+            } 
+            // Handle print button in print preview
+            else if (printBtn.id === 'print-invoice' || printBtn.closest('#print-invoice')) {
+                window.print();
+            }
+        }
+        
+        /**
+         * Handles printing from invoice list
+         * @param {HTMLElement} printBtn - The clicked print button
+         */
+        function handleInvoiceListPrint(printBtn) {
+            const invoiceId = printBtn.dataset.invoiceId || printBtn.dataset.id;
+            if (!invoiceId) return;
+            
+            const invoice = window.inventorySystem?.getInvoice(invoiceId);
+            if (invoice) {
+                window.printInvoice.openModal(invoice);
+            } else {
+                console.error('Invoice not found:', invoiceId);
+                window.inventorySystem?.showAlert('خطأ: لم يتم العثور على الفاتورة', 'error');
+            }
+        }
+        
+        /**
+         * Handles printing from invoice details modal
+         */
+        function handleDetailsModalPrint() {
+            const invoiceModal = document.querySelector('#invoice-details-modal');
+            if (invoiceModal) {
+                const invoiceId = invoiceModal.querySelector('.modal-header h3')?.textContent?.match(/#(\S+)/)?.[1];
+                if (invoiceId) {
+                    const invoice = window.inventorySystem?.getInvoice(invoiceId);
+                    if (invoice) {
+                        window.printInvoice.openModal(invoice);
+                        return;
+                    }
+                }
+            }
+            // Fallback to basic print if we couldn't get invoice from modal
+            window.print();
+        }
+        
+        /**
+         * ===========================================
+         * MAIN APPLICATION NAMESPACE & DATA CONTAINERS
+         * ===========================================
+         */
+        window.InvoiceSystem = window.InvoiceSystem || {};
+        
+        // Data containers - These hold the application state
+        window.allProducts = [];
+        window.sampleInvoices = [];
+        window.sampleCustomers = [];
+        window.sampleSuppliers = [];
+        window.productIds = [];
+        
+        /**
+         * ===========================================
+         * HELPER FUNCTIONS
+         * ===========================================
+         */
+        
+        /**
+         * Get product details by ID
+         * @param {string} productId - The ID of the product to find
+         * @returns {Object} Product details or default object if not found
+         */
+        function getProductDetails(productId) {
+            return window.allProducts.find(p => p.id === productId) || { 
+                name: 'منتج غير معروف', 
+                balance: 0 
+            };
+        }
+
+        /**
+         * Format purchase history for a customer
+         * @param {string} customerId - The ID of the customer
+         * @returns {Array} Formatted purchase history
+         */
+        function formatPurchaseHistory(customerId) {
+            const customer = window.sampleCustomers.find(c => c.id === customerId);
+            if (!customer) return [];
+            
+            return (customer.purchases || []).map(purchase => {
+                const invoice = window.sampleInvoices.find(inv => inv.id === purchase.invoiceId);
+                const items = invoice ? 
+                    (invoice.items || []).map(item => item.name).join('، ') :
+                    (purchase.items || []).map(item => item.name).join('، ');
+                    
+                const total = invoice ? (invoice.total || 0) : (purchase.total || 0);
+                const status = invoice ? (invoice.status || 'unpaid') : (purchase.status || 'unpaid');
+                const remaining = invoice ? 
+                    (invoice.remaining || 0) : 
+                    (status === 'paid' ? 0 : total);
+                
+                return {
+                    date: purchase.date || new Date().toISOString(),
+                    invoiceId: purchase.invoiceId || '',
+                    items: items,
+                    total: parseFloat(total).toFixed(2),
+                    status: status === 'paid' ? 'مدفوع' : 'غير مدفوع',
+                    remaining: parseFloat(remaining).toFixed(2)
+                };
+            });
+        }
+    </script>
+    
+    <!-- Assets JavaScript -->
+    <!-- =================================== -->
+    <!--        GLOBAL VARIABLES & DATA       -->
+    <!-- =================================== -->
+    <script>
+        /**
+         * ===========================================
+         * APPLICATION DATA INITIALIZATION
+         * ===========================================
+         */
+        // Initialize data when the script loads
+        (function initializeAppData() {
+            try {
+                // Initialize products
+                if (localStorage.getItem('products')) {
+                    window.InvoiceSystem.products = JSON.parse(localStorage.getItem('products'));
+                } else {
+                    window.InvoiceSystem.products = [...window.allProducts];
+                    localStorage.setItem('products', JSON.stringify(window.InvoiceSystem.products));
+                }
+
+                // Initialize customers
+                if (localStorage.getItem('customers')) {
+                    window.InvoiceSystem.customers = JSON.parse(localStorage.getItem('customers'));
+                } else {
+                    window.InvoiceSystem.customers = [...window.sampleCustomers];
+                    localStorage.setItem('customers', JSON.stringify(window.InvoiceSystem.customers));
+                }
+
+                // Initialize invoices
+                if (localStorage.getItem('invoices')) {
+                    window.InvoiceSystem.invoices = JSON.parse(localStorage.getItem('invoices'));
+                } else {
+                    window.InvoiceSystem.invoices = [...window.sampleInvoices];
+                    localStorage.setItem('invoices', JSON.stringify(window.InvoiceSystem.invoices));
+                }
+
+                // Backward compatibility
+                window.products = window.InvoiceSystem.products;
+                window.invoices = window.InvoiceSystem.invoices || [];
+                window.customers = window.InvoiceSystem.customers;
+                
+                // Initialize recent invoices
+                window.recentInvoices = [...window.invoices]
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 10);
+                
+                console.log('Application data initialized successfully');
+            } catch (error) {
+                console.error('Error initializing application data:', error);
+                // Fallback to empty data
+                const fallbackData = {
+                    products: [...window.allProducts],
+                    invoices: [...window.sampleInvoices],
+                    customers: [...window.sampleCustomers]
+                };
+                
+                window.InvoiceSystem = { ...fallbackData };
+                window.products = fallbackData.products;
+                window.invoices = fallbackData.invoices;
+                window.customers = fallbackData.customers;
+                window.recentInvoices = [];
+            }
+        })();
+
+        // ===================================
+        //         HELPER FUNCTIONS
+        // ===================================
+        
+        /**
+         * Get product details by ID
+         * @param {string} productId - The ID of the product to find
+         * @returns {Object} Product details or default object if not found
+         */
+        function getProductDetails(productId) {
+            return window.allProducts.find(p => p.id === productId) || { 
+                name: 'منتج غير معروف', 
+                balance: 0 
+            };
+        }
+
+        /**
+         * Format purchase history for a customer
+         * @param {string} customerId - The ID of the customer
+         * @returns {Array} Formatted purchase history
+         */
+        function formatPurchaseHistory(customerId) {
+            const customer = window.sampleCustomers.find(c => c.id === customerId);
+            if (!customer) return [];
+            
+            return (customer.purchases || []).map(purchase => {
+                const invoice = window.sampleInvoices.find(inv => inv.id === purchase.invoiceId);
+                const items = invoice ? 
+                    (invoice.items || []).map(item => item.name).join('، ') :
+                    (purchase.items || []).map(item => item.name).join('، ');
+                    
+                const total = invoice ? (invoice.total || 0) : (purchase.total || 0);
+                const status = invoice ? (invoice.status || 'unpaid') : (purchase.status || 'unpaid');
+                const remaining = invoice ? 
+                    (invoice.remaining || 0) : 
+                    (status === 'paid' ? 0 : total);
+                
+                return {
+                    date: purchase.date || new Date().toISOString(),
+                    invoiceId: purchase.invoiceId || '',
+                    items: items,
+                    total: parseFloat(total).toFixed(2),
+                    status: status === 'paid' ? 'مدفوع' : 'غير مدفوع',
+                    remaining: parseFloat(remaining).toFixed(2)
+                };
+            });
+        }
     </script>
 </body>
 </html>
