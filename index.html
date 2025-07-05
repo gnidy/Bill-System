@@ -1908,7 +1908,6 @@
 
     <!-- Add Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="assets.js"></script>
     <script>
         // Main Application Class
         class InventorySystem {
@@ -6824,9 +6823,6 @@
         });
     </script>
     
-    <!-- Load sample data -->
-    <script src="assets.js"></script>
-    
     <!-- Main application script -->
     <script>
         // Set up event listeners when the DOM is fully loaded
@@ -7540,6 +7536,185 @@
                 }
             });
         });
+    </script>
+
+    <!-- Data Management Script -->
+    <script>
+    /**
+     * Invoice System - Core Data Management
+     * Handles all data operations including storage, retrieval, and manipulation
+     */
+
+    // Main namespace for the Invoice System
+    window.InvoiceSystem = window.InvoiceSystem || {};
+
+    // Sample data templates
+    const SAMPLE_DATA = {
+        products: [],
+        invoices: [],
+        customers: [],
+        suppliers: []
+    };
+
+    /**
+     * Data Service - Handles all data operations
+     */
+    window.InvoiceSystem.DataService = (function() {
+        // Private variables
+        let products = [];
+        let invoices = [];
+        let customers = [];
+        let suppliers = [];
+        
+        // Initialize data from localStorage or use sample data
+        function init() {
+            try {
+                // Load products
+                products = JSON.parse(localStorage.getItem('products')) || [];
+                // Load invoices
+                invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+                // Load customers
+                customers = JSON.parse(localStorage.getItem('customers')) || [];
+                // Load suppliers
+                suppliers = JSON.parse(localStorage.getItem('suppliers')) || [];
+                
+                // If no data exists, initialize with empty arrays
+                if (!localStorage.getItem('products')) {
+                    saveAllData();
+                }
+                
+                console.log('DataService initialized successfully');
+                return true;
+            } catch (error) {
+                console.error('Error initializing DataService:', error);
+                resetToSampleData();
+                return false;
+            }
+        }
+        
+        // Save all data to localStorage
+        function saveAllData() {
+            try {
+                localStorage.setItem('products', JSON.stringify(products));
+                localStorage.setItem('invoices', JSON.stringify(invoices));
+                localStorage.setItem('customers', JSON.stringify(customers));
+                localStorage.setItem('suppliers', JSON.stringify(suppliers));
+                return true;
+            } catch (error) {
+                console.error('Error saving data:', error);
+                return false;
+            }
+        }
+        
+        // Reset all data to sample data
+        function resetToSampleData() {
+            products = [...SAMPLE_DATA.products];
+            invoices = [...SAMPLE_DATA.invoices];
+            customers = [...SAMPLE_DATA.customers];
+            suppliers = [...SAMPLE_DATA.suppliers];
+            saveAllData();
+        }
+        
+        // Product operations
+        function getProducts() {
+            return [...products];
+        }
+        
+        function addProduct(product) {
+            if (!product || !product.id) return false;
+            products.push(product);
+            return saveAllData();
+        }
+        
+        function getProductById(id) {
+            return products.find(p => p.id === id) || { name: 'منتج غير معروف', balance: 0 };
+        }
+        
+        // Invoice operations
+        function getInvoices(limit = 10) {
+            return [...invoices]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, limit);
+        }
+        
+        function addInvoice(invoice) {
+            if (!invoice) return false;
+            invoices.push(invoice);
+            return saveAllData();
+        }
+        
+        // Customer operations
+        function getCustomers() {
+            return [...customers];
+        }
+        
+        function getCustomerById(id) {
+            return customers.find(c => c.id === id);
+        }
+        
+        function formatPurchaseHistory(customerId) {
+            const customer = getCustomerById(customerId);
+            if (!customer || !customer.purchases) return [];
+            
+            return customer.purchases.map(purchase => {
+                const invoice = invoices.find(inv => inv.id === purchase.invoiceId);
+                const items = invoice ? 
+                    invoice.items.map(item => item.name).join('، ') :
+                    (purchase.items ? purchase.items.map(item => item.name).join('، ') : '');
+                    
+                const total = invoice ? invoice.total : (purchase.total || 0);
+                const status = invoice ? invoice.status : (purchase.status || 'unpaid');
+                const remaining = invoice ? 
+                    (invoice.remaining || (status === 'paid' ? 0 : total)) : 
+                    (status === 'paid' ? 0 : total);
+                
+                return {
+                    date: purchase.date || new Date().toISOString(),
+                    invoiceId: purchase.invoiceId || '',
+                    items: items,
+                    total: parseFloat(total).toFixed(2),
+                    status: status === 'paid' ? 'مدفوع' : 'غير مدفوع',
+                    remaining: parseFloat(remaining).toFixed(2)
+                };
+            });
+        }
+        
+        // Public API
+        return {
+            init,
+            resetToSampleData,
+            
+            // Products
+            getProducts,
+            addProduct,
+            getProductById,
+            
+            // Invoices
+            getInvoices,
+            addInvoice,
+            
+            // Customers
+            getCustomers,
+            getCustomerById,
+            formatPurchaseHistory
+        };
+    })();
+
+    // Initialize the data service when the script loads
+    document.addEventListener('DOMContentLoaded', function() {
+        window.InvoiceSystem.DataService.init();
+        
+        // For backward compatibility (consider removing in future versions)
+        window.products = window.InvoiceSystem.DataService.getProducts();
+        window.invoices = window.InvoiceSystem.DataService.getInvoices();
+        window.customers = window.InvoiceSystem.DataService.getCustomers();
+        
+        // Initialize recent invoices
+        window.recentInvoices = window.InvoiceSystem.DataService.getInvoices(10);
+    });
+
+    // For backward compatibility
+    getProductDetails = window.InvoiceSystem.DataService.getProductById;
     </script>
 </body>
 </html>
