@@ -1908,7 +1908,7 @@
 
     <!-- Add Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- assets.js content has been moved inline -->
+    <script src="assets.js"></script>
     <script>
         // Main Application Class
         class InventorySystem {
@@ -5109,13 +5109,13 @@
                                                         <td>${(edit.oldBalance || 0).toFixed(2)} ج.م</td>
                                                         <td>${(edit.newBalance || 0).toFixed(2)} ج.م</td>
                                                         <td class="${priceDiff > 0 ? 'text-success' : priceDiff < 0 ? 'text-danger' : ''}">
-                                                            ${priceDiff !== 0 ? priceDiff.toFixed(2) : '0.00'} ج.م
+                                                            ${priceDiff > 0 ? '+' : ''}${priceDiff !== 0 ? priceDiff.toFixed(2) : '0.00'} ج.م
                                                         </td>
                                                     </tr>
                                                 `;
                                             }).join('')}
                                         </tbody>
-                                    </table>    
+                                    </table>
                                 </div>` : 
                                 `<div class="text-center py-3">لا توجد تعديلات سابقة على السعر</div>`
                             }
@@ -5194,6 +5194,280 @@
         this.showAlert('حدث خطأ أثناء عرض سجل المنتج', 'error');
     }
 }
+
+            showCustomerBalanceHistory(customerId) {
+                try {
+                    const customer = this.getCustomer(customerId);
+                    if (!customer) {
+                        this.showAlert('العميل غير موجود', 'error');
+                        return;
+                    }
+
+                    // Create modal HTML
+                    const modalHtml = `
+                        <div class="modal-overlay active" id="customer-balance-history-modal">
+                            <div class="modal" style="width: auto; max-width: 90%;">
+                                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                                    <h3 style="margin: 0;">سجل معاملات الرصيد: ${customer.name}</h3>
+                                    <div>
+                                        <button class="close-btn" id="close-customer-balance-history" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #666; padding: 5px 10px;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="customer-info" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div><strong>الرصيد الحالي:</strong> ${(customer.balance || 0).toFixed(2)} ج.م</div>
+                                            <button id="add-payment-btn" class="btn btn-primary" style="padding: 6px 12px; font-size: 14px;">
+                                                <i class="fas fa-plus-circle"></i> تسديد دفعة
+                                            </button>
+                                        </div>
+                                        <div id="payment-form" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                                            <div style="display: flex; gap: 10px; align-items: center;">
+                                                <input type="number" id="customer-payment-amount" class="form-control" placeholder="المبلغ" min="0.01" step="0.01" style="flex: 1;">
+                                                <button id="save-payment-btn" class="btn btn-success" style="white-space: nowrap;">
+                                                    <i class="fas fa-check"></i> حفظ
+                                                </button>
+                                                <button id="cancel-payment-btn" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-times"></i> إلغاء
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="balance-history" style="width: 100%;">
+                                        <h4 style="margin: 20px 0 15px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px; text-align: right; white-space: nowrap; width: 100%;">
+                                            سجل حركات الرصيد
+                                        </h4>
+                                        <div style="max-height: 400px; overflow-y: auto;">
+                                            <table class="table" style="width: 100%; border-collapse: collapse;">
+                                                <thead>
+                                                    <tr style="background-color: #f8f9fa;">
+                                                        <th style="padding: 12px; text-align: right; width: 30%;">التاريخ</th>
+                                                        <th style="padding: 12px; text-align: left; width: 30%;">المبلغ</th>
+                                                        <th style="padding: 12px; text-align: left; width: 40%;">الرصيد</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${(() => {
+                                                        const history = customer.balanceHistory || [];
+                                                        if (history.length === 0) {
+                                                            return `
+                                                                <tr>
+                                                                    <td colspan="3" style="text-align: center; padding: 20px; color: #666;">
+                                                                        <i class="fas fa-exchange-alt" style="font-size: 1.5em; margin-bottom: 10px; opacity: 0.5; display: block;"></i>
+                                                                        لا توجد معاملات سابقة لهذا العميل
+                                                                    </td>
+                                                                </tr>`;
+                                                        }
+
+                                                        // Sort history by date (oldest first for running balance calculation)
+                                                        const sortedHistory = [...history].sort((a, b) => {
+                                                            const dateA = a.date ? new Date(a.date) : new Date(0);
+                                                            const dateB = b.date ? new Date(b.date) : new Date(0);
+                                                            return dateA - dateB; // Sort ascending (oldest first)
+                                                        });
+                                                        
+                                                        // Calculate running balance
+                                                        let runningBalance = 0;
+                                                        const entriesWithBalance = sortedHistory.map(entry => {
+                                                            const amount = parseFloat(entry.amount) || 0;
+                                                            runningBalance += amount;
+                                                            return {
+                                                                ...entry,
+                                                                runningBalance: runningBalance
+                                                            };
+                                                        }).reverse(); // Reverse to show newest first
+                                                        
+                                                        // Build rows
+                                                        return entriesWithBalance.map(entry => {
+                                                            const entryDate = entry.date ? new Date(entry.date) : new Date();
+                                                            const day = entryDate.getDate();
+                                                            const month = entryDate.getMonth() + 1;
+                                                            const year = entryDate.getFullYear();
+                                                            
+                                                            const toArabicNumeral = num => {
+                                                                const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+                                                                return num.toString().replace(/\d/g, d => arabicNumerals[d]);
+                                                            };
+                                                            
+                                                            const formattedDate = `${toArabicNumeral(day)}/${toArabicNumeral(month)}/${toArabicNumeral(year)}`;
+                                                            const amount = parseFloat(entry.amount) || 0;
+                                                            const amountClass = amount >= 0 ? 'text-success' : 'text-danger';
+                                                            const amountSign = amount >= 0 ? '+' : '';
+                                                            const balanceClass = entry.runningBalance >= 0 ? 'text-success' : 'text-danger';
+                                                            
+                                                            return `
+                                                                <tr style="border-bottom: 1px solid #eee;">
+                                                                    <td style="padding: 12px; text-align: right; white-space: nowrap;">${formattedDate}</td>
+                                                                    <td style="padding: 12px; text-align: left; white-space: nowrap;" class="${amountClass}">
+                                                                        ${amountSign}${Math.abs(amount).toFixed(2)} ج.م
+                                                                    </td>
+                                                                    <td style="padding: 12px; text-align: left; white-space: nowrap;" class="${balanceClass}">
+                                                                        ${entry.runningBalance.toFixed(2)} ج.م
+                                                                    </td>
+                                                                </tr>`;
+                                                        }).join('');
+                                                    })()}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer" style="padding: 15px; border-top: 1px solid #eee; margin-top: 0;">
+                                    <button id="close-customer-balance-history-footer" class="btn btn-secondary" style="margin-right: auto;">
+                                        <i class="fas fa-times"></i> إغلاق
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+
+                    // Add modal to the DOM
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+                    // Add close functionality
+                    const closeModal = () => {
+                        const modal = document.getElementById('customer-balance-history-modal');
+                        if (modal) {
+                            modal.remove();
+                            document.removeEventListener('keydown', handleEsc);
+                            modal.removeEventListener('click', handleOutsideClick);
+                        }
+                    };
+
+                    // Handle Escape key
+                    const handleEsc = (e) => {
+                        if (e.key === 'Escape') {
+                            closeModal();
+                        }
+                    };
+
+                    // Handle click outside modal
+                    const handleOutsideClick = (e) => {
+                        const modal = document.getElementById('customer-balance-history-modal');
+                        if (e.target === modal) {
+                            closeModal();
+                        }
+                    };
+
+                    // Add event listeners
+                    document.addEventListener('keydown', handleEsc);
+                    const modalOverlay = document.getElementById('customer-balance-history-modal');
+                    if (modalOverlay) {
+                        modalOverlay.addEventListener('click', handleOutsideClick);
+                    }
+
+                    // Close buttons
+                    const closeButtons = [
+                        'close-customer-balance-history',
+                        'close-customer-balance-history-footer'
+                    ];
+
+                    closeButtons.forEach(btnId => {
+                        const btn = document.getElementById(btnId);
+                        if (btn) {
+                            btn.addEventListener('click', closeModal);
+                        }
+                    });
+
+                    // Prevent clicks inside modal from closing it
+                    const modalContent = modalOverlay?.querySelector('.modal');
+                    if (modalContent) {
+                        modalContent.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                        });
+                    }
+
+                    // Add payment button functionality
+                    const addPaymentBtn = document.getElementById('add-payment-btn');
+                    const paymentForm = document.getElementById('payment-form');
+                    const paymentAmount = document.getElementById('customer-payment-amount');
+                    const paymentDescription = document.getElementById('customer-payment-description');
+                    const savePaymentBtn = document.getElementById('save-payment-btn');
+                    const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
+                    
+                    if (addPaymentBtn) {
+                        addPaymentBtn.addEventListener('click', () => {
+                            paymentForm.style.display = 'block';
+                            addPaymentBtn.style.display = 'none';
+                            paymentAmount.focus();
+                        });
+                    }
+                    
+                    if (cancelPaymentBtn) {
+                        cancelPaymentBtn.addEventListener('click', () => {
+                            paymentForm.style.display = 'none';
+                            addPaymentBtn.style.display = 'block';
+                            paymentAmount.value = '';
+                            if (paymentDescription) paymentDescription.value = '';
+                        });
+                    }
+                    
+                    if (savePaymentBtn) {
+                        savePaymentBtn.addEventListener('click', () => {
+                            const amount = parseFloat(paymentAmount.value);
+                            
+                            if (isNaN(amount) || amount <= 0) {
+                                this.showAlert('الرجاء إدخال مبلغ صحيح أكبر من الصفر', 'error');
+                                return;
+                            }
+                            
+                            try {
+                                // Update customer balance (subtract payment)
+                                customer.balance = (parseFloat(customer.balance) || 0) - amount;
+                                
+                                // Add to balance history
+                                if (!customer.balanceHistory) customer.balanceHistory = [];
+                                customer.balanceHistory.push({
+                                    amount: -amount, // Negative because it's a payment from client
+                                    date: new Date().toISOString(),
+                                    type: 'payment'
+                                });
+                                
+                                // Save changes
+                                this.saveData();
+                                
+                                // Reset form and update UI
+                                paymentAmount.value = '';
+                                if (paymentDescription) paymentDescription.value = '';
+                                paymentForm.style.display = 'none';
+                                addPaymentBtn.style.display = 'block';
+                                
+                                // Show success message
+                                this.showAlert('تم تسجيل الدفعة بنجاح', 'success');
+                                
+                                // Close the current modal
+                                const modal = document.getElementById('customer-balance-history-modal');
+                                if (modal) modal.remove();
+                                
+                                // Reopen the modal to show updated balance and history
+                                setTimeout(() => {
+                                    this.showCustomerBalanceHistory(customerId);
+                                }, 100);
+                                
+                            } catch (error) {
+                                console.error('Error saving payment:', error);
+                                this.showAlert('حدث خطأ أثناء حفظ الدفعة', 'error');
+                            }
+                        });
+                    }
+                    
+                    // Close on Escape key
+                    const handleCustomerBalanceEsc = (e) => {
+                        if (e.key === 'Escape') {
+                            const modal = document.getElementById('customer-balance-history-modal');
+                            if (modal) modal.remove();
+                            document.removeEventListener('keydown', handleCustomerBalanceEsc);
+                        }
+                    };
+                    document.addEventListener('keydown', handleCustomerBalanceEsc);
+
+                } catch (error) {
+                    console.error('Error showing customer balance history:', error);
+                    this.showAlert('حدث خطأ أثناء عرض سجل المعاملات', 'error');
+                }
+            }
 
             showCustomerHistory(customerId) {
                 try {
@@ -5477,6 +5751,9 @@
                             <button class="action-btn history" data-id="${customer.id}" title="سجل المشتريات">
                                 <i class="fas fa-history"></i>
                             </button>
+                            <button class="action-btn payment disabled" data-id="${customer.id}" title="سجل معاملات العميل">
+                                <i class="fas fa-receipt"></i>
+                            </button>
                         </td>
                     `;
                     
@@ -5504,6 +5781,14 @@
                         e.stopPropagation();
                         const id = e.currentTarget.getAttribute('data-id');
                         this.showCustomerHistory(id);
+                    });
+                });
+                
+                tbody.querySelectorAll('.payment').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = e.currentTarget.getAttribute('data-id');
+                        this.showCustomerBalanceHistory(id);
                     });
                 });
                 
@@ -6189,12 +6474,10 @@
                                                                         ${transaction.supplierName || transaction.customerName || 'غير محدد'}
                                                                     </td>
                                                                     <td style="padding: 10px; text-align: right; font-weight: bold; color: ${transaction.supplierId ? '#28a745' : (transaction.type === 'مرتجع' ? '#28a745' : '#dc3545')};">
-                                                                        ${transaction.supplierId || transaction.type === 'مرتجع' ? '+' : ''}${(transaction.quantity || 0).toLocaleString('ar-EG', {useGrouping: true})} ${transaction.unit || ''}
+                                                                        ${transaction.supplierId ? '+' : (transaction.type === 'مرتجع' ? '+' : '-')} ${(transaction.quantity || 0).toLocaleString('ar-EG')}
                                                                     </td>
-                                                                    <td style="padding: 10px; text-align: right;">${(transaction.price || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })} ج.م</td>
-                                                                    <td style="padding: 10px; text-align: right; font-weight: bold;">
-                                                                        ${Math.abs(transaction.total || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })} ج.م
-                                                                    </td>
+                                                                    <td style="padding: 10px; text-align: right;">${(transaction.price || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م</td>
+                                                                    <td style="padding: 10px; text-align: right; font-weight: bold;">${(transaction.total || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م</td>
                                                                 </tr>
                                                             `;
                                                         }).join('')}
@@ -6481,45 +6764,20 @@
             }
             
             populateCustomerDropdown() {
-                try {
-                    console.log('Populating customer dropdown...');
-                    const customerSelect = document.getElementById('invoice-customer');
-                    
-                    if (!customerSelect) {
-                        console.error('Customer select element not found');
-                        return;
-                    }
-                    
-                    console.log(`Found ${this.customers?.length || 0} customers to add`);
-                    
+                const customerSelect = document.getElementById('invoice-customer');
+                if (customerSelect) {
                     // Clear existing options except the first one
                     while (customerSelect.options.length > 1) {
                         customerSelect.remove(1);
                     }
                     
-                    // Check if we have customers to add
-                    if (!this.customers || this.customers.length === 0) {
-                        console.warn('No customers found to populate in the dropdown');
-                        return;
-                    }
-                    
                     // Add customers to the dropdown
-                    this.customers.forEach((customer, index) => {
-                        if (!customer || !customer.id || !customer.name) {
-                            console.warn(`Invalid customer data at index ${index}:`, customer);
-                            return;
-                        }
-                        
+                    this.customers.forEach(customer => {
                         const option = document.createElement('option');
                         option.value = customer.id;
                         option.textContent = customer.name;
                         customerSelect.appendChild(option);
                     });
-                    
-                    console.log(`Successfully added ${customerSelect.options.length - 1} customers to dropdown`);
-                    
-                } catch (error) {
-                    console.error('Error populating customer dropdown:', error);
                 }
             }
         }
@@ -6567,7 +6825,7 @@
     </script>
     
     <!-- Load sample data -->
-    <!-- assets.js content has been moved inline -->
+    <script src="assets.js"></script>
     
     <!-- Main application script -->
     <script>
@@ -7235,269 +7493,53 @@
             }
         }
         
-        /**
-         * ===========================================
-         * APPLICATION INITIALIZATION
-         * ===========================================
-         */
+        // Initialize print invoice functionality
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize main application
-            window.inventorySystem = new InventorySystem();
+            // Initialize PrintInvoice instance
+            window.printInvoice = new PrintInvoice();
             
-            // Initialize print functionality if available
-            if (window.printInvoice) {
-                window.printInvoice.setupEventListeners();
-            }
-            
-            // Handle print button clicks using event delegation
-            setupPrintFunctionality();
-        });
-        
-        /**
-         * Sets up event delegation for print functionality
-         */
-        function setupPrintFunctionality() {
+            // Handle print button clicks
             document.addEventListener('click', (e) => {
-                const printBtn = e.target.closest('.print-invoice-btn, .print-btn, #print-invoice, #print-invoice-details');
+                const printBtn = e.target.closest('.print-invoice-btn, #print-invoice-details, #print-invoice, .btn-print');
                 if (!printBtn) return;
                 
                 e.preventDefault();
-                handlePrintButtonClick(printBtn);
-            });
-        }
-        
-        /**
-         * Handles click events for print buttons
-         * @param {HTMLElement} printBtn - The clicked print button
-         */
-        function handlePrintButtonClick(printBtn) {
-            // Handle print buttons in the invoices list
-            if (printBtn.classList.contains('print-invoice-btn')) {
-                handleInvoiceListPrint(printBtn);
-            } 
-            // Handle print button in invoice details modal
-            else if (printBtn.id === 'print-invoice-details' || printBtn.closest('#print-invoice-details')) {
-                handleDetailsModalPrint();
-            } 
-            // Handle print button in print preview
-            else if (printBtn.id === 'print-invoice' || printBtn.closest('#print-invoice')) {
-                window.print();
-            }
-        }
-        
-        /**
-         * Handles printing from invoice list
-         * @param {HTMLElement} printBtn - The clicked print button
-         */
-        function handleInvoiceListPrint(printBtn) {
-            const invoiceId = printBtn.dataset.invoiceId || printBtn.dataset.id;
-            if (!invoiceId) return;
-            
-            const invoice = window.inventorySystem?.getInvoice(invoiceId);
-            if (invoice) {
-                window.printInvoice.openModal(invoice);
-            } else {
-                console.error('Invoice not found:', invoiceId);
-                window.inventorySystem?.showAlert('خطأ: لم يتم العثور على الفاتورة', 'error');
-            }
-        }
-        
-        /**
-         * Handles printing from invoice details modal
-         */
-        function handleDetailsModalPrint() {
-            const invoiceModal = document.querySelector('#invoice-details-modal');
-            if (invoiceModal) {
-                const invoiceId = invoiceModal.querySelector('.modal-header h3')?.textContent?.match(/#(\S+)/)?.[1];
-                if (invoiceId) {
-                    const invoice = window.inventorySystem?.getInvoice(invoiceId);
-                    if (invoice) {
-                        window.printInvoice.openModal(invoice);
-                        return;
+                e.stopPropagation();
+                
+                // Handle different print button scenarios
+                if (printBtn.classList.contains('print-invoice-btn') || printBtn.classList.contains('btn-print')) {
+                    // Handle print buttons in the invoices list
+                    const invoiceId = printBtn.dataset.invoiceId || printBtn.dataset.id;
+                    if (invoiceId) {
+                        const invoice = window.inventorySystem?.getInvoice(invoiceId);
+                        if (invoice) {
+                            window.printInvoice.openModal(invoice);
+                        } else {
+                            console.error('Invoice not found:', invoiceId);
+                            window.inventorySystem?.showAlert('خطأ: لم يتم العثور على الفاتورة', 'error');
+                        }
                     }
+                } else if (printBtn.id === 'print-invoice-details' || printBtn.closest('#print-invoice-details')) {
+                    // Handle print button in invoice details modal
+                    const invoiceModal = document.querySelector('#invoice-details-modal');
+                    if (invoiceModal) {
+                        const invoiceId = invoiceModal.querySelector('.modal-header h3')?.textContent?.match(/#(\S+)/)?.[1];
+                        if (invoiceId) {
+                            const invoice = window.inventorySystem?.getInvoice(invoiceId);
+                            if (invoice) {
+                                window.printInvoice.openModal(invoice);
+                                return;
+                            }
+                        }
+                    }
+                    // If we couldn't get invoice from modal, try to print the current invoice
+                    window.print();
+                } else if (printBtn.id === 'print-invoice' || printBtn.closest('#print-invoice')) {
+                    // Handle print button in print preview
+                    window.print();
                 }
-            }
-            // Fallback to basic print if we couldn't get invoice from modal
-            window.print();
-        }
-        
-        /**
-         * ===========================================
-         * MAIN APPLICATION NAMESPACE & DATA CONTAINERS
-         * ===========================================
-         */
-        window.InvoiceSystem = window.InvoiceSystem || {};
-        
-        // Data containers - These hold the application state
-        window.allProducts = [];
-        window.sampleInvoices = [];
-        window.sampleCustomers = [];
-        window.sampleSuppliers = [];
-        window.productIds = [];
-        
-        /**
-         * ===========================================
-         * HELPER FUNCTIONS
-         * ===========================================
-         */
-        
-        /**
-         * Get product details by ID
-         * @param {string} productId - The ID of the product to find
-         * @returns {Object} Product details or default object if not found
-         */
-        function getProductDetails(productId) {
-            return window.allProducts.find(p => p.id === productId) || { 
-                name: 'منتج غير معروف', 
-                balance: 0 
-            };
-        }
-
-        /**
-         * Format purchase history for a customer
-         * @param {string} customerId - The ID of the customer
-         * @returns {Array} Formatted purchase history
-         */
-        function formatPurchaseHistory(customerId) {
-            const customer = window.sampleCustomers.find(c => c.id === customerId);
-            if (!customer) return [];
-            
-            return (customer.purchases || []).map(purchase => {
-                const invoice = window.sampleInvoices.find(inv => inv.id === purchase.invoiceId);
-                const items = invoice ? 
-                    (invoice.items || []).map(item => item.name).join('، ') :
-                    (purchase.items || []).map(item => item.name).join('، ');
-                    
-                const total = invoice ? (invoice.total || 0) : (purchase.total || 0);
-                const status = invoice ? (invoice.status || 'unpaid') : (purchase.status || 'unpaid');
-                const remaining = invoice ? 
-                    (invoice.remaining || 0) : 
-                    (status === 'paid' ? 0 : total);
-                
-                return {
-                    date: purchase.date || new Date().toISOString(),
-                    invoiceId: purchase.invoiceId || '',
-                    items: items,
-                    total: parseFloat(total).toFixed(2),
-                    status: status === 'paid' ? 'مدفوع' : 'غير مدفوع',
-                    remaining: parseFloat(remaining).toFixed(2)
-                };
             });
-        }
-    </script>
-    
-    <!-- Assets JavaScript -->
-    <!-- =================================== -->
-    <!--        GLOBAL VARIABLES & DATA       -->
-    <!-- =================================== -->
-    <script>
-        /**
-         * ===========================================
-         * APPLICATION DATA INITIALIZATION
-         * ===========================================
-         */
-        // Initialize data when the script loads
-        (function initializeAppData() {
-            try {
-                // Initialize products
-                if (localStorage.getItem('products')) {
-                    window.InvoiceSystem.products = JSON.parse(localStorage.getItem('products'));
-                } else {
-                    window.InvoiceSystem.products = [...window.allProducts];
-                    localStorage.setItem('products', JSON.stringify(window.InvoiceSystem.products));
-                }
-
-                // Initialize customers
-                if (localStorage.getItem('customers')) {
-                    window.InvoiceSystem.customers = JSON.parse(localStorage.getItem('customers'));
-                } else {
-                    window.InvoiceSystem.customers = [...window.sampleCustomers];
-                    localStorage.setItem('customers', JSON.stringify(window.InvoiceSystem.customers));
-                }
-
-                // Initialize invoices
-                if (localStorage.getItem('invoices')) {
-                    window.InvoiceSystem.invoices = JSON.parse(localStorage.getItem('invoices'));
-                } else {
-                    window.InvoiceSystem.invoices = [...window.sampleInvoices];
-                    localStorage.setItem('invoices', JSON.stringify(window.InvoiceSystem.invoices));
-                }
-
-                // Backward compatibility
-                window.products = window.InvoiceSystem.products;
-                window.invoices = window.InvoiceSystem.invoices || [];
-                window.customers = window.InvoiceSystem.customers;
-                
-                // Initialize recent invoices
-                window.recentInvoices = [...window.invoices]
-                    .sort((a, b) => new Date(b.date) - new Date(a.date))
-                    .slice(0, 10);
-                
-                console.log('Application data initialized successfully');
-            } catch (error) {
-                console.error('Error initializing application data:', error);
-                // Fallback to empty data
-                const fallbackData = {
-                    products: [...window.allProducts],
-                    invoices: [...window.sampleInvoices],
-                    customers: [...window.sampleCustomers]
-                };
-                
-                window.InvoiceSystem = { ...fallbackData };
-                window.products = fallbackData.products;
-                window.invoices = fallbackData.invoices;
-                window.customers = fallbackData.customers;
-                window.recentInvoices = [];
-            }
-        })();
-
-        // ===================================
-        //         HELPER FUNCTIONS
-        // ===================================
-        
-        /**
-         * Get product details by ID
-         * @param {string} productId - The ID of the product to find
-         * @returns {Object} Product details or default object if not found
-         */
-        function getProductDetails(productId) {
-            return window.allProducts.find(p => p.id === productId) || { 
-                name: 'منتج غير معروف', 
-                balance: 0 
-            };
-        }
-
-        /**
-         * Format purchase history for a customer
-         * @param {string} customerId - The ID of the customer
-         * @returns {Array} Formatted purchase history
-         */
-        function formatPurchaseHistory(customerId) {
-            const customer = window.sampleCustomers.find(c => c.id === customerId);
-            if (!customer) return [];
-            
-            return (customer.purchases || []).map(purchase => {
-                const invoice = window.sampleInvoices.find(inv => inv.id === purchase.invoiceId);
-                const items = invoice ? 
-                    (invoice.items || []).map(item => item.name).join('، ') :
-                    (purchase.items || []).map(item => item.name).join('، ');
-                    
-                const total = invoice ? (invoice.total || 0) : (purchase.total || 0);
-                const status = invoice ? (invoice.status || 'unpaid') : (purchase.status || 'unpaid');
-                const remaining = invoice ? 
-                    (invoice.remaining || 0) : 
-                    (status === 'paid' ? 0 : total);
-                
-                return {
-                    date: purchase.date || new Date().toISOString(),
-                    invoiceId: purchase.invoiceId || '',
-                    items: items,
-                    total: parseFloat(total).toFixed(2),
-                    status: status === 'paid' ? 'مدفوع' : 'غير مدفوع',
-                    remaining: parseFloat(remaining).toFixed(2)
-                };
-            });
-        }
+        });
     </script>
 </body>
 </html>
