@@ -29,6 +29,9 @@ body,html{padding:0;margin:0;font-family:Arial,sans-serif;font-size:20px;scroll-
         <input type="date" id="date" placeholder="Enter your date" style="display:none">
         <input type="hidden" id="time">
         <button id="btn">التالي</button>
+        <div id="error-message" style="color: red; margin-top: 10px; display: none;">
+            يرجى إدخال اسم العميل واسم الكاشير
+        </div>
         <div id="wayQuantityForm">الكمية</div>
     </form>
 
@@ -49,6 +52,42 @@ body,html{padding:0;margin:0;font-family:Arial,sans-serif;font-size:20px;scroll-
     </div>	
     
     <script>
+// Form validation for the Next button
+document.addEventListener('DOMContentLoaded', function() {
+    const nextButton = document.getElementById('btn');
+    const clientInput = document.getElementById('client');
+    const cashierInput = document.getElementById('cashier');
+    const errorMessage = document.getElementById('error-message');
+    
+    if (nextButton && clientInput && cashierInput && errorMessage) {
+        nextButton.addEventListener('click', function(event) {
+            if (!clientInput.value.trim() || !cashierInput.value.trim()) {
+                // Prevent default action and stop event propagation
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Show error message
+                errorMessage.style.display = 'block';
+                
+                // Hide the message after 3 seconds
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+                
+                // Focus on the empty field
+                if (!clientInput.value.trim()) {
+                    clientInput.focus();
+                } else {
+                    cashierInput.focus();
+                }
+                
+                // Stop any further execution
+                return false;
+            }
+        }, true); // Use capture phase to catch the event first
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     // Check if "Items" exists in localStorage
     if (!localStorage.getItem('Items')) {
